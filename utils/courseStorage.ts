@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary } from '@/types';
+import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance } from '@/types';
 
 const COURSES_KEY = 'math-feedback-courses';
 let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
@@ -286,6 +286,155 @@ export function getTestResults(courseId: string, testId: string): TestResultsSum
     lowestScore: scores.length > 0 ? Math.min(...scores) : 0,
     studentResults,
   };
+}
+
+// Label and Category Analytics
+export function getLabelPerformance(courseId: string): LabelPerformance[] {
+  const course = loadCourse(courseId);
+  if (!course || course.availableLabels.length === 0) return [];
+
+  const labelMap = new Map<string, {
+    totalPoints: number;
+    totalTasks: number;
+    studentScores: Map<string, { totalPoints: number; taskCount: number }>;
+  }>();
+
+  // Initialize all labels
+  course.availableLabels.forEach(label => {
+    labelMap.set(label, {
+      totalPoints: 0,
+      totalTasks: 0,
+      studentScores: new Map(),
+    });
+  });
+
+  // Aggregate data from all tests
+  course.tests.forEach(test => {
+    test.studentFeedbacks.forEach(feedback => {
+      if (!feedback.completedDate) return; // Only include completed feedback
+
+      feedback.taskFeedbacks.forEach(taskFeedback => {
+        // Find the task or subtask
+        const task = test.tasks.find(t => t.id === taskFeedback.taskId);
+        if (!task) return;
+
+        let labels: string[] = [];
+
+        if (taskFeedback.subtaskId) {
+          const subtask = task.subtasks.find(st => st.id === taskFeedback.subtaskId);
+          if (subtask) {
+            labels = subtask.labels || [];
+          }
+        } else {
+          labels = task.labels || [];
+        }
+
+        // Update stats for each label
+        labels.forEach(label => {
+          const labelData = labelMap.get(label);
+          if (!labelData) return;
+
+          labelData.totalPoints += taskFeedback.points;
+          labelData.totalTasks += 1;
+
+          // Update student-specific data
+          const studentId = feedback.studentId;
+          if (!labelData.studentScores.has(studentId)) {
+            labelData.studentScores.set(studentId, { totalPoints: 0, taskCount: 0 });
+          }
+          const studentData = labelData.studentScores.get(studentId)!;
+          studentData.totalPoints += taskFeedback.points;
+          studentData.taskCount += 1;
+        });
+      });
+    });
+  });
+
+  // Convert to array format
+  return Array.from(labelMap.entries()).map(([label, data]) => {
+    const averageScore = data.totalTasks > 0 ? data.totalPoints / data.totalTasks : 0;
+
+    const studentScores = Array.from(data.studentScores.entries()).map(([studentId, studentData]) => {
+      const student = course.students.find(s => s.id === studentId);
+      return {
+        studentId,
+        studentName: student?.name || 'Unknown',
+        averageScore: studentData.taskCount > 0 ? studentData.totalPoints / studentData.taskCount : 0,
+        completedTasks: studentData.taskCount,
+      };
+    }).sort((a, b) => b.averageScore - a.averageScore); // Sort by score descending
+
+    return {
+      label,
+      averageScore,
+      taskCount: data.totalTasks,
+      studentScores,
+    };
+  }).sort((a, b) => a.label.localeCompare(b.label)); // Sort by label name
+}
+
+export function getCategoryPerformance(courseId: string): CategoryPerformance[] {
+  const course = loadCourse(courseId);
+  if (!course) return [];
+
+  const categoryMap = new Map<number, {
+    totalPoints: number;
+    totalTasks: number;
+  }>();
+
+  // Initialize categories 1, 2, 3
+  [1, 2, 3].forEach(cat => {
+    categoryMap.set(cat, { totalPoints: 0, totalTasks: 0 });
+  });
+
+  // Aggregate data from all tests
+  course.tests.forEach(test => {
+    test.studentFeedbacks.forEach(feedback => {
+      if (!feedback.completedDate) return; // Only include completed feedback
+
+      feedback.taskFeedbacks.forEach(taskFeedback => {
+        // Find the task or subtask
+        const task = test.tasks.find(t => t.id === taskFeedback.taskId);
+        if (!task) return;
+
+        let category: number | undefined;
+
+        if (taskFeedback.subtaskId) {
+          const subtask = task.subtasks.find(st => st.id === taskFeedback.subtaskId);
+          if (subtask) {
+            category = subtask.category;
+          }
+        } else {
+          category = task.category;
+        }
+
+        if (!category) return; // Skip tasks without category
+
+        const categoryData = categoryMap.get(category);
+        if (!categoryData) return;
+
+        categoryData.totalPoints += taskFeedback.points;
+        categoryData.totalTasks += 1;
+      });
+    });
+  });
+
+  // Convert to array format
+  const descriptions = {
+    1: 'Category 1',
+    2: 'Category 2',
+    3: 'Category 3',
+  };
+
+  return Array.from(categoryMap.entries())
+    .map(([category, data]) => ({
+      category,
+      averageScore: data.totalTasks > 0 ? data.totalPoints / data.totalTasks : 0,
+      taskCount: data.totalTasks,
+      description: descriptions[category as 1 | 2 | 3],
+    }))
+    .filter(cat => cat.taskCount > 0) // Only include categories with data
+    .sort((a, b) => a.category - b.category);
 }
 
 // Auto-save functionality
