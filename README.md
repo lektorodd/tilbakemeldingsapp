@@ -86,7 +86,7 @@ npm run dev
 
 ### Installing Typst (Required for PDF Generation)
 
-**Important**: The app exports `.typ` files (Typst source code). You must manually compile them to PDF.
+**The app now auto-compiles PDFs!** When you click "Generate PDF", the app automatically compiles the Typst file to PDF and downloads it.
 
 Install Typst CLI:
 
@@ -100,12 +100,18 @@ cargo install --git https://github.com/typst/typst
 # Or download from https://github.com/typst/typst/releases
 ```
 
-**Workflow**:
-1. In app: Click "Export PDF" → downloads `student_name.typ`
-2. In terminal: `typst compile student_name.typ` → generates `student_name.pdf`
-3. Distribute the PDF to students
+**Two Options for Export**:
 
-**The app does NOT auto-compile to PDF** - this is a manual step.
+1. **"Generate PDF"** button (recommended):
+   - Automatically compiles to PDF
+   - Downloads PDF directly
+   - Requires Typst installed on your system
+   - Requires `npm run dev` to be running
+
+2. **".typ"** button (manual):
+   - Downloads Typst source file (`.typ`)
+   - You manually run: `typst compile filename.typ`
+   - Useful if auto-compile fails or for batch processing
 
 ## Complete Workflow
 
@@ -188,18 +194,24 @@ MathFeedback/
 3. Move to next student
 4. Repeat
 
-### 8. Export and Compile PDF
+### 8. Export PDF
 
-1. Click "Export PDF" button
+**Option A: Auto-Compile (Recommended)**
+1. Click "Generate PDF" button
+2. PDF automatically compiles and downloads
+3. Distribute to student
+
+**Option B: Manual Compile**
+1. Click ".typ" button
 2. Downloads `student_name_test_name.typ` file
-3. **Manual step**: Open terminal and run:
-   ```bash
-   typst compile student_name_test_name.typ
-   ```
-4. This creates `student_name_test_name.pdf`
-5. Distribute PDF to student
+3. In terminal: `typst compile student_name_test_name.typ`
+4. Creates `student_name_test_name.pdf`
+5. Distribute to student
 
-**Note**: The app exports Typst source code (`.typ`), not PDFs. You must compile manually.
+**Note**: Auto-compile requires:
+- Typst CLI installed on your system
+- Development server running (`npm run dev`)
+- If auto-compile fails, use the ".typ" button for manual compilation
 
 ### 9. Next Test
 

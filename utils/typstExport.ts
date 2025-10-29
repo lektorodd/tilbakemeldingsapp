@@ -141,6 +141,50 @@ export function downloadTypstFile(content: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+export async function compileAndDownloadPDF(content: string, filename: string): Promise<boolean> {
+  try {
+    const response = await fetch('/api/compile-typst', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content,
+        filename,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Compilation error:', error);
+
+      if (error.error?.includes('not installed')) {
+        alert('Typst is not installed!\n\nPlease install it:\n• macOS: brew install typst\n• Linux: cargo install --git https://github.com/typst/typst\n\nOr download from: https://github.com/typst/typst/releases');
+      } else {
+        alert(`Failed to compile PDF: ${error.error}\n\nDetails: ${error.details || ''}`);
+      }
+      return false;
+    }
+
+    // Download the PDF
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename.replace(/\.typ$/, '.pdf');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    return true;
+  } catch (error) {
+    console.error('Network error:', error);
+    alert('Failed to compile PDF. Make sure the development server is running.');
+    return false;
+  }
+}
+
 export function calculateTotalPoints(feedbacks: TaskFeedback[]): number {
   return feedbacks.reduce((sum, f) => sum + f.points, 0);
 }

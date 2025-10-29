@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData } from '@/types';
 import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
-import { generateTypstDocument, downloadTypstFile } from '@/utils/typstExport';
+import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
-import { ArrowLeft, Save, Download, CheckCircle, Circle } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TestFeedbackPage() {
@@ -133,6 +133,31 @@ export default function TestFeedbackPage() {
 
     const filename = `${selectedStudent.name.replace(/\s+/g, '_')}_${test.name.replace(/\s+/g, '_')}.typ`;
     downloadTypstFile(typstContent, filename);
+  };
+
+  const handleCompilePDF = async () => {
+    if (!selectedStudent || !test || !currentFeedback) return;
+
+    const score = calculateStudentScore(test.tasks, currentFeedback.taskFeedbacks);
+
+    const typstContent = generateTypstDocument({
+      studentName: selectedStudent.name,
+      studentNumber: selectedStudent.studentNumber,
+      testName: test.name,
+      tasks: test.tasks,
+      feedbacks: currentFeedback.taskFeedbacks,
+      generalComment: test.generalComment,
+      individualComment: currentFeedback.individualComment,
+      totalPoints: score,
+      maxPoints: 60,
+    });
+
+    const filename = `${selectedStudent.name.replace(/\s+/g, '_')}_${test.name.replace(/\s+/g, '_')}.typ`;
+
+    const success = await compileAndDownloadPDF(typstContent, filename);
+    if (success) {
+      alert('PDF compiled and downloaded successfully!');
+    }
   };
 
   if (!course || !test) {
@@ -273,11 +298,20 @@ export default function TestFeedbackPage() {
                       </button>
                     )}
                     <button
-                      onClick={handleExportTypst}
+                      onClick={handleCompilePDF}
                       className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+                      title="Compile to PDF directly"
                     >
                       <Download size={18} />
-                      Export PDF
+                      Generate PDF
+                    </button>
+                    <button
+                      onClick={handleExportTypst}
+                      className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+                      title="Download .typ source file"
+                    >
+                      <FileText size={18} />
+                      .typ
                     </button>
                   </div>
                 </div>
