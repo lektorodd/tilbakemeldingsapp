@@ -65,34 +65,84 @@ export interface StudentProgress {
   totalTests: number;
 }
 
-// New test-centric data model
-export interface Student {
+// Course-centric data model
+export interface CourseStudent {
   id: string;
   name: string;
   studentNumber?: string;
+}
+
+export interface TestFeedbackData {
+  studentId: string;
   taskFeedbacks: TaskFeedback[];
   individualComment: string;
-  completedDate?: string; // ISO date string when feedback was completed
+  completedDate?: string;
+  score?: number; // Calculated, not stored
 }
 
-export interface Test {
+export interface CourseTest {
   id: string;
   name: string; // e.g., "October Test - Logarithms"
-  description?: string; // e.g., "logarithms", "chapter 3-5"
+  description?: string;
+  date: string; // Test date
   tasks: Task[];
   generalComment: string;
-  students: Student[];
-  createdDate: string; // ISO date string
-  lastModified: string; // ISO date string
+  studentFeedbacks: TestFeedbackData[]; // Feedback for each student on this test
+  createdDate: string;
+  lastModified: string;
 }
 
-export interface TestSummary {
+export interface Course {
+  id: string;
+  name: string; // e.g., "Math 10A - Fall 2024"
+  description?: string;
+  students: CourseStudent[]; // All students in this course
+  tests: CourseTest[]; // All tests in this course
+  createdDate: string;
+  lastModified: string;
+}
+
+export interface CourseSummary {
   id: string;
   name: string;
   description?: string;
   studentCount: number;
-  completedCount: number;
+  testCount: number;
   createdDate: string;
   lastModified: string;
 }
+
+// Analytics interfaces
+export interface StudentTestResult {
+  testId: string;
+  testName: string;
+  testDate: string;
+  score: number;
+  maxScore: number;
+  percentage: number;
+  completed: boolean;
+}
+
+export interface StudentCourseProgress {
+  student: CourseStudent;
+  testResults: StudentTestResult[];
+  averageScore: number;
+  averagePercentage: number;
+  completedTests: number;
+  totalTests: number;
+}
+
+export interface TestResultsSummary {
+  test: CourseTest;
+  completedCount: number;
+  averageScore: number;
+  highestScore: number;
+  lowestScore: number;
+  studentResults: Array<{
+    student: CourseStudent;
+    score: number;
+    completed: boolean;
+  }>;
+}
+
 

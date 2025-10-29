@@ -1,0 +1,426 @@
+import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary } from '@/types';
+
+const COURSES_KEY = 'math-feedback-courses';
+let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
+
+// Course CRUD operations
+export function saveCourse(course: Course): void {
+  const courses = loadAllCourses();
+  const existingIndex = courses.findIndex(c => c.id === course.id);
+
+  course.lastModified = new Date().toISOString();
+
+  if (existingIndex >= 0) {
+    courses[existingIndex] = course;
+  } else {
+    courses.push(course);
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+  }
+
+  // Auto-save completed feedback
+  autoSaveCourse(course);
+}
+
+export function loadAllCourses(): Course[] {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem(COURSES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  }
+  return [];
+}
+
+export function loadCourse(courseId: string): Course | null {
+  const courses = loadAllCourses();
+  return courses.find(c => c.id === courseId) || null;
+}
+
+export function deleteCourse(courseId: string): void {
+  const courses = loadAllCourses();
+  const filtered = courses.filter(c => c.id !== courseId);
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(filtered));
+  }
+}
+
+export function getCourseSummaries(): CourseSummary[] {
+  const courses = loadAllCourses();
+  return courses.map(course => ({
+    id: course.id,
+    name: course.name,
+    description: course.description,
+    studentCount: course.students.length,
+    testCount: course.tests.length,
+    createdDate: course.createdDate,
+    lastModified: course.lastModified,
+  }));
+}
+
+// Student operations
+export function addStudentToCourse(courseId: string, student: Omit<CourseStudent, 'id'>): CourseStudent {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const newStudent: CourseStudent = {
+    ...student,
+    id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  };
+
+  course.students.push(newStudent);
+  saveCourse(course);
+
+  return newStudent;
+}
+
+export function updateStudent(courseId: string, studentId: string, updates: Partial<CourseStudent>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const studentIndex = course.students.findIndex(s => s.id === studentId);
+  if (studentIndex < 0) throw new Error('Student not found');
+
+  course.students[studentIndex] = {
+    ...course.students[studentIndex],
+    ...updates,
+  };
+
+  saveCourse(course);
+}
+
+export function deleteStudent(courseId: string, studentId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  course.students = course.students.filter(s => s.id !== studentId);
+
+  // Also remove their feedback from all tests
+  course.tests.forEach(test => {
+    test.studentFeedbacks = test.studentFeedbacks.filter(f => f.studentId !== studentId);
+  });
+
+  saveCourse(course);
+}
+
+// Test operations
+export function addTestToCourse(courseId: string, test: Omit<CourseTest, 'id' | 'createdDate' | 'lastModified' | 'studentFeedbacks'>): CourseTest {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const newTest: CourseTest = {
+    ...test,
+    id: `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    studentFeedbacks: [],
+    createdDate: new Date().toISOString(),
+    lastModified: new Date().toISOString(),
+  };
+
+  course.tests.push(newTest);
+  saveCourse(course);
+
+  return newTest;
+}
+
+export function updateTest(courseId: string, testId: string, updates: Partial<CourseTest>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const testIndex = course.tests.findIndex(t => t.id === testId);
+  if (testIndex < 0) throw new Error('Test not found');
+
+  course.tests[testIndex] = {
+    ...course.tests[testIndex],
+    ...updates,
+    lastModified: new Date().toISOString(),
+  };
+
+  saveCourse(course);
+}
+
+export function deleteTest(courseId: string, testId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  course.tests = course.tests.filter(t => t.id !== testId);
+  saveCourse(course);
+}
+
+// Feedback operations
+export function updateStudentFeedback(
+  courseId: string,
+  testId: string,
+  studentId: string,
+  updates: Partial<TestFeedbackData>
+): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test) throw new Error('Test not found');
+
+  const feedbackIndex = test.studentFeedbacks.findIndex(f => f.studentId === studentId);
+
+  if (feedbackIndex >= 0) {
+    test.studentFeedbacks[feedbackIndex] = {
+      ...test.studentFeedbacks[feedbackIndex],
+      ...updates,
+    };
+  } else {
+    test.studentFeedbacks.push({
+      studentId,
+      taskFeedbacks: [],
+      individualComment: '',
+      ...updates,
+    });
+  }
+
+  saveCourse(course);
+}
+
+export function getStudentFeedback(courseId: string, testId: string, studentId: string): TestFeedbackData | null {
+  const course = loadCourse(courseId);
+  if (!course) return null;
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test) return null;
+
+  return test.studentFeedbacks.find(f => f.studentId === studentId) || null;
+}
+
+// Scoring calculations
+export function calculateStudentScore(tasks: Task[], feedbacks: TaskFeedback[]): number {
+  const taskCount = countTasks(tasks);
+  if (taskCount === 0) return 0;
+
+  const totalPoints = feedbacks.reduce((sum, f) => sum + f.points, 0);
+  const averagePerTask = totalPoints / taskCount;
+  return Math.round(averagePerTask * 10);
+}
+
+export function calculateMaxScore(): number {
+  return 60;
+}
+
+function countTasks(tasks: Task[]): number {
+  let count = 0;
+  tasks.forEach(task => {
+    if (task.hasSubtasks && task.subtasks.length > 0) {
+      count += task.subtasks.length;
+    } else {
+      count += 1;
+    }
+  });
+  return count;
+}
+
+// Analytics
+export function getStudentProgress(courseId: string, studentId: string): StudentCourseProgress | null {
+  const course = loadCourse(courseId);
+  if (!course) return null;
+
+  const student = course.students.find(s => s.id === studentId);
+  if (!student) return null;
+
+  const testResults: StudentTestResult[] = course.tests.map(test => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
+    const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
+    const percentage = (score / 60) * 100;
+
+    return {
+      testId: test.id,
+      testName: test.name,
+      testDate: test.date,
+      score,
+      maxScore: 60,
+      percentage,
+      completed: !!feedback?.completedDate,
+    };
+  }).sort((a, b) => new Date(a.testDate).getTime() - new Date(b.testDate).getTime());
+
+  const completedResults = testResults.filter(r => r.completed);
+  const averageScore = completedResults.length > 0
+    ? completedResults.reduce((sum, r) => sum + r.score, 0) / completedResults.length
+    : 0;
+  const averagePercentage = completedResults.length > 0
+    ? completedResults.reduce((sum, r) => sum + r.percentage, 0) / completedResults.length
+    : 0;
+
+  return {
+    student,
+    testResults,
+    averageScore,
+    averagePercentage,
+    completedTests: completedResults.length,
+    totalTests: course.tests.length,
+  };
+}
+
+export function getTestResults(courseId: string, testId: string): TestResultsSummary | null {
+  const course = loadCourse(courseId);
+  if (!course) return null;
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test) return null;
+
+  const studentResults = course.students.map(student => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
+    const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
+
+    return {
+      student,
+      score,
+      completed: !!feedback?.completedDate,
+    };
+  });
+
+  const completedResults = studentResults.filter(r => r.completed);
+  const scores = completedResults.map(r => r.score);
+
+  return {
+    test,
+    completedCount: completedResults.length,
+    averageScore: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,
+    highestScore: scores.length > 0 ? Math.max(...scores) : 0,
+    lowestScore: scores.length > 0 ? Math.min(...scores) : 0,
+    studentResults,
+  };
+}
+
+// Auto-save functionality
+export async function setupAutoSaveDirectory(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+
+  if (!('showDirectoryPicker' in window)) {
+    alert('Auto-save to folder is not supported in this browser. Use Chrome or Edge for this feature.');
+    return false;
+  }
+
+  try {
+    // @ts-ignore
+    const dirHandle = await window.showDirectoryPicker({
+      mode: 'readwrite',
+      startIn: 'documents',
+    });
+
+    autoSaveDirHandle = dirHandle;
+
+    if (dirHandle.requestPermission) {
+      await dirHandle.requestPermission({ mode: 'readwrite' });
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Failed to set up auto-save directory:', error);
+    return false;
+  }
+}
+
+export function isAutoSaveEnabled(): boolean {
+  return autoSaveDirHandle !== null;
+}
+
+export function disableAutoSave(): void {
+  autoSaveDirHandle = null;
+}
+
+async function autoSaveCourse(course: Course): Promise<void> {
+  if (!autoSaveDirHandle) return;
+
+  try {
+    const courseFolderName = sanitizeFileName(course.name);
+    const courseDirHandle = await autoSaveDirHandle.getDirectoryHandle(courseFolderName, { create: true });
+
+    // Save course info
+    const courseInfoFile = await courseDirHandle.getFileHandle('course-info.json', { create: true });
+    const courseInfoWritable = await courseInfoFile.createWritable();
+    await courseInfoWritable.write(JSON.stringify({
+      name: course.name,
+      description: course.description,
+      students: course.students,
+      createdDate: course.createdDate,
+      lastModified: course.lastModified,
+    }, null, 2));
+    await courseInfoWritable.close();
+
+    // Save each test
+    for (const test of course.tests) {
+      const testFolderName = sanitizeFileName(test.name);
+      const testDirHandle = await courseDirHandle.getDirectoryHandle(testFolderName, { create: true });
+
+      // Save test config
+      const testConfigFile = await testDirHandle.getFileHandle('test-config.json', { create: true });
+      const testConfigWritable = await testConfigFile.createWritable();
+      await testConfigWritable.write(JSON.stringify({
+        name: test.name,
+        description: test.description,
+        date: test.date,
+        tasks: test.tasks,
+        generalComment: test.generalComment,
+        createdDate: test.createdDate,
+        lastModified: test.lastModified,
+      }, null, 2));
+      await testConfigWritable.close();
+
+      // Save completed student feedback
+      for (const feedback of test.studentFeedbacks) {
+        if (feedback.completedDate) {
+          const student = course.students.find(s => s.id === feedback.studentId);
+          if (!student) continue;
+
+          const studentFileName = `${sanitizeFileName(student.name)}.json`;
+          const studentFile = await testDirHandle.getFileHandle(studentFileName, { create: true });
+          const studentWritable = await studentFile.createWritable();
+
+          const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
+
+          await studentWritable.write(JSON.stringify({
+            name: student.name,
+            studentNumber: student.studentNumber,
+            score: score,
+            maxScore: 60,
+            taskFeedbacks: feedback.taskFeedbacks,
+            individualComment: feedback.individualComment,
+            completedDate: feedback.completedDate,
+          }, null, 2));
+          await studentWritable.close();
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Auto-save failed:', error);
+  }
+}
+
+function sanitizeFileName(name: string): string {
+  return name
+    .replace(/[^a-z0-9_\-\s]/gi, '')
+    .replace(/\s+/g, '_')
+    .toLowerCase();
+}
+
+// Export
+export function exportAllCourses(): string {
+  const courses = loadAllCourses();
+  return JSON.stringify(courses, null, 2);
+}
+
+export function importCourses(jsonString: string): void {
+  try {
+    const imported = JSON.parse(jsonString);
+    const courses = loadAllCourses();
+
+    if (Array.isArray(imported)) {
+      courses.push(...imported);
+    } else {
+      courses.push(imported);
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+    }
+  } catch (error) {
+    throw new Error('Invalid JSON format');
+  }
+}
