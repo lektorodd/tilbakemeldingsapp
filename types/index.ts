@@ -3,11 +3,15 @@ export interface Task {
   label: string; // e.g., "1", "2", "3"
   subtasks: Subtask[];
   hasSubtasks: boolean;
+  labels: string[]; // e.g., ["logarithms", "equations", "algebra"]
+  category?: number; // 1, 2, or 3
 }
 
 export interface Subtask {
   id: string;
   label: string; // e.g., "a", "b", "c"
+  labels: string[]; // Subtasks can also have their own labels
+  category?: number; // 1, 2, or 3
 }
 
 export interface TaskFeedback {
@@ -98,6 +102,7 @@ export interface Course {
   description?: string;
   students: CourseStudent[]; // All students in this course
   tests: CourseTest[]; // All tests in this course
+  availableLabels: string[]; // Course-specific labels (e.g., ["fractions", "logarithms", "equations"])
   createdDate: string;
   lastModified: string;
 }
@@ -145,4 +150,23 @@ export interface TestResultsSummary {
   }>;
 }
 
+// Label-based analytics
+export interface LabelPerformance {
+  label: string;
+  averageScore: number;
+  taskCount: number;
+  studentScores: Array<{
+    studentId: string;
+    studentName: string;
+    averageScore: number;
+    completedTasks: number;
+  }>;
+}
+
+export interface CategoryPerformance {
+  category: number;
+  averageScore: number;
+  taskCount: number;
+  description: string; // e.g., "Category 1 (Easy)", "Category 2 (Medium)", "Category 3 (Hard)"
+}
 

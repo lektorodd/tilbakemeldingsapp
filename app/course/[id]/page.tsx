@@ -6,6 +6,7 @@ import { Course, CourseStudent, CourseTest } from '@/types';
 import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest } from '@/utils/courseStorage';
 import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import LabelManager from '@/components/LabelManager';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -75,17 +76,19 @@ export default function CourseDetailPage() {
       description: newTestDescription || undefined,
       date: newTestDate,
       tasks: [
-        { id: 'task-1', label: '1', subtasks: [], hasSubtasks: false },
+        { id: 'task-1', label: '1', subtasks: [], hasSubtasks: false, labels: [], category: undefined },
         {
           id: 'task-2',
           label: '2',
           subtasks: [
-            { id: 'task-2-a', label: 'a' },
-            { id: 'task-2-b', label: 'b' },
+            { id: 'task-2-a', label: 'a', labels: [], category: undefined },
+            { id: 'task-2-b', label: 'b', labels: [], category: undefined },
           ],
           hasSubtasks: true,
+          labels: [],
+          category: undefined,
         },
-        { id: 'task-3', label: '3', subtasks: [], hasSubtasks: false },
+        { id: 'task-3', label: '3', subtasks: [], hasSubtasks: false, labels: [], category: undefined },
       ],
       generalComment: '',
     });
@@ -102,6 +105,13 @@ export default function CourseDetailPage() {
       deleteTest(courseId, testId);
       loadData();
     }
+  };
+
+  const handleLabelsChange = (labels: string[]) => {
+    if (!course) return;
+    const updatedCourse = { ...course, availableLabels: labels };
+    saveCourse(updatedCourse);
+    setCourse(updatedCourse);
   };
 
   if (!course) {
@@ -244,6 +254,14 @@ export default function CourseDetailPage() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Label Manager */}
+        <div className="mt-6">
+          <LabelManager
+            labels={course.availableLabels}
+            onLabelsChange={handleLabelsChange}
+          />
         </div>
 
         {/* Quick stats */}

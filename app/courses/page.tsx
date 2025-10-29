@@ -35,6 +35,7 @@ export default function CoursesPage() {
       description: newCourseDescription,
       students: [],
       tests: [],
+      availableLabels: [],
       createdDate: new Date().toISOString(),
       lastModified: new Date().toISOString(),
     };

@@ -181,6 +181,7 @@ export default function TestDetailPage() {
               <TaskConfiguration
                 tasks={test.tasks}
                 onTasksChange={(tasks) => setTest({ ...test, tasks })}
+                availableLabels={[]}
               />
             </div>
 

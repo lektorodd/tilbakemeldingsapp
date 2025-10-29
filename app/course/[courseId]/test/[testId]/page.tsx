@@ -208,6 +208,7 @@ export default function TestFeedbackPage() {
               <TaskConfiguration
                 tasks={test.tasks}
                 onTasksChange={(tasks) => setTest({ ...test, tasks })}
+                availableLabels={course.availableLabels}
               />
             </div>
 
