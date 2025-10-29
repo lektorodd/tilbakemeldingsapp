@@ -7,7 +7,9 @@ import StudentInfo from '@/components/StudentInfo';
 import FeedbackForm from '@/components/FeedbackForm';
 import { generateTypstDocument, downloadTypstFile, calculateTotalPoints, calculateMaxPoints } from '@/utils/typstExport';
 import { saveTasks, loadTasks, saveGeneralComment, loadGeneralComment, saveTestName, loadTestName } from '@/utils/storage';
-import { Download, RotateCcw } from 'lucide-react';
+import { saveToArchive } from '@/utils/archive';
+import { Download, RotateCcw, Archive, Save } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   const [testName, setTestName] = useState('Matteprøve');
@@ -85,6 +87,25 @@ export default function Home() {
     downloadTypstFile(typstContent, filename);
   };
 
+  const handleSaveToArchive = () => {
+    const totalPoints = calculateTotalPoints(feedbacks);
+    const maxPoints = calculateMaxPoints(tasks);
+
+    saveToArchive({
+      testName,
+      studentName,
+      studentNumber,
+      tasks: JSON.parse(JSON.stringify(tasks)), // Deep copy
+      taskFeedbacks: JSON.parse(JSON.stringify(feedbacks)), // Deep copy
+      generalComment,
+      individualComment,
+      totalPoints,
+      maxPoints,
+    });
+
+    alert('Feedback saved to archive!');
+  };
+
   const handleReset = () => {
     if (confirm('Are you sure you want to reset this feedback? This will clear the student info and feedback, but keep the task configuration.')) {
       setFeedbacks([]);
@@ -101,8 +122,19 @@ export default function Home() {
     <main className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Math Test Feedback App</h1>
-          <p className="text-gray-600">Create detailed feedback for math tests with Typst math notation support</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Math Test Feedback App</h1>
+              <p className="text-gray-600">Create detailed feedback for math tests with Typst math notation support</p>
+            </div>
+            <Link
+              href="/archive"
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+            >
+              <Archive size={20} />
+              View Archive
+            </Link>
+          </div>
         </header>
 
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -152,6 +184,14 @@ export default function Home() {
               >
                 <RotateCcw size={20} />
                 Reset Feedback
+              </button>
+              <button
+                onClick={handleSaveToArchive}
+                disabled={!studentName}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                <Save size={20} />
+                Save to Archive
               </button>
               <button
                 onClick={handleExportPDF}

@@ -33,3 +33,34 @@ export interface TestConfiguration {
   maxPointsPerTask: number;
   generalComment: string;
 }
+
+export interface ArchivedFeedback {
+  id: string;
+  date: string; // ISO date string
+  testName: string;
+  studentName: string;
+  studentNumber?: string;
+  tasks: Task[]; // Snapshot of task configuration at time of feedback
+  taskFeedbacks: TaskFeedback[];
+  generalComment: string;
+  individualComment: string;
+  totalPoints: number;
+  maxPoints: number;
+}
+
+export interface TaskStatistics {
+  taskLabel: string;
+  taskId: string;
+  subtaskId?: string;
+  averagePoints: number;
+  maxPoints: number;
+  totalSubmissions: number;
+  pointsDistribution: number[]; // Count of each point value (0-6)
+}
+
+export interface StudentProgress {
+  studentName: string;
+  feedbacks: ArchivedFeedback[];
+  averageScore: number;
+  totalTests: number;
+}

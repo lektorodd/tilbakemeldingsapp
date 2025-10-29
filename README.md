@@ -4,12 +4,21 @@ A simple web application for creating detailed feedback on math tests with flexi
 
 ## Features
 
+### Core Feedback Features
 - **Flexible Task Configuration**: Easily add, remove, and customize tasks with or without subtasks (e.g., 1, 2a, 2b, 3, 4a, 4b, 4c)
 - **Point System**: Award points from 0-6 for each task/subtask
 - **Rich Comments**: Add comments with Typst math notation support
 - **General & Individual Comments**: Include both shared and personalized feedback
 - **PDF Export**: Generate professional feedback documents using Typst
 - **Local Storage**: Automatically saves your task configuration and general comments
+
+### Archive & Analytics Features
+- **Feedback Archive**: Save all feedback to a local archive for future reference
+- **Task Difficulty Analysis**: Identify which tasks students struggle with most
+- **Student Progress Tracking**: Monitor individual student improvement over time
+- **Statistical Insights**: View average scores, point distributions, and success rates
+- **Data Export/Import**: Backup and restore your entire archive as JSON
+- **Filter & Search**: Easily find feedback by student name or test name
 
 ## Getting Started
 
@@ -77,9 +86,46 @@ cargo install --git https://github.com/typst/typst
 - Click "Export Typst File" to download a `.typ` file
 - Compile to PDF using: `typst compile filename.typ`
 
-### 6. Next Student
+### 6. Save to Archive
+
+- Click "Save to Archive" to store the feedback for future analysis
+- This allows you to track student progress and identify difficult tasks
+
+### 7. Next Student
 
 - Click "Reset Feedback" to clear student-specific data while keeping task configuration
+
+## Archive & Analytics
+
+### Viewing the Archive
+
+1. Click "View Archive" in the top right corner
+2. Browse all saved feedback
+3. Filter by student name or test name
+4. Click on any feedback to view full details
+5. Export archive as JSON for backup
+6. Import previously exported archives
+
+### Analyzing Task Difficulty
+
+1. From the Archive page, click "View Analytics & Statistics"
+2. View task difficulty analysis:
+   - **Average Points**: See mean score for each task
+   - **Success Rate**: Percentage of maximum points achieved
+   - **Difficulty Rating**: Automatic classification (Easy/Moderate/Hard/Very Hard)
+   - **Point Distribution**: Visual histogram showing how many students got each score
+3. Filter by specific test to compare task difficulty across tests
+4. Identify problematic tasks that need better teaching or clarification
+
+### Tracking Student Progress
+
+1. In the Analytics page, select a student from the dropdown
+2. View:
+   - **Total Tests**: Number of tests completed
+   - **Average Score**: Overall performance across all tests
+   - **Latest Score**: Most recent test result
+   - **Test History**: Chronological list of all tests with trend indicators
+3. Monitor improvement or identify students needing extra support
 
 ## Typst Math Notation Examples
 
@@ -112,12 +158,16 @@ For more Typst math syntax, see the [Typst documentation](https://typst.app/docs
 
 ## Data Persistence
 
-The app automatically saves:
-- Task configuration
-- Test name
-- General comment
+The app automatically saves to localStorage:
+- **Task configuration**: Persists across sessions
+- **Test name**: Remembered for future feedback
+- **General comment**: Saved for reuse
+- **Archive**: All saved feedback is stored locally
 
-This data persists across browser sessions using localStorage.
+**Important**: Data is stored in your browser's localStorage. To backup your data:
+1. Go to Archive page
+2. Click "Export Archive" to download a JSON file
+3. Keep this file safe - you can re-import it anytime
 
 ## Technology Stack
 
@@ -132,20 +182,38 @@ This data persists across browser sessions using localStorage.
 ```
 tilbakemeldingsapp/
 ├── app/
-│   ├── layout.tsx        # App layout
-│   ├── page.tsx          # Main page
-│   └── globals.css       # Global styles
+│   ├── layout.tsx         # App layout
+│   ├── page.tsx           # Main feedback page
+│   ├── archive/
+│   │   └── page.tsx       # Archive viewer
+│   ├── analytics/
+│   │   └── page.tsx       # Analytics & statistics
+│   └── globals.css        # Global styles
 ├── components/
 │   ├── TaskConfiguration.tsx  # Task setup UI
 │   ├── StudentInfo.tsx        # Student info form
 │   └── FeedbackForm.tsx       # Feedback input
 ├── types/
-│   └── index.ts          # TypeScript types
+│   └── index.ts           # TypeScript types
 ├── utils/
-│   ├── typstExport.ts    # PDF export logic
-│   └── storage.ts        # LocalStorage utilities
+│   ├── typstExport.ts     # PDF export logic
+│   ├── storage.ts         # LocalStorage utilities
+│   └── archive.ts         # Archive & analytics utilities
 └── package.json
 ```
+
+## Use Cases
+
+### For Teachers
+- **Grading Efficiency**: Quickly grade multiple student tests with consistent formatting
+- **Student Progress**: Track individual student improvement across multiple tests
+- **Curriculum Improvement**: Identify difficult topics that need more teaching time
+- **Professional Feedback**: Generate professional-looking PDF feedback with mathematical notation
+
+### For Students
+- Clear, detailed feedback with mathematical expressions properly formatted
+- Consistent grading structure across all tests
+- Individual and general comments for comprehensive understanding
 
 ## Contributing
 
