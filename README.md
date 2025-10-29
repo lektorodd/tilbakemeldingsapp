@@ -65,21 +65,30 @@ The app is organized around **Courses** (classes), not individual tests:
 
 ### Installation
 
-1. Install dependencies:
+1. Navigate to the project folder:
+```bash
+cd /home/user/tilbakemeldingsapp
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Run the development server:
+3. Run the development server:
 ```bash
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-### Installing Typst
+**Note**: Always run npm commands from the `/home/user/tilbakemeldingsapp/` directory.
 
-To compile Typst files to PDF:
+### Installing Typst (Required for PDF Generation)
+
+**Important**: The app exports `.typ` files (Typst source code). You must manually compile them to PDF.
+
+Install Typst CLI:
 
 ```bash
 # macOS (Homebrew)
@@ -90,6 +99,13 @@ cargo install --git https://github.com/typst/typst
 
 # Or download from https://github.com/typst/typst/releases
 ```
+
+**Workflow**:
+1. In app: Click "Export PDF" → downloads `student_name.typ`
+2. In terminal: `typst compile student_name.typ` → generates `student_name.pdf`
+3. Distribute the PDF to students
+
+**The app does NOT auto-compile to PDF** - this is a manual step.
 
 ## Complete Workflow
 
@@ -172,11 +188,18 @@ MathFeedback/
 3. Move to next student
 4. Repeat
 
-### 8. Export PDF
+### 8. Export and Compile PDF
 
-- Click "Export PDF" to download Typst file
-- Compile: `typst compile student_name.typ`
-- Distribute to students
+1. Click "Export PDF" button
+2. Downloads `student_name_test_name.typ` file
+3. **Manual step**: Open terminal and run:
+   ```bash
+   typst compile student_name_test_name.typ
+   ```
+4. This creates `student_name_test_name.pdf`
+5. Distribute PDF to student
+
+**Note**: The app exports Typst source code (`.typ`), not PDFs. You must compile manually.
 
 ### 9. Next Test
 
@@ -438,24 +461,6 @@ A: Use the Analytics page (coming soon) to see progress over time.
 8. **Sync Auto-Save Folder**: Use Dropbox/OneDrive for automatic backups
 9. **Mark Complete**: Triggers auto-save and marks as done
 10. **Check Analytics**: Identify problem areas and track improvement
-
-## Roadmap
-
-### Coming Soon
-- [ ] Course analytics page (student progress + test results)
-- [ ] Bulk student import (CSV)
-- [ ] Test templates (reuse task configurations)
-- [ ] Grade distribution graphs
-- [ ] Export individual PDFs for all students at once
-- [ ] Course archiving (end of term)
-- [ ] Parent/student view (read-only access)
-
-### Under Consideration
-- [ ] Mobile app version
-- [ ] Cloud sync option
-- [ ] Collaborative grading (multiple teachers)
-- [ ] Assignment tracking (homework, not just tests)
-- [ ] Attendance integration
 
 ## Contributing
 
