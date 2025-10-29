@@ -64,3 +64,35 @@ export interface StudentProgress {
   averageScore: number;
   totalTests: number;
 }
+
+// New test-centric data model
+export interface Student {
+  id: string;
+  name: string;
+  studentNumber?: string;
+  taskFeedbacks: TaskFeedback[];
+  individualComment: string;
+  completedDate?: string; // ISO date string when feedback was completed
+}
+
+export interface Test {
+  id: string;
+  name: string; // e.g., "October Test - Logarithms"
+  description?: string; // e.g., "logarithms", "chapter 3-5"
+  tasks: Task[];
+  generalComment: string;
+  students: Student[];
+  createdDate: string; // ISO date string
+  lastModified: string; // ISO date string
+}
+
+export interface TestSummary {
+  id: string;
+  name: string;
+  description?: string;
+  studentCount: number;
+  completedCount: number;
+  createdDate: string;
+  lastModified: string;
+}
+

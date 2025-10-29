@@ -1,31 +1,57 @@
 # Math Test Feedback App
 
-A simple web application for creating detailed feedback on math tests with flexible task configuration and PDF export using Typst.
+A comprehensive web application for managing math tests, providing detailed student feedback, and tracking progress over time. Features flexible task configuration, Typst math notation support, and automatic file export.
+
+## Core Concept
+
+The app is organized around **Tests** rather than individual feedback:
+1. **Create a Test** (e.g., "October Test - Logarithms")
+2. **Configure Tasks** (e.g., 1, 2a, 2b, 3, 4a, 4b, 4c)
+3. **Add Students** to the test
+4. **Provide Feedback** for each student
+5. **Auto-Save** completed feedback to local files
 
 ## Features
 
-### Core Feedback Features
-- **Flexible Task Configuration**: Easily add, remove, and customize tasks with or without subtasks (e.g., 1, 2a, 2b, 3, 4a, 4b, 4c)
-- **Point System**: Award points from 0-6 for each task/subtask
-- **Rich Comments**: Add comments with Typst math notation support
-- **General & Individual Comments**: Include both shared and personalized feedback
-- **PDF Export**: Generate professional feedback documents using Typst
-- **Local Storage**: Automatically saves your task configuration and general comments
+### Test Management
+- **Create Tests**: Organize feedback by test (e.g., "October Test - Logarithms", "Chapter 3-5 Exam")
+- **Test Configuration**: Each test has its own task structure and general comment
+- **Student Management**: Add students to tests and track their completion status
+- **Persistent Storage**: All data saved locally in browser
+- **Export/Import**: Backup tests as JSON files
 
-### Archive & Analytics Features
-- **Feedback Archive**: Save all feedback to a local archive for future reference
-- **Task Difficulty Analysis**: Identify which tasks students struggle with most
-- **Student Progress Tracking**: Monitor individual student improvement over time
-- **Statistical Insights**: View average scores, point distributions, and success rates
-- **Data Export/Import**: Backup and restore your entire archive as JSON
-- **Filter & Search**: Easily find feedback by student name or test name
+### Scoring System (NEW!)
+- **0-60 Scale**: Scores are calculated as **(average points per task) × 10**
+- **Example**: 3 tasks, scores of 4, 5, and 6 = average of 5 → **50/60**
+- **Integer Results**: Always produces clean integer scores
+- **Easy to Interpret**: 50/60 = 83% = good performance
+
+### Feedback Features
+- **Flexible Task Configuration**: Tasks with or without subtasks (1, 2a, 2b, 3, etc.)
+- **Point System**: 0-6 points per task/subtask
+- **Typst Math Notation**: Write mathematical expressions in comments
+- **General Comments**: Same for all students in a test
+- **Individual Comments**: Personalized feedback per student
+- **PDF Export**: Generate professional Typst documents
+
+### Auto-Save to Files
+- **Automatic Export**: Completed feedback automatically saved to your chosen folder
+- **Organized Structure**: Each test gets its own folder
+- **JSON Format**: Easy to backup, share, and process
+- **Browser Support**: Works in Chrome and Edge (uses File System Access API)
+
+### Analytics (From Old Archive)
+- **Task Difficulty Analysis**: Identify which tasks students struggle with
+- **Student Progress Tracking**: Monitor improvement over time
+- **Statistical Insights**: View averages, distributions, and trends
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Typst CLI (for compiling the exported .typ files to PDF)
+- Modern browser (Chrome or Edge recommended for auto-save)
+- Typst CLI (for compiling PDFs from exported files)
 
 ### Installation
 
@@ -43,131 +69,208 @@ npm run dev
 
 ### Installing Typst
 
-To compile the exported Typst files to PDF:
+To compile Typst files to PDF:
 
 ```bash
-# On macOS (using Homebrew)
+# macOS (Homebrew)
 brew install typst
 
-# On Linux (using cargo)
+# Linux (cargo)
 cargo install --git https://github.com/typst/typst
 
 # Or download from https://github.com/typst/typst/releases
 ```
 
-## Usage
+## Usage Guide
 
-### 1. Configure Your Test
+### 1. Setup Auto-Save (Recommended)
 
-- Set the test name at the top
-- Click "Show Config" to customize tasks
-- Add or remove tasks and subtasks as needed
-- Task labels can be customized (e.g., "1", "2a", "2b")
+1. On the main page, click "Setup Auto-Save Folder"
+2. Select a folder on your computer (e.g., `Documents/MathFeedback/`)
+3. Grant permissions when prompted
+4. All completed feedback will now auto-save there
 
-### 2. Enter General Information
+**Folder Structure:**
+```
+MathFeedback/
+├── october_test_logarithms/
+│   ├── test-config.json
+│   ├── john_doe.json
+│   ├── jane_smith.json
+│   └── ...
+└── chapter_3_5_exam/
+    ├── test-config.json
+    └── ...
+```
 
-- **General Comment**: This comment will be the same for all students (useful for overall test information)
-- You can use Typst math notation in comments
+**Note**: Auto-save works in Chrome and Edge. Firefox/Safari users can manually export tests.
 
-### 3. Enter Student Information
+### 2. Create a Test
 
-- Student name (required)
-- Student number (optional)
-- Individual comment specific to this student
+1. Click "Create New Test"
+2. Enter test name: `"October Test"`
+3. Enter description: `"Logarithms"` (optional)
+4. Click "Create Test"
 
-### 4. Provide Task Feedback
+### 3. Configure Test Tasks
 
-- For each task/subtask:
-  - Select points (0-6)
-  - Add comments with mathematical notation
+1. Open your test
+2. In the left sidebar, click "Show Config" under Task Configuration
+3. Add/remove tasks and subtasks
+4. Example setup:
+   - Task 1 (no subtasks)
+   - Task 2 (subtasks a, b, c)
+   - Task 3 (no subtasks)
+   - Task 4 (subtasks a, b)
 
-### 5. Export to Typst
+### 4. Add General Comment
 
-- Click "Export Typst File" to download a `.typ` file
-- Compile to PDF using: `typst compile filename.typ`
+In the "General Comment" box, add information relevant to all students:
+```
+This test covers logarithms and exponential functions.
+Important formulas: $log_a(x y) = log_a(x) + log_a(y)$
+```
 
-### 6. Save to Archive
+### 5. Add Students
 
-- Click "Save to Archive" to store the feedback for future analysis
-- This allows you to track student progress and identify difficult tasks
+1. Click "+ Add" in the Students section
+2. Enter student name (required)
+3. Enter student number (optional)
+4. Click "Add Student"
+5. Repeat for all students
 
-### 7. Next Student
+### 6. Provide Feedback
 
-- Click "Reset Feedback" to clear student-specific data while keeping task configuration
+1. Click on a student from the list
+2. For each task/subtask:
+   - Select points (0-6)
+   - Add comments with Typst math notation
+3. Add individual comment for the student
+4. See live score update (0-60)
 
-## Archive & Analytics
+### 7. Complete Feedback
 
-### Viewing the Archive
+1. When done, click "Mark Complete"
+2. **Feedback auto-saves** to your selected folder (if enabled)
+3. Or click "Export PDF" to download Typst file
+4. Compile: `typst compile student_name.typ`
 
-1. Click "View Archive" in the top right corner
-2. Browse all saved feedback
-3. Filter by student name or test name
-4. Click on any feedback to view full details
-5. Export archive as JSON for backup
-6. Import previously exported archives
+### 8. Next Student
 
-### Analyzing Task Difficulty
+1. Click another student from the list
+2. Repeat feedback process
+3. All progress auto-saves as you work
 
-1. From the Archive page, click "View Analytics & Statistics"
-2. View task difficulty analysis:
-   - **Average Points**: See mean score for each task
-   - **Success Rate**: Percentage of maximum points achieved
-   - **Difficulty Rating**: Automatic classification (Easy/Moderate/Hard/Very Hard)
-   - **Point Distribution**: Visual histogram showing how many students got each score
-3. Filter by specific test to compare task difficulty across tests
-4. Identify problematic tasks that need better teaching or clarification
+## Understanding the 0-60 Scoring System
 
-### Tracking Student Progress
+The new scoring system is designed to give integer scores that are easy to interpret:
 
-1. In the Analytics page, select a student from the dropdown
-2. View:
-   - **Total Tests**: Number of tests completed
-   - **Average Score**: Overall performance across all tests
-   - **Latest Score**: Most recent test result
-   - **Test History**: Chronological list of all tests with trend indicators
-3. Monitor improvement or identify students needing extra support
+### How It Works
 
-## Typst Math Notation Examples
+1. **Calculate average per task**:
+   - Student completes 4 tasks with scores: 3, 4, 5, 6
+   - Average: (3+4+5+6)/4 = 4.5
 
-The app supports Typst's mathematical notation:
+2. **Multiply by 10**:
+   - Score: 4.5 × 10 = 45
+   - Rounded to nearest integer: **45/60**
 
-| Math Expression | Typst Code |
-|----------------|------------|
-| x² + y² = r² | `$x^2 + y^2 = r^2$` |
+3. **Result**: Clean, interpretable score
+
+### Examples
+
+| Tasks | Scores | Average | Final Score | Percentage |
+|-------|--------|---------|-------------|------------|
+| 3 | 6, 6, 6 | 6.0 | **60/60** | 100% |
+| 3 | 5, 5, 5 | 5.0 | **50/60** | 83% |
+| 4 | 4, 5, 5, 6 | 5.0 | **50/60** | 83% |
+| 5 | 3, 3, 4, 4, 4 | 3.6 | **36/60** | 60% |
+| 3 | 0, 3, 6 | 3.0 | **30/60** | 50% |
+
+### Why This System?
+
+- ✅ **Consistent**: Same scale regardless of number of tasks
+- ✅ **Integer scores**: No decimals to round
+- ✅ **Easy to understand**: 50/60 is immediately clear
+- ✅ **Fair**: Average prevents task count bias
+
+## Typst Math Notation
+
+Use Typst syntax in all comment fields:
+
+| Math | Typst Code |
+|------|------------|
+| x² + y² | `$x^2 + y^2$` |
 | Fraction | `$x/y$` or `$frac(x, y)$` |
-| Greek letters | `$alpha$, $beta$, $gamma$` |
-| Limits | `$lim_(x arrow infinity) f(x)$` |
-| Integrals | `$integral x^2 d x$` |
-| Derivatives | `$f'(x)$` or `$(d y)/(d x)$` |
 | Square root | `$sqrt(x)$` |
+| Logarithm | `$log_2(x)$` |
+| Limit | `$lim_(x arrow infinity) f(x)$` |
+| Integral | `$integral_0^1 x^2 d x$` |
 | Sum | `$sum_(i=1)^n i$` |
+| Greek | `$alpha$, $beta$, $Delta$` |
 
-For more Typst math syntax, see the [Typst documentation](https://typst.app/docs/reference/math/).
+Full documentation: [Typst Math Documentation](https://typst.app/docs/reference/math/)
 
-## Example Workflow
+## File Storage Location
 
-1. Configure test with tasks: 1, 2a, 2b, 3
-2. Enter general comment: "This test covers derivatives and integrals from Chapter 4."
-3. For each student:
-   - Enter name and student number
-   - Fill in points and comments for each task
-   - Add individual feedback
-   - Export Typst file
-   - Compile: `typst compile student_name.typ`
-   - Click "Reset Feedback" for next student
+**Browser Storage**: All data is stored in your browser's localStorage
+- Survives browser restarts
+- Private to your computer
+- No server/cloud needed
 
-## Data Persistence
+**File System** (with auto-save):
+- You choose the folder
+- JSON files for each student
+- Easy to backup/version control
+- Can be synced to cloud (Dropbox, OneDrive, etc.)
 
-The app automatically saves to localStorage:
-- **Task configuration**: Persists across sessions
-- **Test name**: Remembered for future feedback
-- **General comment**: Saved for reuse
-- **Archive**: All saved feedback is stored locally
+**Recommendation**: Enable auto-save and keep the folder in a synced directory for automatic backups.
 
-**Important**: Data is stored in your browser's localStorage. To backup your data:
-1. Go to Archive page
-2. Click "Export Archive" to download a JSON file
-3. Keep this file safe - you can re-import it anytime
+## Data Export/Import
+
+### Export Single Test
+1. Click download icon on test card
+2. Choose folder location
+3. Creates folder with all student data
+
+### Export All Tests
+1. Click "Export All" in top bar
+2. Downloads JSON file with everything
+3. Safe backup of all data
+
+### Import Tests
+1. Use the import function (coming soon)
+2. Or manually edit localStorage
+
+## Typical Workflow
+
+### Starting a New Test
+1. Create test: "November Test - Derivatives"
+2. Configure 5 tasks (some with subtasks)
+3. Add general comment about test content
+4. Add 25 students to the test
+
+### Grading Session
+1. Open test
+2. Have papers ready
+3. Click first student
+4. Grade each task (0-6 points + comments)
+5. Add individual feedback
+6. Click "Mark Complete" → auto-saves
+7. Move to next student
+
+### After Grading
+1. All feedback automatically saved to folder
+2. Compile PDFs: `typst compile *.typ`
+3. Distribute PDFs to students
+4. Review analytics to identify difficult tasks
+
+## Analytics
+
+Access the old archive system for:
+- **Task difficulty analysis**: Which tasks were hardest?
+- **Student progress**: How is each student improving?
+- **Class statistics**: Overall performance trends
 
 ## Technology Stack
 
@@ -175,45 +278,75 @@ The app automatically saves to localStorage:
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **PDF Generation**: Typst
-- **Icons**: Lucide React
+- **File System**: File System Access API (Chrome/Edge)
+- **Storage**: Browser localStorage + JSON files
 
 ## Project Structure
 
 ```
 tilbakemeldingsapp/
 ├── app/
-│   ├── layout.tsx         # App layout
-│   ├── page.tsx           # Main feedback page
+│   ├── page.tsx              # Redirect to /tests
+│   ├── tests/
+│   │   └── page.tsx          # Test management page
+│   ├── test/
+│   │   └── [id]/page.tsx     # Test detail + feedback
 │   ├── archive/
-│   │   └── page.tsx       # Archive viewer
-│   ├── analytics/
-│   │   └── page.tsx       # Analytics & statistics
-│   └── globals.css        # Global styles
+│   │   └── page.tsx          # Old archive viewer
+│   └── analytics/
+│       └── page.tsx          # Statistics & analysis
 ├── components/
-│   ├── TaskConfiguration.tsx  # Task setup UI
-│   ├── StudentInfo.tsx        # Student info form
-│   └── FeedbackForm.tsx       # Feedback input
+│   ├── TaskConfiguration.tsx # Task setup UI
+│   ├── StudentInfo.tsx       # (Legacy)
+│   └── FeedbackForm.tsx      # (Legacy)
 ├── types/
-│   └── index.ts           # TypeScript types
+│   └── index.ts              # TypeScript definitions
 ├── utils/
-│   ├── typstExport.ts     # PDF export logic
-│   ├── storage.ts         # LocalStorage utilities
-│   └── archive.ts         # Archive & analytics utilities
+│   ├── testStorage.ts        # New test-centric storage
+│   ├── typstExport.ts        # PDF generation
+│   ├── storage.ts            # Legacy storage
+│   └── archive.ts            # Archive utilities
 └── package.json
 ```
 
-## Use Cases
+## Browser Compatibility
 
-### For Teachers
-- **Grading Efficiency**: Quickly grade multiple student tests with consistent formatting
-- **Student Progress**: Track individual student improvement across multiple tests
-- **Curriculum Improvement**: Identify difficult topics that need more teaching time
-- **Professional Feedback**: Generate professional-looking PDF feedback with mathematical notation
+| Feature | Chrome/Edge | Firefox | Safari |
+|---------|-------------|---------|--------|
+| Core app | ✅ | ✅ | ✅ |
+| localStorage | ✅ | ✅ | ✅ |
+| Auto-save | ✅ | ❌ | ❌ |
+| Manual export | ✅ | ✅ | ✅ |
 
-### For Students
-- Clear, detailed feedback with mathematical expressions properly formatted
-- Consistent grading structure across all tests
-- Individual and general comments for comprehensive understanding
+**Recommendation**: Use Chrome or Edge for best experience with auto-save feature.
+
+## FAQ
+
+**Q: Where are my files stored?**
+A: In two places:
+1. Browser localStorage (for the app interface)
+2. Your chosen folder (for auto-saved JSON/Typst files)
+
+**Q: Can I move the auto-save folder?**
+A: Yes, just setup auto-save again with the new folder.
+
+**Q: What if I lose my browser data?**
+A: Your files in the auto-save folder are safe. Use "Export All" regularly as extra backup.
+
+**Q: Can multiple teachers use this?**
+A: Each browser/computer has its own data. Share via exported JSON files.
+
+**Q: How do I edit a completed feedback?**
+A: Just click the student again and make changes. Mark complete again to re-save.
+
+## Tips
+
+1. **Enable auto-save first** - saves time and prevents data loss
+2. **Use descriptive test names** - "October Test - Logarithms" vs "Test 1"
+3. **Write general comments first** - shared across all students
+4. **Use Typst math freely** - makes feedback professional
+5. **Export regularly** - backup your data
+6. **Check analytics** - identify problem areas
 
 ## Contributing
 

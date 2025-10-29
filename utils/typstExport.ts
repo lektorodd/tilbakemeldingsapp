@@ -92,7 +92,7 @@ ${feedback.comment ? `*Kommentar:* ${escapeTypst(feedback.comment)}` : ''}
   columns: 2,
   gutter: 1em,
   [*Student:* ${studentName}],
-  [*Total:* ${totalPoints}/${maxPoints} poeng],
+  [*Poengsum:* ${totalPoints}/${maxPoints}],
   ${studentNumber ? `[*Studentnummer:* ${studentNumber}],` : ''}
   [*Dato:* #datetime.today().display()],
 )
