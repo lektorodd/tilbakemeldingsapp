@@ -15,9 +15,11 @@ export default function CourseDetailPage() {
 
   const [course, setCourse] = useState<Course | null>(null);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+  const [showBulkAddStudentModal, setShowBulkAddStudentModal] = useState(false);
   const [showAddTestModal, setShowAddTestModal] = useState(false);
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentNumber, setNewStudentNumber] = useState('');
+  const [bulkStudentText, setBulkStudentText] = useState('');
   const [newTestName, setNewTestName] = useState('');
   const [newTestDescription, setNewTestDescription] = useState('');
   const [newTestDate, setNewTestDate] = useState('');
@@ -52,6 +54,42 @@ export default function CourseDetailPage() {
     setNewStudentNumber('');
     setShowAddStudentModal(false);
     loadData();
+  };
+
+  const handleBulkAddStudents = () => {
+    if (!bulkStudentText.trim()) {
+      alert('Please enter at least one student name');
+      return;
+    }
+
+    // Parse by both newlines and commas
+    const names = bulkStudentText
+      .split(/[\n,]+/) // Split by newlines or commas
+      .map(name => name.trim()) // Trim whitespace
+      .filter(name => name.length > 0); // Remove empty strings
+
+    if (names.length === 0) {
+      alert('No valid student names found');
+      return;
+    }
+
+    const confirmAdd = confirm(`Add ${names.length} student(s)?\n\n${names.join('\n')}`);
+    if (!confirmAdd) return;
+
+    let addedCount = 0;
+    names.forEach(name => {
+      try {
+        addStudentToCourse(courseId, { name });
+        addedCount++;
+      } catch (error) {
+        console.error(`Failed to add ${name}:`, error);
+      }
+    });
+
+    setBulkStudentText('');
+    setShowBulkAddStudentModal(false);
+    loadData();
+    alert(`Successfully added ${addedCount} student(s)!`);
   };
 
   const handleDeleteStudent = (studentId: string) => {
@@ -155,13 +193,22 @@ export default function CourseDetailPage() {
                 <h2 className="text-2xl font-bold text-gray-800">Students</h2>
                 <span className="text-gray-600">({course.students.length})</span>
               </div>
-              <button
-                onClick={() => setShowAddStudentModal(true)}
-                className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
-              >
-                <Plus size={16} />
-                Add
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowAddStudentModal(true)}
+                  className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                >
+                  <Plus size={16} />
+                  Add
+                </button>
+                <button
+                  onClick={() => setShowBulkAddStudentModal(true)}
+                  className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm"
+                >
+                  <Users size={16} />
+                  Bulk Add
+                </button>
+              </div>
             </div>
 
             <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -359,6 +406,52 @@ export default function CourseDetailPage() {
                   className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                 >
                   Add Student
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk add students modal */}
+        {showBulkAddStudentModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Bulk Add Students</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Student Names (one per line or separated by commas):
+                  </label>
+                  <textarea
+                    value={bulkStudentText}
+                    onChange={(e) => setBulkStudentText(e.target.value)}
+                    rows={10}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 font-mono text-sm"
+                    placeholder="John Doe&#10;Jane Smith&#10;Alice Johnson&#10;&#10;or&#10;&#10;John Doe, Jane Smith, Alice Johnson"
+                    autoFocus
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter names separated by line breaks or commas. Empty lines will be ignored.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowBulkAddStudentModal(false);
+                    setBulkStudentText('');
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBulkAddStudents}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+                >
+                  Add Students
                 </button>
               </div>
             </div>

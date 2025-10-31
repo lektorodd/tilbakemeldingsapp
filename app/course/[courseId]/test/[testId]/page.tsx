@@ -6,7 +6,7 @@ import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData } fro
 import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TestFeedbackPage() {
@@ -322,15 +322,17 @@ export default function TestFeedbackPage() {
                     return (
                       <div
                         key={student.id}
-                        className={`p-3 border rounded-lg cursor-pointer transition ${
+                        className={`p-3 border rounded-lg transition ${
                           selectedStudent?.id === student.id
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-300 hover:bg-gray-50'
                         }`}
-                        onClick={() => setSelectedStudent(student)}
                       >
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">
+                          <div
+                            className="flex-1 cursor-pointer"
+                            onClick={() => setSelectedStudent(student)}
+                          >
                             <div className="flex items-center gap-2">
                               <h4 className="font-medium text-gray-800">{student.name}</h4>
                               {isCompleted && (
@@ -344,6 +346,14 @@ export default function TestFeedbackPage() {
                               {score} / 60
                             </p>
                           </div>
+                          <Link
+                            href={`/course/${courseId}/student/${student.id}`}
+                            className="p-1 text-purple-600 hover:bg-purple-100 rounded transition"
+                            title="View student dashboard"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <BarChart3 size={16} />
+                          </Link>
                         </div>
                       </div>
                     );
