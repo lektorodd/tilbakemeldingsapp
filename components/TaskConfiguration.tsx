@@ -181,12 +181,12 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
           {tasks.map(task => (
             <div key={task.id} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
               <div className="flex items-center gap-3 mb-3">
-                <label className="text-sm font-medium text-gray-700">Task Label:</label>
+                <label className="text-sm font-medium text-gray-700">Task Number:</label>
                 <input
                   type="text"
                   value={task.label}
                   onChange={(e) => updateTaskLabel(task.id, e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="e.g., 1, 2"
                 />
                 <label className="flex items-center gap-2 ml-4">
@@ -212,7 +212,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 <select
                   value={task.category || ''}
                   onChange={(e) => updateTaskCategory(task.id, e.target.value ? Number(e.target.value) : undefined)}
-                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 >
                   <option value="">None</option>
                   <option value="1">1</option>
@@ -221,10 +221,10 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 </select>
               </div>
 
-              {/* Task Labels */}
+              {/* Task Theme Labels */}
               {availableLabels.length > 0 && (
                 <div className="mb-3">
-                  <label className="text-sm font-medium text-gray-700 block mb-2">Labels:</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Theme Labels:</label>
                   <div className="flex flex-wrap gap-2">
                     {availableLabels.map(label => (
                       <button
@@ -248,12 +248,12 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                   {task.subtasks.map(subtask => (
                     <div key={subtask.id} className="border border-gray-200 rounded-lg p-3 bg-white">
                       <div className="flex items-center gap-3 mb-2">
-                        <label className="text-sm font-medium text-gray-700">Subtask:</label>
+                        <label className="text-sm font-medium text-gray-700">Subtask Label:</label>
                         <input
                           type="text"
                           value={subtask.label}
                           onChange={(e) => updateSubtaskLabel(task.id, subtask.id, e.target.value)}
-                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                           placeholder="e.g., a, b, c"
                         />
                         <button
@@ -270,7 +270,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                         <select
                           value={subtask.category || ''}
                           onChange={(e) => updateSubtaskCategory(task.id, subtask.id, e.target.value ? Number(e.target.value) : undefined)}
-                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                         >
                           <option value="">None</option>
                           <option value="1">1</option>
@@ -279,10 +279,10 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                         </select>
                       </div>
 
-                      {/* Subtask Labels */}
+                      {/* Subtask Theme Labels */}
                       {availableLabels.length > 0 && (
                         <div>
-                          <label className="text-sm font-medium text-gray-700 block mb-2">Labels:</label>
+                          <label className="text-sm font-medium text-gray-700 block mb-2">Theme Labels:</label>
                           <div className="flex flex-wrap gap-2">
                             {availableLabels.map(label => (
                               <button

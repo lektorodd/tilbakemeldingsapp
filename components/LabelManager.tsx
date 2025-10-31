@@ -55,7 +55,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
-            className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+            className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-gray-900"
             placeholder="e.g., logarithms, fractions, equations"
             autoFocus
           />

@@ -171,20 +171,29 @@ export default function CourseDetailPage() {
                 course.students.map(student => (
                   <div
                     key={student.id}
-                    className="flex items-center justify-between p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="border border-gray-300 rounded-lg p-3 hover:bg-gray-50"
                   >
-                    <div>
-                      <h4 className="font-medium text-gray-800">{student.name}</h4>
-                      {student.studentNumber && (
-                        <p className="text-xs text-gray-500">#{student.studentNumber}</p>
-                      )}
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h4 className="font-medium text-gray-800">{student.name}</h4>
+                        {student.studentNumber && (
+                          <p className="text-xs text-gray-500">#{student.studentNumber}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteStudent(student.id)}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded transition"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleDeleteStudent(student.id)}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded transition"
+                    <Link
+                      href={`/course/${courseId}/student/${student.id}`}
+                      className="block text-center px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm"
                     >
-                      <Trash2 size={14} />
-                    </button>
+                      <BarChart3 size={14} className="inline mr-1" />
+                      View Dashboard
+                    </Link>
                   </div>
                 ))
               )}

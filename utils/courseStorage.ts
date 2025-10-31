@@ -437,6 +437,154 @@ export function getCategoryPerformance(courseId: string): CategoryPerformance[] 
     .sort((a, b) => a.category - b.category);
 }
 
+// Individual Student Analytics
+export function getStudentDetailedAnalytics(courseId: string, studentId: string) {
+  const course = loadCourse(courseId);
+  if (!course) return null;
+
+  const student = course.students.find(s => s.id === studentId);
+  if (!student) return null;
+
+  // Performance across tests
+  const testPerformance = course.tests.map(test => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
+    if (!feedback) {
+      return {
+        testId: test.id,
+        testName: test.name,
+        testDate: test.date,
+        score: 0,
+        maxScore: 60,
+        completed: false,
+        tasksAttempted: 0,
+        totalTasks: countTasks(test.tasks),
+        attemptPercentage: 0,
+      };
+    }
+
+    const totalTasks = countTasks(test.tasks);
+    const tasksAttempted = feedback.taskFeedbacks.filter(f => f.points > 0).length;
+    const attemptPercentage = totalTasks > 0 ? (tasksAttempted / totalTasks) * 100 : 0;
+
+    return {
+      testId: test.id,
+      testName: test.name,
+      testDate: test.date,
+      score: calculateStudentScore(test.tasks, feedback.taskFeedbacks),
+      maxScore: 60,
+      completed: !!feedback.completedDate,
+      tasksAttempted,
+      totalTasks,
+      attemptPercentage,
+    };
+  }).sort((a, b) => new Date(a.testDate).getTime() - new Date(b.testDate).getTime());
+
+  // Performance by label
+  const labelPerformance = new Map<string, { totalPoints: number; taskCount: number }>();
+
+  course.availableLabels.forEach(label => {
+    labelPerformance.set(label, { totalPoints: 0, taskCount: 0 });
+  });
+
+  course.tests.forEach(test => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
+    if (!feedback || !feedback.completedDate) return;
+
+    feedback.taskFeedbacks.forEach(taskFeedback => {
+      const task = test.tasks.find(t => t.id === taskFeedback.taskId);
+      if (!task) return;
+
+      let labels: string[] = [];
+      if (taskFeedback.subtaskId) {
+        const subtask = task.subtasks.find(st => st.id === taskFeedback.subtaskId);
+        if (subtask) labels = subtask.labels || [];
+      } else {
+        labels = task.labels || [];
+      }
+
+      labels.forEach(label => {
+        const data = labelPerformance.get(label);
+        if (data) {
+          data.totalPoints += taskFeedback.points;
+          data.taskCount += 1;
+        }
+      });
+    });
+  });
+
+  const labelStats = Array.from(labelPerformance.entries())
+    .map(([label, data]) => ({
+      label,
+      averageScore: data.taskCount > 0 ? data.totalPoints / data.taskCount : 0,
+      taskCount: data.taskCount,
+    }))
+    .filter(l => l.taskCount > 0)
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  // Performance by category
+  const categoryPerformance = new Map<number, { totalPoints: number; taskCount: number }>();
+  [1, 2, 3].forEach(cat => categoryPerformance.set(cat, { totalPoints: 0, taskCount: 0 }));
+
+  course.tests.forEach(test => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
+    if (!feedback || !feedback.completedDate) return;
+
+    feedback.taskFeedbacks.forEach(taskFeedback => {
+      const task = test.tasks.find(t => t.id === taskFeedback.taskId);
+      if (!task) return;
+
+      let category: number | undefined;
+      if (taskFeedback.subtaskId) {
+        const subtask = task.subtasks.find(st => st.id === taskFeedback.subtaskId);
+        if (subtask) category = subtask.category;
+      } else {
+        category = task.category;
+      }
+
+      if (!category) return;
+
+      const data = categoryPerformance.get(category);
+      if (data) {
+        data.totalPoints += taskFeedback.points;
+        data.taskCount += 1;
+      }
+    });
+  });
+
+  const categoryStats = Array.from(categoryPerformance.entries())
+    .map(([category, data]) => ({
+      category,
+      averageScore: data.taskCount > 0 ? data.totalPoints / data.taskCount : 0,
+      taskCount: data.taskCount,
+      description: `Category ${category}`,
+    }))
+    .filter(c => c.taskCount > 0)
+    .sort((a, b) => a.category - b.category);
+
+  // Overall stats
+  const completedTests = testPerformance.filter(t => t.completed);
+  const averageScore = completedTests.length > 0
+    ? completedTests.reduce((sum, t) => sum + t.score, 0) / completedTests.length
+    : 0;
+  const averageAttemptRate = testPerformance.length > 0
+    ? testPerformance.reduce((sum, t) => sum + t.attemptPercentage, 0) / testPerformance.length
+    : 0;
+
+  return {
+    student,
+    course,
+    testPerformance,
+    labelPerformance: labelStats,
+    categoryPerformance: categoryStats,
+    overallStats: {
+      completedTests: completedTests.length,
+      totalTests: course.tests.length,
+      averageScore,
+      averageAttemptRate,
+    },
+  };
+}
+
 // Auto-save functionality
 export async function setupAutoSaveDirectory(): Promise<boolean> {
   if (typeof window === 'undefined') return false;

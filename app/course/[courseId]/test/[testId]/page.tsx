@@ -341,7 +341,7 @@ export default function TestFeedbackPage() {
                                       onChange={(e) =>
                                         handleUpdateFeedback(task.id, subtask.id, { points: Number(e.target.value) })
                                       }
-                                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                                     >
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                         <option key={p} value={p}>{p}</option>
@@ -385,7 +385,7 @@ export default function TestFeedbackPage() {
                                       onChange={(e) =>
                                         handleUpdateFeedback(task.id, undefined, { points: Number(e.target.value) })
                                       }
-                                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                                     >
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                         <option key={p} value={p}>{p}</option>
