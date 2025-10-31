@@ -121,10 +121,14 @@ export default function StudentDashboardPage() {
           ) : (
             <div className="space-y-3">
               {testPerformance.map(test => (
-                <div key={test.testId} className="border border-gray-200 rounded-lg p-4">
+                <Link
+                  key={test.testId}
+                  href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
+                  className="block border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h4 className="font-semibold text-gray-800">{test.testName}</h4>
+                      <h4 className="font-semibold text-gray-800 hover:text-blue-600 transition">{test.testName}</h4>
                       <p className="text-xs text-gray-500">
                         {new Date(test.testDate).toLocaleDateString('nb-NO')}
                       </p>
@@ -158,7 +162,7 @@ export default function StudentDashboardPage() {
                       {test.tasksAttempted} / {test.totalTasks} ({test.attemptPercentage.toFixed(0)}%)
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

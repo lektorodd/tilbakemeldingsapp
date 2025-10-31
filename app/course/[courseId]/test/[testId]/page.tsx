@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData } from '@/types';
 import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 export default function TestFeedbackPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const courseId = params.courseId as string;
   const testId = params.testId as string;
 
@@ -42,6 +43,19 @@ export default function TestFeedbackPage() {
     setCourse(loadedCourse);
     setTest(loadedTest);
   };
+
+  // Auto-select student from URL parameter
+  useEffect(() => {
+    if (!course) return;
+
+    const studentIdParam = searchParams.get('student');
+    if (studentIdParam) {
+      const student = course.students.find(s => s.id === studentIdParam);
+      if (student && (!selectedStudent || selectedStudent.id !== studentIdParam)) {
+        setSelectedStudent(student);
+      }
+    }
+  }, [course, searchParams, selectedStudent]);
 
   useEffect(() => {
     if (selectedStudent && course && test) {
