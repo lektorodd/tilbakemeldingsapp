@@ -37,36 +37,39 @@ export function generateTypstDocument(data: ExportData): string {
     return text;
   };
 
-  // Generate task feedback sections
-  const taskSections = tasks.map(task => {
+  // Generate task feedback table rows
+  const taskRows: string[] = [];
+
+  tasks.forEach(task => {
     if (task.hasSubtasks && task.subtasks.length > 0) {
-      const subtaskContent = task.subtasks.map(subtask => {
+      task.subtasks.forEach(subtask => {
         const feedback = getFeedback(task.id, subtask.id);
-        if (!feedback) return '';
-
-        return `
-=== Oppgave ${task.label}${subtask.label}
-
-*Poeng:* ${feedback.points}/6
-
-${feedback.comment ? `*Kommentar:* ${escapeTypst(feedback.comment)}` : ''}
-`;
-      }).join('\n');
-
-      return subtaskContent;
+        if (feedback) {
+          const taskLabel = `${task.label}${subtask.label}`;
+          const points = `${feedback.points}/6`;
+          const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
+          taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
+        }
+      });
     } else {
       const feedback = getFeedback(task.id, undefined);
-      if (!feedback) return '';
-
-      return `
-=== Oppgave ${task.label}
-
-*Poeng:* ${feedback.points}/6
-
-${feedback.comment ? `*Kommentar:* ${escapeTypst(feedback.comment)}` : ''}
-`;
+      if (feedback) {
+        const taskLabel = task.label;
+        const points = `${feedback.points}/6`;
+        const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
+        taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
+      }
     }
-  }).join('\n');
+  });
+
+  const taskTable = taskRows.length > 0 ? `
+#table(
+  columns: (auto, auto, 1fr),
+  stroke: 0.5pt,
+  align: (center, center, left),
+  [*Oppgave*], [*Poeng*], [*Kommentar*],
+${taskRows.join('\n')}
+)` : 'Ingen oppgavekommentarer.';
 
   const typstContent = `#set document(title: "${testName} - Tilbakemelding")
 #set page(
@@ -74,7 +77,6 @@ ${feedback.comment ? `*Kommentar:* ${escapeTypst(feedback.comment)}` : ''}
   margin: (x: 2.5cm, y: 2.5cm),
 )
 #set text(
-  font: "Linux Libertine",
   size: 11pt,
   lang: "nb",
 )
@@ -109,7 +111,7 @@ ${escapeTypst(generalComment)}
 
 == Oppgavekommentarer
 
-${taskSections}
+${taskTable}
 
 #v(1em)
 
