@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function CourseAnalyticsPage() {
   const params = useParams();
   const router = useRouter();
-  const courseId = params.id as string;
+  const courseId = params.courseId as string;
 
   const [course, setCourse] = useState<Course | null>(null);
   const [labelPerformance, setLabelPerformance] = useState<LabelPerformance[]>([]);
