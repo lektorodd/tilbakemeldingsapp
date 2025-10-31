@@ -21,6 +21,7 @@ export default function CourseDetailPage() {
   const [newTestName, setNewTestName] = useState('');
   const [newTestDescription, setNewTestDescription] = useState('');
   const [newTestDate, setNewTestDate] = useState('');
+  const [newTestTaskCount, setNewTestTaskCount] = useState('5');
 
   useEffect(() => {
     loadData();
@@ -71,31 +72,34 @@ export default function CourseDetailPage() {
       return;
     }
 
+    const taskCount = parseInt(newTestTaskCount) || 5;
+    if (taskCount < 1 || taskCount > 50) {
+      alert('Please enter a valid number of tasks (1-50)');
+      return;
+    }
+
+    // Generate tasks
+    const tasks = Array.from({ length: taskCount }, (_, i) => ({
+      id: `task-${i + 1}`,
+      label: String(i + 1),
+      subtasks: [],
+      hasSubtasks: false,
+      labels: [],
+      category: undefined,
+    }));
+
     addTestToCourse(courseId, {
       name: newTestName,
       description: newTestDescription || undefined,
       date: newTestDate,
-      tasks: [
-        { id: 'task-1', label: '1', subtasks: [], hasSubtasks: false, labels: [], category: undefined },
-        {
-          id: 'task-2',
-          label: '2',
-          subtasks: [
-            { id: 'task-2-a', label: 'a', labels: [], category: undefined },
-            { id: 'task-2-b', label: 'b', labels: [], category: undefined },
-          ],
-          hasSubtasks: true,
-          labels: [],
-          category: undefined,
-        },
-        { id: 'task-3', label: '3', subtasks: [], hasSubtasks: false, labels: [], category: undefined },
-      ],
+      tasks,
       generalComment: '',
     });
 
     setNewTestName('');
     setNewTestDescription('');
     setNewTestDate('');
+    setNewTestTaskCount('5');
     setShowAddTestModal(false);
     loadData();
   };
@@ -310,7 +314,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., John Doe"
                     autoFocus
                   />
@@ -324,7 +328,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newStudentNumber}
                     onChange={(e) => setNewStudentNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., 12345"
                   />
                 </div>
@@ -367,7 +371,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newTestName}
                     onChange={(e) => setNewTestName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., October Test"
                     autoFocus
                   />
@@ -381,7 +385,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newTestDescription}
                     onChange={(e) => setNewTestDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., Logarithms, Chapter 3-5"
                   />
                 </div>
@@ -394,8 +398,24 @@ export default function CourseDetailPage() {
                     type="date"
                     value={newTestDate}
                     onChange={(e) => setNewTestDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Number of Tasks:
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={newTestTaskCount}
+                    onChange={(e) => setNewTestTaskCount(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    placeholder="5"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Tasks will be numbered 1, 2, 3... (you can customize later)</p>
                 </div>
               </div>
 
@@ -406,6 +426,7 @@ export default function CourseDetailPage() {
                     setNewTestName('');
                     setNewTestDescription('');
                     setNewTestDate('');
+                    setNewTestTaskCount('5');
                   }}
                   className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
                 >

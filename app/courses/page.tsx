@@ -246,7 +246,7 @@ export default function CoursesPage() {
                     type="text"
                     value={newCourseName}
                     onChange={(e) => setNewCourseName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., Math 10A - Fall 2024"
                     autoFocus
                   />
@@ -260,7 +260,7 @@ export default function CoursesPage() {
                     type="text"
                     value={newCourseDescription}
                     onChange={(e) => setNewCourseDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., Advanced mathematics"
                   />
                 </div>

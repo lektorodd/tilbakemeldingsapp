@@ -200,35 +200,36 @@ export default function TestFeedbackPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Task Configuration */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <TaskConfiguration
-                tasks={test.tasks}
-                onTasksChange={(tasks) => setTest({ ...test, tasks })}
-                availableLabels={course.availableLabels}
-              />
-            </div>
+        {/* Task Configuration - Full Width */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <TaskConfiguration
+            tasks={test.tasks}
+            onTasksChange={(tasks) => setTest({ ...test, tasks })}
+            availableLabels={course.availableLabels}
+          />
+        </div>
 
-            {/* General Comment */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">General Comment</h3>
-              <textarea
-                value={test.generalComment}
-                onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                placeholder="Same for all students..."
-              />
-            </div>
+        {/* General Comment - Full Width */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">General Comment</h3>
+          <p className="text-sm text-gray-600 mb-2">This comment will appear on all student feedback PDFs</p>
+          <textarea
+            value={test.generalComment}
+            onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
+            placeholder="Same for all students..."
+          />
+        </div>
 
-            {/* Students list */}
-            <div className="bg-white rounded-lg shadow-md p-4">
+        {/* Students and Feedback */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Students list */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-md p-4 sticky top-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Students ({course.students.length})</h3>
 
-              <div className="space-y-2 max-h-96 overflow-y-auto">
+              <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                 {course.students.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">No students in course</p>
                 ) : (
@@ -271,8 +272,8 @@ export default function TestFeedbackPage() {
             </div>
           </div>
 
-          {/* Right side - Feedback form */}
-          <div className="lg:col-span-2">
+          {/* Feedback form */}
+          <div className="lg:col-span-3">
             {selectedStudent && currentFeedback ? (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-start justify-between mb-6">
@@ -359,7 +360,7 @@ export default function TestFeedbackPage() {
                                       handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
                                     }
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
                                     placeholder="e.g., Good work! $x = 5$"
                                   />
                                 </div>
@@ -403,7 +404,7 @@ export default function TestFeedbackPage() {
                                       handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
                                     }
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
                                     placeholder="e.g., Excellent! $integral x^2 d x = x^3/3 + C$"
                                   />
                                 </div>
@@ -425,7 +426,7 @@ export default function TestFeedbackPage() {
                     value={currentFeedback.individualComment}
                     onChange={(e) => handleUpdateIndividualComment(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
                     placeholder="Personal feedback for this student..."
                   />
                 </div>
