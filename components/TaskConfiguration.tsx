@@ -206,41 +206,46 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 </button>
               </div>
 
-              {/* Task Category */}
-              <div className="flex items-center gap-3 mb-3">
-                <label className="text-sm font-medium text-gray-700">Category:</label>
-                <select
-                  value={task.category || ''}
-                  onChange={(e) => updateTaskCategory(task.id, e.target.value ? Number(e.target.value) : undefined)}
-                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                >
-                  <option value="">None</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                </select>
-              </div>
-
-              {/* Task Theme Labels */}
-              {availableLabels.length > 0 && (
-                <div className="mb-3">
-                  <label className="text-sm font-medium text-gray-700 block mb-2">Theme Labels:</label>
-                  <div className="flex flex-wrap gap-2">
-                    {availableLabels.map(label => (
-                      <button
-                        key={label}
-                        onClick={() => toggleTaskLabel(task.id, label)}
-                        className={`px-3 py-1 rounded-full text-sm transition ${
-                          task.labels.includes(label)
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
+              {/* Task Category and Theme Labels - only shown if NO subtasks */}
+              {!task.hasSubtasks && (
+                <>
+                  {/* Task Category */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <label className="text-sm font-medium text-gray-700">Category:</label>
+                    <select
+                      value={task.category || ''}
+                      onChange={(e) => updateTaskCategory(task.id, e.target.value ? Number(e.target.value) : undefined)}
+                      className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    >
+                      <option value="">None</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                    </select>
                   </div>
-                </div>
+
+                  {/* Task Theme Labels */}
+                  {availableLabels.length > 0 && (
+                    <div className="mb-3">
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Theme Labels:</label>
+                      <div className="flex flex-wrap gap-2">
+                        {availableLabels.map(label => (
+                          <button
+                            key={label}
+                            onClick={() => toggleTaskLabel(task.id, label)}
+                            className={`px-3 py-1 rounded-full text-sm transition ${
+                              task.labels.includes(label)
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {task.hasSubtasks && (

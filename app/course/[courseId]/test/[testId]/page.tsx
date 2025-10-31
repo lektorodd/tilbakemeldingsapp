@@ -114,6 +114,77 @@ export default function TestFeedbackPage() {
     alert('Feedback marked as complete and auto-saved!');
   };
 
+  const handleUnmarkComplete = () => {
+    if (!currentFeedback || !selectedStudent) return;
+
+    const updatedFeedback = {
+      ...currentFeedback,
+      completedDate: undefined,
+    };
+
+    updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
+    setCurrentFeedback(updatedFeedback);
+    loadData();
+  };
+
+  const handleExportAllPDFs = async () => {
+    if (!test || !course) return;
+
+    const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
+
+    if (completedFeedbacks.length === 0) {
+      alert('No completed feedback to export. Mark at least one student as complete first.');
+      return;
+    }
+
+    const confirmExport = confirm(
+      `Export PDFs for ${completedFeedbacks.length} completed student(s)?\n\nThis will download multiple files.`
+    );
+
+    if (!confirmExport) return;
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const feedback of completedFeedbacks) {
+      const student = course.students.find(s => s.id === feedback.studentId);
+      if (!student) continue;
+
+      const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
+
+      const typstContent = generateTypstDocument({
+        studentName: student.name,
+        studentNumber: student.studentNumber,
+        testName: test.name,
+        tasks: test.tasks,
+        feedbacks: feedback.taskFeedbacks,
+        generalComment: test.generalComment,
+        individualComment: feedback.individualComment,
+        totalPoints: score,
+        maxPoints: 60,
+      });
+
+      const filename = `${test.name.replace(/[^a-z0-9]/gi, '_')}_${student.name.replace(/[^a-z0-9]/gi, '_')}`;
+
+      const success = await compileAndDownloadPDF(typstContent, filename);
+
+      if (success) {
+        successCount++;
+      } else {
+        failCount++;
+      }
+
+      // Small delay between downloads to avoid overwhelming the browser
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    if (failCount > 0) {
+      alert(`Export complete: ${successCount} succeeded, ${failCount} failed.`);
+    } else {
+      alert(`Successfully exported ${successCount} PDF(s)!`);
+    }
+  };
+
   const handleExportTypst = () => {
     if (!selectedStudent || !test || !currentFeedback) return;
 
@@ -191,13 +262,23 @@ export default function TestFeedbackPage() {
             <p className="text-gray-600">{course.name}</p>
             {test.description && <p className="text-gray-600 text-sm">{test.description}</p>}
           </div>
-          <button
-            onClick={handleSaveTest}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-          >
-            <Save size={18} />
-            Save Test Config
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleSaveTest}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            >
+              <Save size={18} />
+              Save Test Config
+            </button>
+            <button
+              onClick={handleExportAllPDFs}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition"
+              title="Export PDFs for all completed students"
+            >
+              <Download size={18} />
+              Export All PDFs
+            </button>
+          </div>
         </div>
 
         {/* Task Configuration - Full Width */}
@@ -286,10 +367,14 @@ export default function TestFeedbackPage() {
                   </div>
                   <div className="flex gap-2">
                     {currentFeedback.completedDate ? (
-                      <span className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-md font-medium">
+                      <button
+                        onClick={handleUnmarkComplete}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition font-medium"
+                        title="Click to un-mark as complete"
+                      >
                         <CheckCircle size={18} />
-                        Completed
-                      </span>
+                        Completed (click to undo)
+                      </button>
                     ) : (
                       <button
                         onClick={handleMarkComplete}
