@@ -719,7 +719,7 @@ export default function TestFeedbackPage() {
                 {/* Written Feedback Section */}
                 {feedbackMode === 'written' && (
                   <div className="relative">
-                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
                     <button
                       onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
@@ -987,9 +987,11 @@ export default function TestFeedbackPage() {
                       </div>
                     )}
                   </div>
-                </div>
+                  </div>
+                )}
 
                 {/* Individual Comment */}
+                {feedbackMode === 'written' && (
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="block text-sm font-medium text-text-secondary">
@@ -1021,7 +1023,6 @@ export default function TestFeedbackPage() {
                     placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
-                  </div>
                 )}
 
                 {/* Oral Feedback Section */}
