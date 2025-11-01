@@ -82,6 +82,9 @@ ${taskRows.join('\n')}
 )
 #set par(justify: true)
 
+// Show links with underline
+#show link: underline
+
 #align(center)[
   #text(size: 18pt, weight: "bold")[${testName}]
 

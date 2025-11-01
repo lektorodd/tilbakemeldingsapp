@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData } from '@/types';
 import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -22,6 +22,10 @@ export default function TestFeedbackPage() {
   const [test, setTest] = useState<CourseTest | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<TestFeedbackData | null>(null);
+
+  // Refs for textareas to handle cursor position
+  const generalCommentRef = useRef<HTMLTextAreaElement>(null);
+  const individualCommentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     loadData();
@@ -247,6 +251,38 @@ export default function TestFeedbackPage() {
     }
   };
 
+  // Insert link template at cursor position
+  const insertLinkTemplate = (textareaRef: React.RefObject<HTMLTextAreaElement>, isGeneral: boolean) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const linkTemplate = '#link("https://example.com")[\n  See example.com\n]';
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = textarea.value;
+
+    const newValue = currentValue.substring(0, start) + linkTemplate + currentValue.substring(end);
+
+    if (isGeneral && test) {
+      setTest({ ...test, generalComment: newValue });
+    } else if (!isGeneral && currentFeedback && selectedStudent) {
+      const updatedFeedback = {
+        ...currentFeedback,
+        individualComment: newValue,
+      };
+      updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
+      setCurrentFeedback(updatedFeedback);
+      loadData();
+    }
+
+    // Set cursor position after the inserted text
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + linkTemplate.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
   if (!course || !test) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -308,9 +344,20 @@ export default function TestFeedbackPage() {
 
         {/* General Comment - Full Width */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('test.generalCommentTitle')}</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold text-gray-800">{t('test.generalCommentTitle')}</h3>
+            <button
+              onClick={() => insertLinkTemplate(generalCommentRef, true)}
+              className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+              title="Insert link template"
+            >
+              <Link2 size={16} />
+              Insert Link
+            </button>
+          </div>
           <p className="text-sm text-gray-600 mb-2">{t('test.generalCommentDesc')}</p>
           <textarea
+            ref={generalCommentRef}
             value={test.generalComment}
             onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
             rows={4}
@@ -530,10 +577,21 @@ export default function TestFeedbackPage() {
 
                 {/* Individual Comment */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('test.individualCommentLabel')}
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {t('test.individualCommentLabel')}
+                    </label>
+                    <button
+                      onClick={() => insertLinkTemplate(individualCommentRef, false)}
+                      className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs"
+                      title="Insert link template"
+                    >
+                      <Link2 size={14} />
+                      Insert Link
+                    </button>
+                  </div>
                   <textarea
+                    ref={individualCommentRef}
                     value={currentFeedback.individualComment}
                     onChange={(e) => handleUpdateIndividualComment(e.target.value)}
                     rows={4}
