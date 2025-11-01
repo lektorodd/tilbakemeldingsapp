@@ -165,150 +165,157 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+    <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Task Configuration</h2>
+        <h2 className="text-xl font-semibold text-text-primary">Task Structure</h2>
         <button
           onClick={() => setShowConfig(!showConfig)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          className="px-3 py-1.5 bg-brand text-white rounded-lg hover:bg-brand-hover transition text-sm"
         >
-          {showConfig ? 'Hide' : 'Show'} Config
+          {showConfig ? 'Hide' : 'Show'} Details
         </button>
       </div>
 
       {showConfig && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {tasks.map(task => (
-            <div key={task.id} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
-              <div className="flex items-center gap-3 mb-3">
-                <label className="text-sm font-medium text-gray-700">Task Number:</label>
-                <input
-                  type="text"
-                  value={task.label}
-                  onChange={(e) => updateTaskLabel(task.id, e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="e.g., 1, 2"
-                />
+            <div key={task.id} className="border border-border rounded-lg p-4 bg-surface-alt">
+              {/* Compact header with task number, category, subtasks toggle, and delete */}
+              <div className="flex items-center gap-3 mb-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-medium text-text-secondary">Task:</label>
+                  <input
+                    type="text"
+                    value={task.label}
+                    onChange={(e) => updateTaskLabel(task.id, e.target.value)}
+                    className="w-16 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
+                    placeholder="1"
+                  />
+                </div>
 
                 {/* Part indicator badge */}
                 {task.part && (
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                     task.part === 1
                       ? 'bg-orange-100 text-orange-800 border border-orange-300'
                       : 'bg-blue-100 text-blue-800 border border-blue-300'
                   }`}>
-                    {task.part === 1 ? 'Part 1: No aids' : 'Part 2: All aids'}
+                    {task.part === 1 ? 'Part 1' : 'Part 2'}
                   </span>
                 )}
 
-                <label className="flex items-center gap-2 ml-4">
+                {!task.hasSubtasks && (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-text-secondary">Category:</label>
+                      <select
+                        value={task.category || ''}
+                        onChange={(e) => updateTaskCategory(task.id, e.target.value ? Number(e.target.value) : undefined)}
+                        className="px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
+                      >
+                        <option value="">-</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                <label className="flex items-center gap-1.5">
                   <input
                     type="checkbox"
                     checked={task.hasSubtasks}
                     onChange={() => toggleSubtasks(task.id)}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-focus"
                   />
-                  <span className="text-sm text-gray-700">Has subtasks</span>
+                  <span className="text-xs text-text-secondary">Subtasks</span>
                 </label>
+
                 <button
                   onClick={() => removeTask(task.id)}
-                  className="ml-auto p-2 text-red-600 hover:bg-red-50 rounded-md transition"
+                  className="ml-auto p-1.5 text-danger hover:bg-red-50 rounded transition"
+                  title="Remove task"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={16} />
                 </button>
               </div>
 
-              {/* Task Category and Theme Labels - only shown if NO subtasks */}
-              {!task.hasSubtasks && (
-                <>
-                  {/* Task Category */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <label className="text-sm font-medium text-gray-700">Category:</label>
-                    <select
-                      value={task.category || ''}
-                      onChange={(e) => updateTaskCategory(task.id, e.target.value ? Number(e.target.value) : undefined)}
-                      className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    >
-                      <option value="">None</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                    </select>
+              {/* Task Theme Labels - only shown if NO subtasks */}
+              {!task.hasSubtasks && availableLabels.length > 0 && (
+                <div className="flex items-start gap-2">
+                  <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">Themes:</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {availableLabels.map(label => (
+                      <button
+                        key={label}
+                        onClick={() => toggleTaskLabel(task.id, label)}
+                        className={`px-2 py-0.5 rounded-full text-xs transition ${
+                          task.labels.includes(label)
+                            ? 'bg-violet-600 text-white'
+                            : 'bg-surface text-text-secondary hover:bg-gray-300 border border-border'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
-
-                  {/* Task Theme Labels */}
-                  {availableLabels.length > 0 && (
-                    <div className="mb-3">
-                      <label className="text-sm font-medium text-gray-700 block mb-2">Theme Labels:</label>
-                      <div className="flex flex-wrap gap-2">
-                        {availableLabels.map(label => (
-                          <button
-                            key={label}
-                            onClick={() => toggleTaskLabel(task.id, label)}
-                            className={`px-3 py-1 rounded-full text-sm transition ${
-                              task.labels.includes(label)
-                                ? 'bg-purple-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
-                          >
-                            {label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
+                </div>
               )}
 
               {task.hasSubtasks && (
-                <div className="ml-6 space-y-3 mt-3">
+                <div className="ml-4 space-y-2 mt-2 border-l-2 border-border pl-3">
                   {task.subtasks.map(subtask => (
-                    <div key={subtask.id} className="border border-gray-200 rounded-lg p-3 bg-white">
-                      <div className="flex items-center gap-3 mb-2">
-                        <label className="text-sm font-medium text-gray-700">Subtask Label:</label>
-                        <input
-                          type="text"
-                          value={subtask.label}
-                          onChange={(e) => updateSubtaskLabel(task.id, subtask.id, e.target.value)}
-                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                          placeholder="e.g., a, b, c"
-                        />
+                    <div key={subtask.id} className="border border-border rounded-lg p-3 bg-surface">
+                      {/* Compact subtask header */}
+                      <div className="flex items-center gap-3 mb-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-medium text-text-secondary">Label:</label>
+                          <input
+                            type="text"
+                            value={subtask.label}
+                            onChange={(e) => updateSubtaskLabel(task.id, subtask.id, e.target.value)}
+                            className="w-12 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
+                            placeholder="a"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-medium text-text-secondary">Category:</label>
+                          <select
+                            value={subtask.category || ''}
+                            onChange={(e) => updateSubtaskCategory(task.id, subtask.id, e.target.value ? Number(e.target.value) : undefined)}
+                            className="px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
+                          >
+                            <option value="">-</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                          </select>
+                        </div>
+
                         <button
                           onClick={() => removeSubtask(task.id, subtask.id)}
-                          className="p-1 text-red-600 hover:bg-red-50 rounded-md transition"
+                          className="ml-auto p-1 text-danger hover:bg-red-50 rounded transition"
+                          title="Remove subtask"
                         >
-                          <X size={16} />
+                          <X size={14} />
                         </button>
-                      </div>
-
-                      {/* Subtask Category */}
-                      <div className="flex items-center gap-3 mb-2">
-                        <label className="text-sm font-medium text-gray-700">Category:</label>
-                        <select
-                          value={subtask.category || ''}
-                          onChange={(e) => updateSubtaskCategory(task.id, subtask.id, e.target.value ? Number(e.target.value) : undefined)}
-                          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                        >
-                          <option value="">None</option>
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                        </select>
                       </div>
 
                       {/* Subtask Theme Labels */}
                       {availableLabels.length > 0 && (
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 block mb-2">Theme Labels:</label>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="flex items-start gap-2">
+                          <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">Themes:</label>
+                          <div className="flex flex-wrap gap-1.5">
                             {availableLabels.map(label => (
                               <button
                                 key={label}
                                 onClick={() => toggleSubtaskLabel(task.id, subtask.id, label)}
-                                className={`px-2 py-1 rounded-full text-xs transition ${
+                                className={`px-2 py-0.5 rounded-full text-xs transition ${
                                   subtask.labels.includes(label)
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ? 'bg-violet-600 text-white'
+                                    : 'bg-white text-text-secondary hover:bg-gray-200 border border-border'
                                 }`}
                               >
                                 {label}
@@ -321,9 +328,9 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                   ))}
                   <button
                     onClick={() => addSubtask(task.id)}
-                    className="flex items-center gap-2 px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-brand hover:bg-violet-50 rounded-lg transition"
                   >
-                    <Plus size={16} />
+                    <Plus size={14} />
                     Add Subtask
                   </button>
                 </div>
@@ -333,17 +340,18 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
 
           <button
             onClick={addTask}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition"
           >
-            <Plus size={20} />
+            <Plus size={18} />
             Add Task
           </button>
         </div>
       )}
 
       {!showConfig && (
-        <div className="text-sm text-gray-600">
-          Current tasks: {tasks.map(t => {
+        <div className="text-sm text-text-secondary bg-surface-alt px-4 py-3 rounded-lg">
+          <span className="font-medium">Tasks: </span>
+          {tasks.map(t => {
             if (t.hasSubtasks) {
               return t.subtasks.map(st => `${t.label}${st.label}`).join(', ');
             }

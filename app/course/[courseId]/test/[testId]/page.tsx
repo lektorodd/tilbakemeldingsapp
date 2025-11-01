@@ -428,13 +428,6 @@ export default function TestFeedbackPage() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={handleSaveTest}
-              className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
-            >
-              <Save size={18} />
-              {t('test.saveTestConfig')}
-            </button>
-            <button
               onClick={handleExportAllPDFs}
               className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
               title={t('test.exportAllPDFs')}
@@ -445,53 +438,78 @@ export default function TestFeedbackPage() {
           </div>
         </div>
 
-        {/* Task Configuration - Full Width */}
-        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
-          <TaskConfiguration
-            tasks={test.tasks}
-            onTasksChange={(tasks) => setTest({ ...test, tasks })}
-            availableLabels={course.availableLabels}
-          />
-        </div>
-
-        {/* General Comment - Full Width */}
-        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-text-primary">{t('test.generalCommentTitle')}</h3>
-            <div className="flex gap-2">
-              <SnippetPicker
-                snippets={allSnippets}
-                onInsert={(text) => insertSnippet(text, generalCommentRef, true)}
-                onAddSnippet={handleAddSnippet}
-                onDeleteSnippet={handleDeleteSnippet}
-              />
-              <button
-                onClick={() => insertLinkTemplate(generalCommentRef, true)}
-                className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                title="Insert link template"
-              >
-                <Link2 size={16} />
-                Insert Link
-              </button>
+        {/* Test Settings Section */}
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-8 border-2 border-violet-200">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-display font-bold text-text-primary">Test Settings</h2>
+              <p className="text-sm text-text-secondary">Configure task structure and general feedback template</p>
             </div>
+            <button
+              onClick={handleSaveTest}
+              className="flex items-center gap-2 px-5 py-2.5 bg-success text-white rounded-lg hover:bg-emerald-700 transition shadow-sm"
+            >
+              <Save size={18} />
+              Save Settings
+            </button>
           </div>
-          <p className="text-sm text-text-secondary mb-2">{t('test.generalCommentDesc')}</p>
-          <textarea
-            ref={generalCommentRef}
-            value={test.generalComment}
-            onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
-            rows={4}
-            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
-            placeholder={t('test.generalCommentPlaceholder')}
-          />
+
+          {/* Task Configuration */}
+          <div className="mb-6">
+            <TaskConfiguration
+              tasks={test.tasks}
+              onTasksChange={(tasks) => setTest({ ...test, tasks })}
+              availableLabels={course.availableLabels}
+            />
+          </div>
+
+          {/* General Comment */}
+          <div className="border-t border-border pt-6">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-lg font-semibold text-text-primary">{t('test.generalCommentTitle')}</h3>
+                <p className="text-xs text-text-secondary">{t('test.generalCommentDesc')}</p>
+              </div>
+              <div className="flex gap-2">
+                <SnippetPicker
+                  snippets={allSnippets}
+                  onInsert={(text) => insertSnippet(text, generalCommentRef, true)}
+                  onAddSnippet={handleAddSnippet}
+                  onDeleteSnippet={handleDeleteSnippet}
+                />
+                <button
+                  onClick={() => insertLinkTemplate(generalCommentRef, true)}
+                  className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
+                  title="Insert link template"
+                >
+                  <Link2 size={16} />
+                  Insert Link
+                </button>
+              </div>
+            </div>
+            <textarea
+              ref={generalCommentRef}
+              value={test.generalComment}
+              onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
+              rows={4}
+              className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
+              placeholder={t('test.generalCommentPlaceholder')}
+            />
+          </div>
         </div>
 
-        {/* Students and Feedback */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Students list */}
-          <div className="lg:col-span-1">
-            <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
-              <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
+        {/* Student Feedback Section */}
+        <div>
+          <div className="mb-4">
+            <h2 className="text-2xl font-display font-bold text-text-primary">Student Feedback</h2>
+            <p className="text-sm text-text-secondary">Select a student to provide individual feedback</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Students list */}
+            <div className="lg:col-span-1">
+              <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
+                <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
 
               <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                 {course.students.length === 0 ? (
@@ -910,6 +928,7 @@ export default function TestFeedbackPage() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </div>
     </main>
