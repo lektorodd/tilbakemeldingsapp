@@ -145,13 +145,45 @@ export default function StudentDashboardPage() {
                     </div>
                   </div>
 
-                  {/* Progress bar */}
-                  <div className="mb-2">
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${test.score >= 50 ? 'bg-green-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600'}`}
-                        style={{ width: `${(test.score / test.maxScore) * 100}%` }}
-                      />
+                  {/* Progress bar and score distribution histogram */}
+                  <div className="mb-2 flex items-center gap-2">
+                    {/* Progress bar - 85% width */}
+                    <div className="flex-[0.85]">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${test.score >= 50 ? 'bg-green-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                          style={{ width: `${(test.score / test.maxScore) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Score distribution histogram - 15% width */}
+                    <div className="flex-[0.15] flex items-end gap-0.5 h-6">
+                      {[0, 1, 2, 3, 4, 5, 6].map(score => {
+                        const count = test.scoreDistribution[score] || 0;
+                        const maxCount = Math.max(...Object.values(test.scoreDistribution));
+                        const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
+
+                        // Determine color based on score
+                        let barColor = 'bg-red-600';
+                        if (score >= 5) barColor = 'bg-green-600';
+                        else if (score >= 3) barColor = 'bg-yellow-600';
+
+                        return (
+                          <div
+                            key={score}
+                            className="flex-1 relative group"
+                            title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
+                          >
+                            <div className="h-6 flex flex-col justify-end">
+                              <div
+                                className={`${barColor} ${count > 0 ? '' : 'bg-gray-300'} rounded-t transition-all`}
+                                style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 

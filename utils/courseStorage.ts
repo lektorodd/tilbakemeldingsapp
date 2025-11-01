@@ -459,12 +459,20 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
         tasksAttempted: 0,
         totalTasks: countTasks(test.tasks),
         attemptPercentage: 0,
+        scoreDistribution: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
       };
     }
 
     const totalTasks = countTasks(test.tasks);
     const tasksAttempted = feedback.taskFeedbacks.filter(f => f.points > 0).length;
     const attemptPercentage = totalTasks > 0 ? (tasksAttempted / totalTasks) * 100 : 0;
+
+    // Calculate score distribution (how many tasks got 0, 1, 2, 3, 4, 5, 6 points)
+    const scoreDistribution: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    feedback.taskFeedbacks.forEach(tf => {
+      const points = Math.min(6, Math.max(0, tf.points)); // Clamp to 0-6
+      scoreDistribution[points] = (scoreDistribution[points] || 0) + 1;
+    });
 
     return {
       testId: test.id,
@@ -476,6 +484,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
       tasksAttempted,
       totalTasks,
       attemptPercentage,
+      scoreDistribution,
     };
   }).sort((a, b) => new Date(a.testDate).getTime() - new Date(b.testDate).getTime());
 
