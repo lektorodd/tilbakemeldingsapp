@@ -161,7 +161,10 @@
     "commentPlaceholder2": "e.g., Excellent! $integral x^2 d x = x^3/3 + C$",
     "individualCommentLabel": "Individual Comment (specific to this student):",
     "individualCommentPlaceholder": "Personal feedback for this student...",
-    "selectStudentPrompt": "Select a student to provide feedback"
+    "selectStudentPrompt": "Select a student to provide feedback",
+    "snippets": "Quick Texts",
+    "snippetInsert": "Insert quick text",
+    "saveAsSnippet": "Save as quick text"
   },
   "dashboard": {
     "title": "Student Dashboard",

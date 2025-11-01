@@ -85,6 +85,13 @@ export interface TestFeedbackData {
   score?: number; // Calculated, not stored
 }
 
+export interface FeedbackSnippet {
+  id: string;
+  text: string;
+  category?: 'standard' | 'encouragement' | 'error' | 'custom';
+  createdDate: string;
+}
+
 export interface CourseTest {
   id: string;
   name: string; // e.g., "October Test - Logarithms"
@@ -98,6 +105,7 @@ export interface CourseTest {
   part1TaskCount?: number;
   part2TaskCount?: number;
   restartNumberingInPart2?: boolean;
+  snippets?: FeedbackSnippet[]; // Test-specific comment snippets
   createdDate: string;
   lastModified: string;
 }

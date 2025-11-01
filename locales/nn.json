@@ -161,7 +161,10 @@
     "commentPlaceholder2": "t.d. Framifrå! $integral x^2 d x = x^3/3 + C$",
     "individualCommentLabel": "Individuell kommentar (spesifikk for denne eleven):",
     "individualCommentPlaceholder": "Personleg tilbakemelding for denne eleven...",
-    "selectStudentPrompt": "Vel ein elev for å gi tilbakemelding"
+    "selectStudentPrompt": "Vel ein elev for å gi tilbakemelding",
+    "snippets": "Snøggtekstar",
+    "snippetInsert": "Set inn snøggtekst",
+    "saveAsSnippet": "Lagre som snøggtekst"
   },
   "dashboard": {
     "title": "Elevdashboard",

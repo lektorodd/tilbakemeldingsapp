@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData } from '@/types';
+import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData, FeedbackSnippet } from '@/types';
 import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
+import SnippetPicker from '@/components/SnippetPicker';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { loadGlobalSnippets, addGlobalSnippet, deleteGlobalSnippet, getAllSnippetsForTest } from '@/utils/snippetStorage';
 
 export default function TestFeedbackPage() {
   const { t } = useLanguage();
@@ -22,6 +24,7 @@ export default function TestFeedbackPage() {
   const [test, setTest] = useState<CourseTest | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<TestFeedbackData | null>(null);
+  const [allSnippets, setAllSnippets] = useState<FeedbackSnippet[]>([]);
 
   // Refs for textareas to handle cursor position
   const generalCommentRef = useRef<HTMLTextAreaElement>(null);
@@ -73,6 +76,14 @@ export default function TestFeedbackPage() {
       });
     }
   }, [selectedStudent, course, test, courseId, testId]);
+
+  // Load snippets when test loads
+  useEffect(() => {
+    if (test) {
+      const snippets = getAllSnippetsForTest(test.snippets);
+      setAllSnippets(snippets);
+    }
+  }, [test]);
 
   const handleSaveTest = () => {
     if (test) {
@@ -283,6 +294,55 @@ export default function TestFeedbackPage() {
     }, 0);
   };
 
+  // Insert snippet at cursor position
+  const insertSnippet = (text: string, textareaRef: React.RefObject<HTMLTextAreaElement>, isGeneral: boolean) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = textarea.value;
+
+    const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+
+    if (isGeneral && test) {
+      setTest({ ...test, generalComment: newValue });
+    } else if (!isGeneral && currentFeedback && selectedStudent) {
+      const updatedFeedback = {
+        ...currentFeedback,
+        individualComment: newValue,
+      };
+      updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
+      setCurrentFeedback(updatedFeedback);
+      loadData();
+    }
+
+    // Set cursor position after the inserted text
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + text.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  // Add new snippet and reload list
+  const handleAddSnippet = (text: string, category?: FeedbackSnippet['category']) => {
+    addGlobalSnippet(text, category);
+    if (test) {
+      const snippets = getAllSnippetsForTest(test.snippets);
+      setAllSnippets(snippets);
+    }
+  };
+
+  // Delete snippet and reload list
+  const handleDeleteSnippet = (id: string) => {
+    deleteGlobalSnippet(id);
+    if (test) {
+      const snippets = getAllSnippetsForTest(test.snippets);
+      setAllSnippets(snippets);
+    }
+  };
+
   if (!course || !test) {
     return <div className="min-h-screen bg-amber-50 flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -346,14 +406,22 @@ export default function TestFeedbackPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold text-gray-800">{t('test.generalCommentTitle')}</h3>
-            <button
-              onClick={() => insertLinkTemplate(generalCommentRef, true)}
-              className="flex items-center gap-1 px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
-              title="Insert link template"
-            >
-              <Link2 size={16} />
-              Insert Link
-            </button>
+            <div className="flex gap-2">
+              <SnippetPicker
+                snippets={allSnippets}
+                onInsert={(text) => insertSnippet(text, generalCommentRef, true)}
+                onAddSnippet={handleAddSnippet}
+                onDeleteSnippet={handleDeleteSnippet}
+              />
+              <button
+                onClick={() => insertLinkTemplate(generalCommentRef, true)}
+                className="flex items-center gap-1 px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
+                title="Insert link template"
+              >
+                <Link2 size={16} />
+                Insert Link
+              </button>
+            </div>
           </div>
           <p className="text-sm text-gray-600 mb-2">{t('test.generalCommentDesc')}</p>
           <textarea
@@ -581,14 +649,22 @@ export default function TestFeedbackPage() {
                     <label className="block text-sm font-medium text-gray-700">
                       {t('test.individualCommentLabel')}
                     </label>
-                    <button
-                      onClick={() => insertLinkTemplate(individualCommentRef, false)}
-                      className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-xs"
-                      title="Insert link template"
-                    >
-                      <Link2 size={14} />
-                      Insert Link
-                    </button>
+                    <div className="flex gap-2">
+                      <SnippetPicker
+                        snippets={allSnippets}
+                        onInsert={(text) => insertSnippet(text, individualCommentRef, false)}
+                        onAddSnippet={handleAddSnippet}
+                        onDeleteSnippet={handleDeleteSnippet}
+                      />
+                      <button
+                        onClick={() => insertLinkTemplate(individualCommentRef, false)}
+                        className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-xs"
+                        title="Insert link template"
+                      >
+                        <Link2 size={14} />
+                        Insert Link
+                      </button>
+                    </div>
                   </div>
                   <textarea
                     ref={individualCommentRef}
