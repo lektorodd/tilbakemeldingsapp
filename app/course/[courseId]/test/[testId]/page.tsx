@@ -612,7 +612,6 @@ export default function TestFeedbackPage() {
                 )}
               </div>
             </div>
-          </div>
 
           {/* Feedback form */}
           <div className="lg:col-span-3">
@@ -1022,7 +1021,6 @@ export default function TestFeedbackPage() {
                     placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
-                  </div>
                 )}
 
                 {/* Oral Feedback Section */}
