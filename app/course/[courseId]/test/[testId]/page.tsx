@@ -442,15 +442,15 @@ export default function TestFeedbackPage() {
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-8 border-2 border-violet-200">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-display font-bold text-text-primary">Test Settings</h2>
-              <p className="text-sm text-text-secondary">Configure task structure and general feedback template</p>
+              <h2 className="text-2xl font-display font-bold text-text-primary">{t('test.testSettings')}</h2>
+              <p className="text-sm text-text-secondary">{t('test.testSettingsDesc')}</p>
             </div>
             <button
               onClick={handleSaveTest}
               className="flex items-center gap-2 px-5 py-2.5 bg-success text-white rounded-lg hover:bg-emerald-700 transition shadow-sm"
             >
               <Save size={18} />
-              Save Settings
+              {t('test.saveSettings')}
             </button>
           </div>
 
@@ -501,8 +501,8 @@ export default function TestFeedbackPage() {
         {/* Student Feedback Section */}
         <div>
           <div className="mb-4">
-            <h2 className="text-2xl font-display font-bold text-text-primary">Student Feedback</h2>
-            <p className="text-sm text-text-secondary">Select a student to provide individual feedback</p>
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('test.studentFeedback')}</h2>
+            <p className="text-sm text-text-secondary">{t('test.studentFeedbackDesc')}</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

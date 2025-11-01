@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Task, Subtask } from '@/types';
 import { Plus, Trash2, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TaskConfigurationProps {
   tasks: Task[];
@@ -11,6 +12,7 @@ interface TaskConfigurationProps {
 }
 
 export default function TaskConfiguration({ tasks, onTasksChange, availableLabels }: TaskConfigurationProps) {
+  const { t } = useLanguage();
   const [showConfig, setShowConfig] = useState(false);
 
   const addTask = () => {
@@ -167,12 +169,12 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-text-primary">Task Structure</h2>
+        <h2 className="text-xl font-semibold text-text-primary">{t('test.taskStructure')}</h2>
         <button
           onClick={() => setShowConfig(!showConfig)}
           className="px-3 py-1.5 bg-brand text-white rounded-lg hover:bg-brand-hover transition text-sm"
         >
-          {showConfig ? 'Hide' : 'Show'} Details
+          {showConfig ? t('test.hideDetails') : t('test.showDetails')}
         </button>
       </div>
 
