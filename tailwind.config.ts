@@ -7,7 +7,37 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        // Matte neutral palette
+        background: '#FAFAFA',
+        surface: '#FFFFFF',
+        'surface-alt': '#F4F4F5',
+        border: '#E5E7EB',
+
+        // Text colors
+        'text-primary': '#1A1A1A',
+        'text-secondary': '#4B5563',
+        'text-disabled': '#9CA3AF',
+
+        // Brand (educational blue)
+        brand: {
+          DEFAULT: '#2563EB',
+          hover: '#1D4ED8',
+          active: '#1E40AF',
+        },
+
+        // Semantic colors
+        success: '#10B981',
+        warning: '#F59E0B',
+        danger: '#EF4444',
+        focus: '#3B82F6',
+      },
+      fontFamily: {
+        sans: ['Inter', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['Satoshi', 'Inter', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 }

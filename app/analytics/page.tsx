@@ -83,7 +83,7 @@ export default function AnalyticsPage() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <BarChart3 size={28} className="text-purple-600" />
-                  <h2 className="text-2xl font-bold text-gray-800">Task Difficulty Analysis</h2>
+                  <h2 className="text-2xl font-display font-bold text-gray-800">Task Difficulty Analysis</h2>
                 </div>
                 <div>
                   <select
@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <Users size={28} className="text-green-600" />
-                  <h2 className="text-2xl font-bold text-gray-800">Student Progress Tracking</h2>
+                  <h2 className="text-2xl font-display font-bold text-gray-800">Student Progress Tracking</h2>
                 </div>
                 <div>
                   <select
@@ -212,17 +212,17 @@ export default function AnalyticsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                       <h3 className="text-sm font-medium text-green-800 mb-1">Total Tests</h3>
-                      <p className="text-3xl font-bold text-green-600">{studentData.totalTests}</p>
+                      <p className="text-3xl font-display font-bold text-green-600">{studentData.totalTests}</p>
                     </div>
                     <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                       <h3 className="text-sm font-medium text-blue-800 mb-1">Average Score</h3>
-                      <p className="text-3xl font-bold text-blue-600">
+                      <p className="text-3xl font-display font-bold text-blue-600">
                         {studentData.averageScore.toFixed(1)}%
                       </p>
                     </div>
                     <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
                       <h3 className="text-sm font-medium text-purple-800 mb-1">Latest Score</h3>
-                      <p className="text-3xl font-bold text-purple-600">
+                      <p className="text-3xl font-display font-bold text-purple-600">
                         {studentData.feedbacks.length > 0
                           ? ((studentData.feedbacks[studentData.feedbacks.length - 1].totalPoints /
                               studentData.feedbacks[studentData.feedbacks.length - 1].maxPoints) *

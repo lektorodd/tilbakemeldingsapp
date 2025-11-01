@@ -62,7 +62,7 @@ export default function SnippetPicker({
     switch (category) {
       case 'standard': return 'bg-stone-100 text-stone-700';
       case 'encouragement': return 'bg-emerald-100 text-emerald-700';
-      case 'error': return 'bg-rose-100 text-rose-700';
+      case 'error': return 'bg-rose-100 text-brand-hover';
       case 'custom': return 'bg-violet-100 text-violet-700';
       default: return 'bg-stone-100 text-stone-700';
     }
@@ -73,7 +73,7 @@ export default function SnippetPicker({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 px-3 py-1.5 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
+        className="flex items-center gap-1 px-3 py-1.5 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
         title={t('test.snippets')}
       >
         <BookmarkPlus size={16} />
@@ -81,12 +81,12 @@ export default function SnippetPicker({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-80 bg-white rounded-lg shadow-xl border-2 border-violet-200 max-h-96 overflow-hidden flex flex-col">
+        <div className="absolute z-50 mt-2 w-80 bg-surface rounded-lg shadow-xl border-2 border-violet-200 max-h-96 overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="p-3 border-b border-stone-200 bg-violet-50">
+          <div className="p-3 border-b border-border bg-violet-50">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                <BookmarkPlus size={18} className="text-violet-600" />
+              <h3 className="font-semibold text-text-primary flex items-center gap-2">
+                <BookmarkPlus size={18} className="text-brand" />
                 Snøggtekstar
               </h3>
               <button
@@ -101,32 +101,32 @@ export default function SnippetPicker({
             <div className="flex gap-1 flex-wrap">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-2 py-1 text-xs rounded transition ${
-                  filter === 'all' ? 'bg-violet-600 text-white' : 'bg-white text-gray-700 hover:bg-violet-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${
+                  filter === 'all' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-violet-100'
                 }`}
               >
                 Alle ({snippets.length})
               </button>
               <button
                 onClick={() => setFilter('standard')}
-                className={`px-2 py-1 text-xs rounded transition ${
-                  filter === 'standard' ? 'bg-stone-600 text-white' : 'bg-white text-gray-700 hover:bg-stone-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${
+                  filter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface text-text-secondary hover:bg-stone-100'
                 }`}
               >
                 Standard
               </button>
               <button
                 onClick={() => setFilter('encouragement')}
-                className={`px-2 py-1 text-xs rounded transition ${
-                  filter === 'encouragement' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-emerald-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${
+                  filter === 'encouragement' ? 'bg-success text-white' : 'bg-surface text-text-secondary hover:bg-emerald-100'
                 }`}
               >
                 Oppmuntrande
               </button>
               <button
                 onClick={() => setFilter('error')}
-                className={`px-2 py-1 text-xs rounded transition ${
-                  filter === 'error' ? 'bg-rose-600 text-white' : 'bg-white text-gray-700 hover:bg-rose-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${
+                  filter === 'error' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-rose-100'
                 }`}
               >
                 Feil
@@ -137,7 +137,7 @@ export default function SnippetPicker({
           {/* Snippet list */}
           <div className="overflow-y-auto flex-1 p-2">
             {filteredSnippets.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">
+              <p className="text-sm text-text-disabled text-center py-4">
                 Ingen snøggtekstar å vise
               </p>
             ) : (
@@ -145,11 +145,11 @@ export default function SnippetPicker({
                 {filteredSnippets.map(snippet => (
                   <div
                     key={snippet.id}
-                    className="group flex items-center gap-2 p-2 hover:bg-amber-50 rounded-md transition"
+                    className="group flex items-center gap-2 p-2 hover:bg-background rounded-lg transition"
                   >
                     <button
                       onClick={() => handleInsert(snippet)}
-                      className="flex-1 text-left text-sm text-gray-800 hover:text-violet-600 transition"
+                      className="flex-1 text-left text-sm text-text-primary hover:text-brand transition"
                     >
                       <span className={`inline-block px-2 py-0.5 rounded text-xs mr-2 ${getCategoryColor(snippet.category)}`}>
                         {snippet.category || 'standard'}
@@ -159,7 +159,7 @@ export default function SnippetPicker({
                     {onDeleteSnippet && snippet.category === 'custom' && (
                       <button
                         onClick={() => onDeleteSnippet(snippet.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-red-600 hover:bg-red-50 rounded transition"
+                        className="opacity-0 group-hover:opacity-100 p-1 text-danger hover:bg-red-50 rounded transition"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -172,7 +172,7 @@ export default function SnippetPicker({
 
           {/* Add new snippet form */}
           {onAddSnippet && (
-            <div className="p-3 border-t border-stone-200 bg-stone-50">
+            <div className="p-3 border-t border-border bg-stone-50">
               {showAddForm ? (
                 <div className="space-y-2">
                   <input
@@ -184,13 +184,13 @@ export default function SnippetPicker({
                       if (e.key === 'Escape') setShowAddForm(false);
                     }}
                     placeholder="Skriv inn ny snøggtekst..."
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm text-text-primary"
                     autoFocus
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={handleAddSnippet}
-                      className="flex-1 px-3 py-1.5 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
+                      className="flex-1 px-3 py-1.5 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
                     >
                       Legg til
                     </button>
@@ -199,7 +199,7 @@ export default function SnippetPicker({
                         setShowAddForm(false);
                         setNewSnippetText('');
                       }}
-                      className="px-3 py-1.5 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition text-sm"
+                      className="px-3 py-1.5 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition-colors text-sm"
                     >
                       Avbryt
                     </button>
@@ -208,7 +208,7 @@ export default function SnippetPicker({
               ) : (
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-violet-100 text-violet-700 rounded-md hover:bg-violet-200 transition text-sm"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200 transition-colors text-sm"
                 >
                   <Plus size={16} />
                   Lag ny snøggtekst

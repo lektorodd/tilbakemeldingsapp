@@ -243,7 +243,7 @@ export default function TestsPage() {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Create New Test</h2>
+              <h2 className="text-2xl font-display font-bold text-gray-800 mb-4">Create New Test</h2>
 
               <div className="space-y-4 mb-6">
                 <div>

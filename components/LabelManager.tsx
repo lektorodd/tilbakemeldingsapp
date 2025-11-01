@@ -33,15 +33,15 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="bg-surface rounded-lg shadow-sm p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Tag size={20} className="text-violet-600" />
-          <h3 className="text-lg font-semibold text-gray-800">Course Labels</h3>
+          <Tag size={20} className="text-brand" />
+          <h3 className="text-lg font-semibold text-text-primary">Course Labels</h3>
         </div>
         <button
           onClick={() => setShowAddLabel(!showAddLabel)}
-          className="flex items-center gap-1 px-3 py-1 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
+          className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
         >
           <Plus size={16} />
           Add Label
@@ -55,13 +55,13 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
-            className="flex-1 px-3 py-1.5 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-gray-900"
+            className="flex-1 px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-text-primary"
             placeholder="e.g., logarithms, fractions, equations"
             autoFocus
           />
           <button
             onClick={handleAddLabel}
-            className="px-3 py-1.5 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm"
+            className="px-3 py-1.5 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition-colors text-sm"
           >
             Add
           </button>
@@ -70,7 +70,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
               setShowAddLabel(false);
               setNewLabel('');
             }}
-            className="px-3 py-1.5 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition text-sm"
+            className="px-3 py-1.5 bg-gray-300 text-text-secondary rounded-lg hover:bg-gray-400 transition-colors text-sm"
           >
             Cancel
           </button>
@@ -79,7 +79,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
 
       <div className="flex flex-wrap gap-2">
         {labels.length === 0 ? (
-          <p className="text-sm text-gray-500">No labels yet. Add labels to categorize tasks by theme/skill.</p>
+          <p className="text-sm text-text-disabled">No labels yet. Add labels to categorize tasks by theme/skill.</p>
         ) : (
           labels.map(label => (
             <div
@@ -98,7 +98,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
         )}
       </div>
 
-      <p className="text-xs text-gray-600 mt-3">
+      <p className="text-xs text-text-secondary mt-3">
         Labels help you track student performance across themes (e.g., "fractions", "logarithms"). Add multiple labels to tasks that cover multiple topics.
       </p>
     </div>

@@ -7,35 +7,35 @@ export default function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center gap-1 text-sm">
+    <div className="flex items-center gap-1 text-sm font-medium">
       <button
         onClick={() => setLanguage('en')}
-        className={`px-2 py-1 rounded transition ${
+        className={`px-2.5 py-1.5 rounded-md transition-colors ${
           language === 'en'
-            ? 'text-rose-600 font-semibold'
-            : 'text-gray-400 hover:text-gray-600'
+            ? 'text-brand bg-blue-50 font-semibold'
+            : 'text-text-disabled hover:text-text-secondary hover:bg-surface-alt'
         }`}
       >
         EN
       </button>
-      <span className="text-gray-300">|</span>
+      <span className="text-border">|</span>
       <button
         onClick={() => setLanguage('nb')}
-        className={`px-2 py-1 rounded transition ${
+        className={`px-2.5 py-1.5 rounded-md transition-colors ${
           language === 'nb'
-            ? 'text-rose-600 font-semibold'
-            : 'text-gray-400 hover:text-gray-600'
+            ? 'text-brand bg-blue-50 font-semibold'
+            : 'text-text-disabled hover:text-text-secondary hover:bg-surface-alt'
         }`}
       >
         NB
       </button>
-      <span className="text-gray-300">|</span>
+      <span className="text-border">|</span>
       <button
         onClick={() => setLanguage('nn')}
-        className={`px-2 py-1 rounded transition ${
+        className={`px-2.5 py-1.5 rounded-md transition-colors ${
           language === 'nn'
-            ? 'text-rose-600 font-semibold'
-            : 'text-gray-400 hover:text-gray-600'
+            ? 'text-brand bg-blue-50 font-semibold'
+            : 'text-text-disabled hover:text-text-secondary hover:bg-surface-alt'
         }`}
       >
         NN

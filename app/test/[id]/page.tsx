@@ -161,7 +161,7 @@ export default function TestDetailPage() {
               <ArrowLeft size={20} />
               Back to Tests
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">{test.name}</h1>
+            <h1 className="text-3xl font-display font-bold text-gray-900">{test.name}</h1>
             {test.description && <p className="text-gray-600">{test.description}</p>}
           </div>
           <button
@@ -265,11 +265,11 @@ export default function TestDetailPage() {
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">{selectedStudent.name}</h2>
+                    <h2 className="text-2xl font-display font-bold text-gray-800">{selectedStudent.name}</h2>
                     {selectedStudent.studentNumber && (
                       <p className="text-sm text-gray-600">Student #: {selectedStudent.studentNumber}</p>
                     )}
-                    <p className="text-3xl font-bold text-blue-600 mt-2">{currentScore} / 60</p>
+                    <p className="text-3xl font-display font-bold text-blue-600 mt-2">{currentScore} / 60</p>
                   </div>
                   <div className="flex gap-2">
                     {selectedStudent.completedDate ? (
@@ -429,7 +429,7 @@ export default function TestDetailPage() {
         {showAddStudentModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Add Student</h2>
+              <h2 className="text-2xl font-display font-bold text-gray-800 mb-4">Add Student</h2>
 
               <div className="space-y-4 mb-6">
                 <div>

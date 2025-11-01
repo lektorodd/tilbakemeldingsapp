@@ -344,7 +344,7 @@ export default function TestFeedbackPage() {
   };
 
   if (!course || !test) {
-    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">{t('common.loading')}</div>;
+    return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback => {
@@ -359,32 +359,32 @@ export default function TestFeedbackPage() {
   const currentScore = currentFeedback && test ? calculateStudentScore(test.tasks, currentFeedback.taskFeedbacks) : 0;
 
   return (
-    <main className="min-h-screen bg-amber-50 py-8 px-4">
+    <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <Link
               href={`/course/${courseId}`}
-              className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-800 mb-2"
+              className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
             >
               <ArrowLeft size={20} />
               {t('test.backToCourse')}
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">{test.name}</h1>
-            <p className="text-gray-600">{course.name}</p>
-            {test.description && <p className="text-gray-600 text-sm">{test.description}</p>}
+            <h1 className="text-3xl font-display font-bold text-text-primary">{test.name}</h1>
+            <p className="text-text-secondary">{course.name}</p>
+            {test.description && <p className="text-text-secondary text-sm">{test.description}</p>}
           </div>
           <div className="flex gap-3">
             <button
               onClick={handleSaveTest}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
             >
               <Save size={18} />
               {t('test.saveTestConfig')}
             </button>
             <button
               onClick={handleExportAllPDFs}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
               title={t('test.exportAllPDFs')}
             >
               <Download size={18} />
@@ -394,7 +394,7 @@ export default function TestFeedbackPage() {
         </div>
 
         {/* Task Configuration - Full Width */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <TaskConfiguration
             tasks={test.tasks}
             onTasksChange={(tasks) => setTest({ ...test, tasks })}
@@ -403,9 +403,9 @@ export default function TestFeedbackPage() {
         </div>
 
         {/* General Comment - Full Width */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-gray-800">{t('test.generalCommentTitle')}</h3>
+            <h3 className="text-lg font-semibold text-text-primary">{t('test.generalCommentTitle')}</h3>
             <div className="flex gap-2">
               <SnippetPicker
                 snippets={allSnippets}
@@ -415,7 +415,7 @@ export default function TestFeedbackPage() {
               />
               <button
                 onClick={() => insertLinkTemplate(generalCommentRef, true)}
-                className="flex items-center gap-1 px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
                 title="Insert link template"
               >
                 <Link2 size={16} />
@@ -423,13 +423,13 @@ export default function TestFeedbackPage() {
               </button>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-2">{t('test.generalCommentDesc')}</p>
+          <p className="text-sm text-text-secondary mb-2">{t('test.generalCommentDesc')}</p>
           <textarea
             ref={generalCommentRef}
             value={test.generalComment}
             onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
             rows={4}
-            className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
             placeholder={t('test.generalCommentPlaceholder')}
           />
         </div>
@@ -438,12 +438,12 @@ export default function TestFeedbackPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Students list */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-4 sticky top-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
+            <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
+              <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
 
               <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                 {course.students.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">{t('test.noStudentsInCourse')}</p>
+                  <p className="text-sm text-text-disabled text-center py-4">{t('test.noStudentsInCourse')}</p>
                 ) : (
                   course.students.map(student => {
                     const feedback = getStudentFeedback(courseId, testId, student.id);
@@ -453,10 +453,10 @@ export default function TestFeedbackPage() {
                     return (
                       <div
                         key={student.id}
-                        className={`p-3 border rounded-lg transition ${
+                        className={`p-3 border rounded-lg transition-colors ${
                           selectedStudent?.id === student.id
                             ? 'border-rose-500 bg-rose-50'
-                            : 'border-stone-300 hover:bg-gray-50'
+                            : 'border-border hover:bg-surface-alt'
                         }`}
                       >
                         <div className="flex items-start justify-between">
@@ -465,21 +465,21 @@ export default function TestFeedbackPage() {
                             onClick={() => setSelectedStudent(student)}
                           >
                             <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-gray-800">{student.name}</h4>
+                              <h4 className="font-medium text-text-primary">{student.name}</h4>
                               {isCompleted && (
-                                <CheckCircle size={16} className="text-emerald-600" />
+                                <CheckCircle size={16} className="text-success" />
                               )}
                             </div>
                             {student.studentNumber && (
-                              <p className="text-xs text-gray-500">#{student.studentNumber}</p>
+                              <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
                             )}
-                            <p className="text-sm font-semibold text-rose-600 mt-1">
+                            <p className="text-sm font-semibold text-brand mt-1">
                               {score} / 60
                             </p>
                           </div>
                           <Link
                             href={`/course/${courseId}/student/${student.id}`}
-                            className="p-1 text-violet-600 hover:bg-violet-100 rounded transition"
+                            className="p-1 text-brand hover:bg-violet-100 rounded transition"
                             title={t('test.viewStudentDashboard')}
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -497,20 +497,20 @@ export default function TestFeedbackPage() {
           {/* Feedback form */}
           <div className="lg:col-span-3">
             {selectedStudent && currentFeedback ? (
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-surface rounded-lg shadow-sm p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">{selectedStudent.name}</h2>
+                    <h2 className="text-2xl font-display font-bold text-text-primary">{selectedStudent.name}</h2>
                     {selectedStudent.studentNumber && (
-                      <p className="text-sm text-gray-600">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
+                      <p className="text-sm text-text-secondary">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
                     )}
-                    <p className="text-3xl font-bold text-rose-600 mt-2">{currentScore} / 60</p>
+                    <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
                   </div>
                   <div className="flex gap-2">
                     {currentFeedback.completedDate ? (
                       <button
                         onClick={handleUnmarkComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200 transition-colors font-medium"
                         title={t('test.clickToUnmarkComplete')}
                       >
                         <CheckCircle size={18} />
@@ -519,7 +519,7 @@ export default function TestFeedbackPage() {
                     ) : (
                       <button
                         onClick={handleMarkComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
+                        className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
                       >
                         <CheckCircle size={18} />
                         {t('test.markComplete')}
@@ -527,7 +527,7 @@ export default function TestFeedbackPage() {
                     )}
                     <button
                       onClick={handleCompilePDF}
-                      className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
                       title={t('test.compileToPDF')}
                     >
                       <Download size={18} />
@@ -535,7 +535,7 @@ export default function TestFeedbackPage() {
                     </button>
                     <button
                       onClick={handleExportTypst}
-                      className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+                      className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
                       title={t('test.downloadTypSource')}
                     >
                       <FileText size={18} />
@@ -546,38 +546,38 @@ export default function TestFeedbackPage() {
 
                 {/* Task Feedback */}
                 <div className="space-y-6 mb-6">
-                  <h3 className="text-xl font-semibold text-gray-800">{t('test.taskFeedbackTitle')}</h3>
+                  <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
                   {test.tasks.map(task => (
                     <div key={task.id}>
                       {task.hasSubtasks ? (
                         <div className="space-y-4">
-                          <h4 className="text-lg font-semibold text-gray-700">{t('test.task')} {task.label}</h4>
+                          <h4 className="text-lg font-semibold text-text-secondary">{t('test.task')} {task.label}</h4>
                           {task.subtasks.map(subtask => {
                             const feedback = getFeedback(task.id, subtask.id);
                             return (
-                              <div key={subtask.id} className="ml-4 border border-gray-200 rounded-lg p-4 bg-gray-50">
+                              <div key={subtask.id} className="ml-4 border border-border rounded-lg p-4 bg-surface-alt">
                                 <div className="flex items-center gap-4 mb-3">
-                                  <label className="font-medium text-gray-700 min-w-[60px]">
+                                  <label className="font-medium text-text-secondary min-w-[60px]">
                                     {task.label}{subtask.label}:
                                   </label>
                                   <div className="flex items-center gap-2">
-                                    <label className="text-sm text-gray-600">{t('test.pointsLabel')}</label>
+                                    <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
                                     <select
                                       value={feedback.points}
                                       onChange={(e) =>
                                         handleUpdateFeedback(task.id, subtask.id, { points: Number(e.target.value) })
                                       }
-                                      className="px-3 py-1.5 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                                      className="px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                                     >
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                         <option key={p} value={p}>{p}</option>
                                       ))}
                                     </select>
-                                    <span className="text-sm text-gray-600">/ 6</span>
+                                    <span className="text-sm text-text-secondary">/ 6</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  <label className="block text-sm font-medium text-text-secondary mb-1">
                                     {t('test.commentLabel')}
                                   </label>
                                   <textarea
@@ -586,7 +586,7 @@ export default function TestFeedbackPage() {
                                       handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
                                     }
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
+                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                     placeholder={t('test.commentPlaceholder1')}
                                   />
                                 </div>
@@ -595,33 +595,33 @@ export default function TestFeedbackPage() {
                           })}
                         </div>
                       ) : (
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div className="border border-border rounded-lg p-4 bg-surface-alt">
                           {(() => {
                             const feedback = getFeedback(task.id, undefined);
                             return (
                               <>
                                 <div className="flex items-center gap-4 mb-3">
-                                  <label className="font-medium text-gray-700 min-w-[60px]">
+                                  <label className="font-medium text-text-secondary min-w-[60px]">
                                     {t('test.task')} {task.label}:
                                   </label>
                                   <div className="flex items-center gap-2">
-                                    <label className="text-sm text-gray-600">{t('test.pointsLabel')}</label>
+                                    <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
                                     <select
                                       value={feedback.points}
                                       onChange={(e) =>
                                         handleUpdateFeedback(task.id, undefined, { points: Number(e.target.value) })
                                       }
-                                      className="px-3 py-1.5 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                                      className="px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                                     >
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                         <option key={p} value={p}>{p}</option>
                                       ))}
                                     </select>
-                                    <span className="text-sm text-gray-600">/ 6</span>
+                                    <span className="text-sm text-text-secondary">/ 6</span>
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  <label className="block text-sm font-medium text-text-secondary mb-1">
                                     {t('test.commentLabel')}
                                   </label>
                                   <textarea
@@ -630,7 +630,7 @@ export default function TestFeedbackPage() {
                                       handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
                                     }
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
+                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                     placeholder={t('test.commentPlaceholder2')}
                                   />
                                 </div>
@@ -646,7 +646,7 @@ export default function TestFeedbackPage() {
                 {/* Individual Comment */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-text-secondary">
                       {t('test.individualCommentLabel')}
                     </label>
                     <div className="flex gap-2">
@@ -658,7 +658,7 @@ export default function TestFeedbackPage() {
                       />
                       <button
                         onClick={() => insertLinkTemplate(individualCommentRef, false)}
-                        className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-xs"
+                        className="flex items-center gap-1 px-2 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-xs"
                         title="Insert link template"
                       >
                         <Link2 size={14} />
@@ -671,14 +671,14 @@ export default function TestFeedbackPage() {
                     value={currentFeedback.individualComment}
                     onChange={(e) => handleUpdateIndividualComment(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                     placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-md p-12 flex items-center justify-center">
-                <div className="text-center text-gray-500">
+              <div className="bg-surface rounded-lg shadow-sm p-12 flex items-center justify-center">
+                <div className="text-center text-text-disabled">
                   <Circle size={48} className="mx-auto mb-4 opacity-50" />
                   <p>{t('test.selectStudentPrompt')}</p>
                 </div>

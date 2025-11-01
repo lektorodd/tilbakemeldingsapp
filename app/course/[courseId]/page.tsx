@@ -219,27 +219,27 @@ export default function CourseDetailPage() {
   };
 
   if (!course) {
-    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">{t('common.loading')}</div>;
+    return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   return (
-    <main className="min-h-screen bg-amber-50 py-8 px-4">
+    <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-800 mb-2"
+              className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
             >
               <ArrowLeft size={20} />
               {t('course.backToCourses')}
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">{course.name}</h1>
-            {course.description && <p className="text-gray-600">{course.description}</p>}
+            <h1 className="text-3xl font-display font-bold text-text-primary">{course.name}</h1>
+            {course.description && <p className="text-text-secondary">{course.description}</p>}
           </div>
           <Link
             href={`/course/${courseId}/analytics`}
-            className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
           >
             <BarChart3 size={18} />
             {t('course.viewAnalytics')}
@@ -248,24 +248,24 @@ export default function CourseDetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Students section */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-surface rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Users size={24} className="text-rose-600" />
-                <h2 className="text-2xl font-bold text-gray-800">{t('course.students')}</h2>
-                <span className="text-gray-600">({course.students.length})</span>
+                <Users size={24} className="text-brand" />
+                <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.students')}</h2>
+                <span className="text-text-secondary">({course.students.length})</span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowAddStudentModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
+                  className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
                 >
                   <Plus size={16} />
                   {t('common.add')}
                 </button>
                 <button
                   onClick={() => setShowBulkAddStudentModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
+                  className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
                 >
                   <Users size={16} />
                   {t('course.bulkAdd')}
@@ -275,30 +275,30 @@ export default function CourseDetailPage() {
 
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {course.students.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-8">{t('course.noStudentsYet')}</p>
+                <p className="text-sm text-text-disabled text-center py-8">{t('course.noStudentsYet')}</p>
               ) : (
                 course.students.map(student => (
                   <div
                     key={student.id}
-                    className="border border-stone-300 rounded-lg p-3 hover:bg-amber-50"
+                    className="border border-border rounded-lg p-3 hover:bg-background"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-medium text-gray-800">{student.name}</h4>
+                        <h4 className="font-medium text-text-primary">{student.name}</h4>
                         {student.studentNumber && (
-                          <p className="text-xs text-gray-500">#{student.studentNumber}</p>
+                          <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
                         )}
                       </div>
                       <button
                         onClick={() => handleDeleteStudent(student.id)}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded transition"
+                        className="p-1 text-danger hover:bg-red-50 rounded transition"
                       >
                         <Trash2 size={14} />
                       </button>
                     </div>
                     <Link
                       href={`/course/${courseId}/student/${student.id}`}
-                      className="block text-center px-3 py-1 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
+                      className="block text-center px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
                     >
                       <BarChart3 size={14} className="inline mr-1" />
                       {t('test.viewDashboard')}
@@ -310,16 +310,16 @@ export default function CourseDetailPage() {
           </div>
 
           {/* Tests section */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-surface rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <FileText size={24} className="text-emerald-600" />
-                <h2 className="text-2xl font-bold text-gray-800">{t('course.tests')}</h2>
-                <span className="text-gray-600">({course.tests.length})</span>
+                <FileText size={24} className="text-success" />
+                <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.tests')}</h2>
+                <span className="text-text-secondary">({course.tests.length})</span>
               </div>
               <button
                 onClick={() => setShowAddTestModal(true)}
-                className="flex items-center gap-1 px-3 py-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition-colors text-sm"
               >
                 <Plus size={16} />
                 {t('common.add')}
@@ -328,7 +328,7 @@ export default function CourseDetailPage() {
 
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {course.tests.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-8">{t('course.noTestsYet')}</p>
+                <p className="text-sm text-text-disabled text-center py-8">{t('course.noTestsYet')}</p>
               ) : (
                 course.tests
                   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -337,35 +337,35 @@ export default function CourseDetailPage() {
                     return (
                       <div
                         key={test.id}
-                        className="border border-stone-300 rounded-lg p-3 hover:bg-amber-50"
+                        className="border border-border rounded-lg p-3 hover:bg-background"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h4 className="font-medium text-gray-800">{test.name}</h4>
+                            <h4 className="font-medium text-text-primary">{test.name}</h4>
                             {test.description && (
-                              <p className="text-xs text-gray-600">{test.description}</p>
+                              <p className="text-xs text-text-secondary">{test.description}</p>
                             )}
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-text-disabled mt-1">
                               {new Date(test.date).toLocaleDateString('nb-NO', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                               })}
                             </p>
-                            <p className="text-xs text-rose-600 mt-1">
+                            <p className="text-xs text-brand mt-1">
                               {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
                             </p>
                           </div>
                           <button
                             onClick={() => handleDeleteTest(test.id)}
-                            className="p-1 text-red-600 hover:bg-red-50 rounded transition"
+                            className="p-1 text-danger hover:bg-red-50 rounded transition"
                           >
                             <Trash2 size={14} />
                           </button>
                         </div>
                         <Link
                           href={`/course/${courseId}/test/${test.id}`}
-                          className="block text-center px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
+                          className="block text-center px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
                         >
                           <Edit size={14} className="inline mr-1" />
                           {t('test.giveFeedback')}
@@ -389,25 +389,25 @@ export default function CourseDetailPage() {
         {/* Quick stats */}
         {course.students.length > 0 && course.tests.length > 0 && (
           <div className="mt-6 bg-amber-100 border border-amber-300 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 mb-2">{t('course.courseOverview')}</h3>
+            <h3 className="font-semibold text-text-primary mb-2">{t('course.courseOverview')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-gray-700">{t('course.totalStudents')}</p>
-                <p className="text-2xl font-bold text-rose-700">{course.students.length}</p>
+                <p className="text-text-secondary">{t('course.totalStudents')}</p>
+                <p className="text-2xl font-display font-bold text-brand-hover">{course.students.length}</p>
               </div>
               <div>
-                <p className="text-gray-700">{t('course.totalTests')}</p>
-                <p className="text-2xl font-bold text-emerald-700">{course.tests.length}</p>
+                <p className="text-text-secondary">{t('course.totalTests')}</p>
+                <p className="text-2xl font-display font-bold text-emerald-700">{course.tests.length}</p>
               </div>
               <div>
-                <p className="text-gray-700">{t('course.possibleFeedback')}</p>
-                <p className="text-2xl font-bold text-violet-700">
+                <p className="text-text-secondary">{t('course.possibleFeedback')}</p>
+                <p className="text-2xl font-display font-bold text-violet-700">
                   {course.students.length * course.tests.length}
                 </p>
               </div>
               <div>
-                <p className="text-gray-700">{t('test.completed')}</p>
-                <p className="text-2xl font-bold text-amber-700">
+                <p className="text-text-secondary">{t('test.completed')}</p>
+                <p className="text-2xl font-display font-bold text-amber-700">
                   {course.tests.reduce((sum, test) =>
                     sum + test.studentFeedbacks.filter(f => f.completedDate).length, 0
                   )}
@@ -420,33 +420,33 @@ export default function CourseDetailPage() {
         {/* Add student modal */}
         {showAddStudentModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('course.addStudentTitle')}</h2>
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('course.addStudentTitle')}</h2>
 
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     {t('course.studentNameLabel')}
                   </label>
                   <input
                     type="text"
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                     placeholder={t('course.studentNamePlaceholder')}
                     autoFocus
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     {t('course.studentNumberLabel')}
                   </label>
                   <input
                     type="text"
                     value={newStudentNumber}
                     onChange={(e) => setNewStudentNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                     placeholder={t('course.studentNumberPlaceholder')}
                   />
                 </div>
@@ -459,13 +459,13 @@ export default function CourseDetailPage() {
                     setNewStudentName('');
                     setNewStudentNumber('');
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleAddStudent}
-                  className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
+                  className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
                 >
                   {t('course.addStudentButton')}
                 </button>
@@ -477,23 +477,23 @@ export default function CourseDetailPage() {
         {/* Bulk add students modal */}
         {showBulkAddStudentModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('course.bulkAddStudents')}</h2>
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-2xl w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('course.bulkAddStudents')}</h2>
 
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     {t('course.bulkAddInstructions')}
                   </label>
                   <textarea
                     value={bulkStudentText}
                     onChange={(e) => setBulkStudentText(e.target.value)}
                     rows={10}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-900 font-mono text-sm"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 text-text-primary font-mono text-sm"
                     placeholder={t('course.bulkAddPlaceholder')}
                     autoFocus
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-text-disabled mt-1">
                     {t('course.bulkAddHelpText')}
                   </p>
                 </div>
@@ -505,13 +505,13 @@ export default function CourseDetailPage() {
                     setShowBulkAddStudentModal(false);
                     setBulkStudentText('');
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleBulkAddStudents}
-                  className="flex-1 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
+                  className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
                 >
                   {t('course.addStudentsButton')}
                 </button>
@@ -523,46 +523,46 @@ export default function CourseDetailPage() {
         {/* Add test modal */}
         {showAddTestModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('course.addTestTitle')}</h2>
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('course.addTestTitle')}</h2>
 
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     {t('course.testNameLabel')}
                   </label>
                   <input
                     type="text"
                     value={newTestName}
                     onChange={(e) => setNewTestName(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                     placeholder={t('course.testNamePlaceholder')}
                     autoFocus
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     {t('course.courseDescriptionLabel')}
                   </label>
                   <input
                     type="text"
                     value={newTestDescription}
                     onChange={(e) => setNewTestDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                     placeholder={t('course.testDescriptionPlaceholder')}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     {t('course.testDateLabel')}
                   </label>
                   <input
                     type="date"
                     value={newTestDate}
                     onChange={(e) => setNewTestDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                   />
                 </div>
 
@@ -573,13 +573,13 @@ export default function CourseDetailPage() {
                       type="checkbox"
                       checked={newTestHasTwoParts}
                       onChange={(e) => setNewTestHasTwoParts(e.target.checked)}
-                      className="w-4 h-4 text-rose-600 rounded focus:ring-2 focus:ring-rose-500"
+                      className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-focus"
                     />
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-text-secondary">
                       {t('course.twoPart')}
                     </span>
                   </label>
-                  <p className="text-xs text-gray-500 mt-1 ml-6">
+                  <p className="text-xs text-text-disabled mt-1 ml-6">
                     {t('course.twoPartHelpText')}
                   </p>
                 </div>
@@ -587,7 +587,7 @@ export default function CourseDetailPage() {
                 {/* Standard task count - only show when NOT two-part */}
                 {!newTestHasTwoParts && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       {t('course.taskCountLabel')}
                     </label>
                     <input
@@ -596,19 +596,19 @@ export default function CourseDetailPage() {
                       max="50"
                       value={newTestTaskCount}
                       onChange={(e) => setNewTestTaskCount(e.target.value)}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                       placeholder="5"
                     />
-                    <p className="text-xs text-gray-500 mt-1">{t('course.taskNumberingHelp')}</p>
+                    <p className="text-xs text-text-disabled mt-1">{t('course.taskNumberingHelp')}</p>
                   </div>
                 )}
 
                 {/* Two-part configuration - only show when enabled */}
                 {newTestHasTwoParts && (
-                  <div className="space-y-3 bg-amber-100 p-4 rounded-md border border-amber-300">
+                  <div className="space-y-3 bg-amber-100 p-4 rounded-lg border border-amber-300">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-text-secondary mb-1">
                           {t('course.part1Label')}
                         </label>
                         <input
@@ -617,13 +617,13 @@ export default function CourseDetailPage() {
                           max="30"
                           value={newTestPart1Count}
                           onChange={(e) => setNewTestPart1Count(e.target.value)}
-                          className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                           placeholder="3"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-text-secondary mb-1">
                           {t('course.part2Label')}
                         </label>
                         <input
@@ -632,7 +632,7 @@ export default function CourseDetailPage() {
                           max="30"
                           value={newTestPart2Count}
                           onChange={(e) => setNewTestPart2Count(e.target.value)}
-                          className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
                           placeholder="2"
                         />
                       </div>
@@ -643,14 +643,14 @@ export default function CourseDetailPage() {
                         type="checkbox"
                         checked={newTestRestartNumbering}
                         onChange={(e) => setNewTestRestartNumbering(e.target.checked)}
-                        className="w-4 h-4 text-rose-600 rounded focus:ring-2 focus:ring-rose-500"
+                        className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-focus"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-text-secondary">
                         {t('course.restartNumbering')}
                       </span>
                     </label>
 
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-text-secondary">
                       {newTestRestartNumbering
                         ? `${t('course.part1Tasks')}: 1-${newTestPart1Count || 3}, ${t('course.part2Tasks')}: 1-${newTestPart2Count || 2}`
                         : `${t('course.part1Tasks')}: 1-${newTestPart1Count || 3}, ${t('course.part2Tasks')}: ${(parseInt(newTestPart1Count) || 3) + 1}-${(parseInt(newTestPart1Count) || 3) + (parseInt(newTestPart2Count) || 2)}`
@@ -673,13 +673,13 @@ export default function CourseDetailPage() {
                     setNewTestPart2Count('2');
                     setNewTestRestartNumbering(false);
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleAddTest}
-                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
+                  className="flex-1 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
                 >
                   {t('course.addTestButton')}
                 </button>

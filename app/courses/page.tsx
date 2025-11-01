@@ -90,24 +90,24 @@ export default function CoursesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-amber-50 py-8 px-4">
+    <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('home.title')}</h1>
-            <p className="text-gray-600">{t('home.subtitle')}</p>
+            <h1 className="text-4xl font-display font-bold text-text-primary mb-2">{t('home.title')}</h1>
+            <p className="text-text-secondary">{t('home.subtitle')}</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={handleExportAll}
-              className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors shadow-sm"
             >
               <Download size={18} />
               {t('course.exportAll')}
             </button>
             <Link
               href="/archive"
-              className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors shadow-sm"
             >
               <FolderOpen size={18} />
               {t('course.oldArchive')}
@@ -116,13 +116,13 @@ export default function CoursesPage() {
         </div>
 
         {/* Auto-save settings */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-surface rounded-lg shadow-sm border border-border p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Settings size={24} className="text-gray-600" />
+              <Settings size={24} className="text-text-secondary" />
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">{t('course.autoSaveSettings')}</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="text-lg font-display font-semibold text-text-primary">{t('course.autoSaveSettings')}</h3>
+                <p className="text-sm text-text-secondary">
                   {autoSaveEnabled
                     ? t('course.autoSaveEnabledDesc')
                     : t('course.autoSaveDisabledDesc')}
@@ -132,14 +132,14 @@ export default function CoursesPage() {
             {autoSaveEnabled ? (
               <button
                 onClick={handleDisableAutoSave}
-                className="px-4 py-2 bg-stone-600 text-white rounded-md hover:bg-stone-700 transition"
+                className="px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors"
               >
                 {t('course.disableAutoSave')}
               </button>
             ) : (
               <button
                 onClick={handleSetupAutoSave}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
+                className="px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 {t('course.setupAutoSave')}
               </button>
@@ -151,7 +151,7 @@ export default function CoursesPage() {
         <div className="mb-6">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
           >
             <Plus size={20} />
             {t('home.createCourse')}
@@ -160,14 +160,14 @@ export default function CoursesPage() {
 
         {/* Courses grid */}
         {courses.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('home.noCourses')}</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-surface rounded-lg shadow-sm border border-border p-12 text-center">
+            <h3 className="text-xl font-display font-semibold text-text-primary mb-2">{t('home.noCourses')}</h3>
+            <p className="text-text-secondary mb-6">
               {t('home.subtitle')}
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition font-medium"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
             >
               <Plus size={20} />
               {t('home.createCourse')}
@@ -182,40 +182,40 @@ export default function CoursesPage() {
               const totalPossible = course.students.length * course.tests.length;
 
               return (
-                <div key={course.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <div key={course.id} className="bg-surface rounded-lg shadow-sm border border-border p-6 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-800 mb-1">{course.name}</h3>
+                      <h3 className="text-xl font-display font-bold text-text-primary mb-1">{course.name}</h3>
                       {course.description && (
-                        <p className="text-sm text-gray-600 mb-2">{course.description}</p>
+                        <p className="text-sm text-text-secondary mb-2">{course.description}</p>
                       )}
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-text-disabled">
                         {t('course.createdDate')}: {new Date(course.createdDate).toLocaleDateString('nb-NO')}
                       </p>
                     </div>
                     <button
                       onClick={() => handleDeleteCourse(course.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-md transition"
+                      className="p-2 text-danger hover:bg-red-50 rounded-lg transition-colors"
                     >
                       <Trash2 size={18} />
                     </button>
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-gray-700">
+                    <div className="flex items-center gap-2 text-text-secondary">
                       <Users size={18} />
                       <span className="text-sm">
                         {course.students.length} {t('course.students').toLowerCase()}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-700">
+                    <div className="flex items-center gap-2 text-text-secondary">
                       <FileText size={18} />
                       <span className="text-sm">
                         {course.tests.length} {t('course.tests').toLowerCase()}
                       </span>
                     </div>
                     {totalPossible > 0 && (
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-text-secondary">
                         {completedCount} / {totalPossible} {t('course.completedFeedback')}
                       </div>
                     )}
@@ -223,7 +223,7 @@ export default function CoursesPage() {
 
                   <Link
                     href={`/course/${course.id}`}
-                    className="block text-center px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
+                    className="block text-center px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
                   >
                     {t('course.openCourse')}
                   </Link>
@@ -236,33 +236,33 @@ export default function CoursesPage() {
         {/* Create course modal */}
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('course.createCourseTitle')}</h2>
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full border border-border">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('course.createCourseTitle')}</h2>
 
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-primary mb-1">
                     {t('course.courseNameLabel')}
                   </label>
                   <input
                     type="text"
                     value={newCourseName}
                     onChange={(e) => setNewCourseName(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary bg-surface"
                     placeholder={t('home.courseNamePlaceholder')}
                     autoFocus
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-text-primary mb-1">
                     {t('course.courseDescriptionLabel')}
                   </label>
                   <input
                     type="text"
                     value={newCourseDescription}
                     onChange={(e) => setNewCourseDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary bg-surface"
                     placeholder={t('course.courseDescriptionPlaceholder')}
                   />
                 </div>
@@ -275,13 +275,13 @@ export default function CoursesPage() {
                     setNewCourseName('');
                     setNewCourseDescription('');
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleCreateCourse}
-                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
+                  className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
                 >
                   {t('course.createCourseButton')}
                 </button>

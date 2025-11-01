@@ -13,28 +13,28 @@ export default function Navbar() {
   const isHomePage = pathname === '/' || pathname === '/courses';
 
   return (
-    <nav className="bg-white shadow-sm border-b border-amber-200">
+    <nav className="bg-surface shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Left side - Logo/Home */}
           <div className="flex items-center">
             <Link
               href="/courses"
-              className="flex items-center gap-2 text-gray-800 hover:text-rose-600 transition"
+              className="flex items-center gap-2 text-text-primary hover:text-brand transition-colors"
             >
               <Home size={20} />
-              <span className="font-semibold text-lg">{t('common.appName')}</span>
+              <span className="font-display font-semibold text-lg">{t('common.appName')}</span>
             </Link>
           </div>
 
           {/* Right side - Help button + Language selector */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/help"
-              className="flex items-center gap-1 px-3 py-1.5 text-violet-600 hover:bg-violet-50 rounded-md transition"
+              className="flex items-center gap-1.5 px-3 py-2 text-text-secondary hover:text-brand hover:bg-surface-alt rounded-lg transition-colors"
               title={t('help.title')}
             >
-              <HelpCircle size={20} />
+              <HelpCircle size={18} />
               <span className="hidden sm:inline text-sm font-medium">{t('common.help')}</span>
             </Link>
             <LanguageSelector />

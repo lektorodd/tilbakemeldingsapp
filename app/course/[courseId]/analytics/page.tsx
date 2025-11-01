@@ -38,8 +38,8 @@ export default function CourseAnalyticsPage() {
 
   const getScoreColor = (score: number): string => {
     if (score >= 5) return 'text-green-600';
-    if (score >= 3.5) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 3.5) return 'text-warning';
+    return 'text-danger';
   };
 
   const getScoreBgColor = (score: number): string => {
@@ -49,89 +49,89 @@ export default function CourseAnalyticsPage() {
   };
 
   if (!course) {
-    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">{t('common.loading')}</div>;
+    return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   const selectedLabelData = selectedLabel ? labelPerformance.find(lp => lp.label === selectedLabel) : null;
 
   return (
-    <main className="min-h-screen bg-amber-50 py-8 px-4">
+    <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Link
             href={`/course/${courseId}`}
-            className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-800 mb-2"
+            className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
           >
             <ArrowLeft size={20} />
             {t('analytics.backToCourse')}
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">{t('analytics.courseAnalyticsTitle').replace('{courseName}', course.name)}</h1>
-          <p className="text-gray-600">{t('analytics.performanceAnalysisDesc')}</p>
+          <h1 className="text-3xl font-display font-bold text-text-primary">{t('analytics.courseAnalyticsTitle').replace('{courseName}', course.name)}</h1>
+          <p className="text-text-secondary">{t('analytics.performanceAnalysisDesc')}</p>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="bg-surface rounded-lg shadow-sm p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Users size={20} className="text-rose-600" />
-              <h3 className="font-semibold text-gray-800">{t('course.totalStudents')}</h3>
+              <Users size={20} className="text-brand" />
+              <h3 className="font-semibold text-text-primary">{t('course.totalStudents')}</h3>
             </div>
-            <p className="text-3xl font-bold text-rose-600">{course.students.length}</p>
+            <p className="text-3xl font-display font-bold text-brand">{course.students.length}</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="bg-surface rounded-lg shadow-sm p-4">
             <div className="flex items-center gap-2 mb-2">
-              <BarChart3 size={20} className="text-emerald-600" />
-              <h3 className="font-semibold text-gray-800">{t('course.totalTests')}</h3>
+              <BarChart3 size={20} className="text-success" />
+              <h3 className="font-semibold text-text-primary">{t('course.totalTests')}</h3>
             </div>
-            <p className="text-3xl font-bold text-emerald-600">{course.tests.length}</p>
+            <p className="text-3xl font-display font-bold text-success">{course.tests.length}</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="bg-surface rounded-lg shadow-sm p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Tag size={20} className="text-violet-600" />
-              <h3 className="font-semibold text-gray-800">{t('analytics.totalLabels')}</h3>
+              <Tag size={20} className="text-brand" />
+              <h3 className="font-semibold text-text-primary">{t('analytics.totalLabels')}</h3>
             </div>
-            <p className="text-3xl font-bold text-violet-600">{course.availableLabels.length}</p>
+            <p className="text-3xl font-display font-bold text-brand">{course.availableLabels.length}</p>
           </div>
         </div>
 
         {/* Label Performance */}
         {labelPerformance.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Tag size={24} className="text-violet-600" />
-              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByLabel')}</h2>
+              <Tag size={24} className="text-brand" />
+              <h2 className="text-2xl font-display font-bold text-text-primary">{t('analytics.performanceByLabel')}</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Label Summary */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('analytics.overallPerformance')}</h3>
+                <h3 className="text-lg font-semibold text-text-primary mb-3">{t('analytics.overallPerformance')}</h3>
                 <div className="space-y-2">
                   {labelPerformance.map(lp => (
                     <div
                       key={lp.label}
-                      className={`p-3 rounded-lg border-2 transition cursor-pointer ${
+                      className={`p-3 rounded-lg border-2 transition-colors cursor-pointer ${
                         selectedLabel === lp.label
                           ? 'border-violet-600 bg-violet-50'
-                          : 'border-stone-200 hover:border-violet-300'
+                          : 'border-border hover:border-violet-300'
                       }`}
                       onClick={() => setSelectedLabel(lp.label === selectedLabel ? null : lp.label)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 bg-violet-600 text-white rounded-full text-sm font-medium">
+                          <span className="px-3 py-1 bg-brand text-white rounded-full text-sm font-medium">
                             {lp.label}
                           </span>
-                          <span className="text-xs text-gray-500">{t('analytics.tasksCount').replace('{count}', lp.taskCount.toString())}</span>
+                          <span className="text-xs text-text-disabled">{t('analytics.tasksCount').replace('{count}', lp.taskCount.toString())}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`text-2xl font-bold ${getScoreColor(lp.averageScore)}`}>
                             {lp.averageScore.toFixed(1)}
                           </span>
-                          <span className="text-gray-500 text-sm">/ 6</span>
+                          <span className="text-text-disabled text-sm">/ 6</span>
                         </div>
                       </div>
 
@@ -154,28 +154,28 @@ export default function CourseAnalyticsPage() {
               <div>
                 {selectedLabelData ? (
                   <>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      {t('analytics.studentPerformance')}: <span className="text-violet-600">{selectedLabelData.label}</span>
+                    <h3 className="text-lg font-semibold text-text-primary mb-3">
+                      {t('analytics.studentPerformance')}: <span className="text-brand">{selectedLabelData.label}</span>
                     </h3>
                     <div className="space-y-2 max-h-96 overflow-y-auto">
                       {selectedLabelData.studentScores.length > 0 ? (
                         selectedLabelData.studentScores.map(ss => (
-                          <div key={ss.studentId} className="p-3 border border-stone-200 rounded-lg">
+                          <div key={ss.studentId} className="p-3 border border-border rounded-lg">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="font-medium text-gray-800">{ss.studentName}</span>
+                              <span className="font-medium text-text-primary">{ss.studentName}</span>
                               <span className={`text-xl font-bold ${getScoreColor(ss.averageScore)}`}>
                                 {ss.averageScore.toFixed(1)} / 6
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <div className="flex items-center gap-2 text-xs text-text-disabled">
                               <span>{t('analytics.tasksCompleted').replace('{count}', ss.completedTasks.toString())}</span>
                             </div>
                             {/* Progress bar */}
                             <div className="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
                               <div
                                 className={`h-full ${
-                                  ss.averageScore >= 5 ? 'bg-emerald-600' :
-                                  ss.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-red-600'
+                                  ss.averageScore >= 5 ? 'bg-success' :
+                                  ss.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-danger'
                                 }`}
                                 style={{ width: `${(ss.averageScore / 6) * 100}%` }}
                               />
@@ -183,12 +183,12 @@ export default function CourseAnalyticsPage() {
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-gray-500 text-center py-4">{t('analytics.noStudentDataForLabel')}</p>
+                        <p className="text-sm text-text-disabled text-center py-4">{t('analytics.noStudentDataForLabel')}</p>
                       )}
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">
+                  <div className="flex items-center justify-center h-full text-text-disabled">
                     <div className="text-center">
                       <Tag size={48} className="mx-auto mb-2 opacity-50" />
                       <p>{t('analytics.clickLabelPrompt')}</p>
@@ -199,12 +199,12 @@ export default function CourseAnalyticsPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Tag size={24} className="text-violet-600" />
-              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByLabel')}</h2>
+              <Tag size={24} className="text-brand" />
+              <h2 className="text-2xl font-display font-bold text-text-primary">{t('analytics.performanceByLabel')}</h2>
             </div>
-            <p className="text-gray-500 text-center py-8">
+            <p className="text-text-disabled text-center py-8">
               {t('analytics.noLabelData')}
             </p>
           </div>
@@ -212,25 +212,25 @@ export default function CourseAnalyticsPage() {
 
         {/* Category Performance */}
         {categoryPerformance.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-surface rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={24} className="text-rose-600" />
-              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByCategory')}</h2>
+              <TrendingUp size={24} className="text-brand" />
+              <h2 className="text-2xl font-display font-bold text-text-primary">{t('analytics.performanceByCategory')}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {categoryPerformance.map(cp => (
-                <div key={cp.category} className="p-4 border-2 border-stone-200 rounded-lg">
+                <div key={cp.category} className="p-4 border-2 border-border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{cp.description}</h3>
-                      <p className="text-xs text-gray-500">{t('analytics.tasksCount').replace('{count}', cp.taskCount.toString())}</p>
+                      <h3 className="text-lg font-semibold text-text-primary">{cp.description}</h3>
+                      <p className="text-xs text-text-disabled">{t('analytics.tasksCount').replace('{count}', cp.taskCount.toString())}</p>
                     </div>
                     <div className="text-right">
                       <p className={`text-3xl font-bold ${getScoreColor(cp.averageScore)}`}>
                         {cp.averageScore.toFixed(1)}
                       </p>
-                      <p className="text-xs text-gray-500">/ 6</p>
+                      <p className="text-xs text-text-disabled">/ 6</p>
                     </div>
                   </div>
 
@@ -238,8 +238,8 @@ export default function CourseAnalyticsPage() {
                   <div className="mt-3 h-3 bg-stone-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${
-                        cp.averageScore >= 5 ? 'bg-emerald-600' :
-                        cp.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-red-600'
+                        cp.averageScore >= 5 ? 'bg-success' :
+                        cp.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-danger'
                       }`}
                       style={{ width: `${(cp.averageScore / 6) * 100}%` }}
                     />
@@ -249,18 +249,18 @@ export default function CourseAnalyticsPage() {
             </div>
 
             <div className="mt-4 p-3 bg-amber-100 border border-amber-300 rounded-lg">
-              <p className="text-sm text-gray-800">
+              <p className="text-sm text-text-primary">
                 <strong>{t('analytics.categoryGuide')}</strong>
               </p>
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-surface rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={24} className="text-rose-600" />
-              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByCategory')}</h2>
+              <TrendingUp size={24} className="text-brand" />
+              <h2 className="text-2xl font-display font-bold text-text-primary">{t('analytics.performanceByCategory')}</h2>
             </div>
-            <p className="text-gray-500 text-center py-8">
+            <p className="text-text-disabled text-center py-8">
               {t('analytics.noCategoryData')}
             </p>
           </div>
