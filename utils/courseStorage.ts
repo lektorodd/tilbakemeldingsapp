@@ -469,10 +469,18 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
     // Calculate score distribution (how many tasks got 0, 1, 2, 3, 4, 5, 6 points)
     const scoreDistribution: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+    // Count feedback entries
     feedback.taskFeedbacks.forEach(tf => {
       const points = Math.min(6, Math.max(0, tf.points)); // Clamp to 0-6
       scoreDistribution[points] = (scoreDistribution[points] || 0) + 1;
     });
+
+    // Add unattempted tasks (tasks without feedback) as 0 points
+    const unattemptedTasks = totalTasks - feedback.taskFeedbacks.length;
+    if (unattemptedTasks > 0) {
+      scoreDistribution[0] += unattemptedTasks;
+    }
 
     return {
       testId: test.id,
