@@ -56,12 +56,12 @@ export default function StudentDashboardPage() {
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
           >
             <ArrowLeft size={20} />
-            Back to Course
+            {t('common.back')}
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">{student.name}</h1>
           <p className="text-gray-600">{course.name}</p>
           {student.studentNumber && (
-            <p className="text-sm text-gray-500">Student #: {student.studentNumber}</p>
+            <p className="text-sm text-gray-500">{t('course.studentNumber')}: {student.studentNumber}</p>
           )}
         </div>
 
@@ -70,23 +70,23 @@ export default function StudentDashboardPage() {
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <Award size={20} className="text-blue-600" />
-              <h3 className="font-semibold text-gray-800">Average Score</h3>
+              <h3 className="font-semibold text-gray-800">{t('dashboard.avgScore')}</h3>
             </div>
             <p className={`text-3xl font-bold ${getScoreColor(overallStats.averageScore)}`}>
               {overallStats.averageScore.toFixed(1)}
             </p>
-            <p className="text-sm text-gray-600">out of 60</p>
+            <p className="text-sm text-gray-600">/ 60</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <BarChart3 size={20} className="text-green-600" />
-              <h3 className="font-semibold text-gray-800">Tests Completed</h3>
+              <h3 className="font-semibold text-gray-800">{t('dashboard.completedTests')}</h3>
             </div>
             <p className="text-3xl font-bold text-green-600">
               {overallStats.completedTests}
             </p>
-            <p className="text-sm text-gray-600">of {overallStats.totalTests}</p>
+            <p className="text-sm text-gray-600">/ {overallStats.totalTests}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-4">
@@ -116,10 +116,10 @@ export default function StudentDashboardPage() {
 
         {/* Test Performance Timeline */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Performance Across Tests</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('dashboard.performanceAcrossTests')}</h2>
 
           {testPerformance.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No tests yet</p>
+            <p className="text-gray-500 text-center py-8">{t('course.noTests')}</p>
           ) : (
             <div className="space-y-3">
               {testPerformance.map(test => (

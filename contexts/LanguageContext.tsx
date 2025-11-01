@@ -1,6 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import en from '@/locales/en.json';
+import nb from '@/locales/nb.json';
+import nn from '@/locales/nn.json';
 
 type Language = 'en' | 'nb' | 'nn';
 
@@ -12,11 +15,19 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const translations = {
+  en,
+  nb,
+  nn,
+};
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('nb'); // Default to Norwegian Bokmål
+  const [mounted, setMounted] = useState(false);
 
   // Load language from localStorage on mount
   useEffect(() => {
+    setMounted(true);
     const stored = localStorage.getItem('language');
     if (stored && (stored === 'en' || stored === 'nb' || stored === 'nn')) {
       setLanguageState(stored);
@@ -29,9 +40,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const t = (key: string): string => {
-    const translations = getTranslations(language);
+    const translation = translations[language];
     const keys = key.split('.');
-    let value: any = translations;
+    let value: any = translation;
 
     for (const k of keys) {
       value = value?.[k];
@@ -39,6 +50,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     return typeof value === 'string' ? value : key;
   };
+
+  // Don't render children until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
@@ -53,14 +69,4 @@ export function useLanguage() {
     throw new Error('useLanguage must be used within a LanguageProvider');
   }
   return context;
-}
-
-// Translation loader
-function getTranslations(lang: Language) {
-  const translations = {
-    en: require('@/locales/en.json'),
-    nb: require('@/locales/nb.json'),
-    nn: require('@/locales/nn.json'),
-  };
-  return translations[lang] || translations.nb;
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { LanguageProvider } from '@/contexts/LanguageContext'
-import LanguageSelector from '@/components/LanguageSelector'
+import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
   title: 'Math Test Feedback App',
@@ -17,9 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-gray-50">
         <LanguageProvider>
-          <div className="fixed top-4 right-4 z-50">
-            <LanguageSelector />
-          </div>
+          <Navbar />
           {children}
         </LanguageProvider>
       </body>
