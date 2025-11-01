@@ -15,7 +15,15 @@
     "confirm": "Bekreft",
     "help": "Hjelp",
     "yes": "Ja",
-    "no": "Nei"
+    "no": "Nei",
+    "all": "Alle"
+  },
+  "snippets": {
+    "encouragement": "Oppmuntrande",
+    "error": "Feil",
+    "noSnippets": "Ingen snøggtekstar å vise",
+    "addPlaceholder": "Skriv inn ny snøggtekst...",
+    "addNew": "Lag ny snøggtekst"
   },
   "home": {
     "title": "Matematikk Prøvetilbakemelding",

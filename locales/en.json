@@ -15,7 +15,15 @@
     "confirm": "Confirm",
     "help": "Help",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "all": "All"
+  },
+  "snippets": {
+    "encouragement": "Encouragement",
+    "error": "Error",
+    "noSnippets": "No snippets to show",
+    "addPlaceholder": "Write new snippet...",
+    "addNew": "Create new snippet"
   },
   "home": {
     "title": "Math Test Feedback",

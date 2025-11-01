@@ -7,7 +7,7 @@ import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calc
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { loadGlobalSnippets, addGlobalSnippet, deleteGlobalSnippet, getAllSnippetsForTest } from '@/utils/snippetStorage';
@@ -29,6 +29,9 @@ export default function TestFeedbackPage() {
   // Snippet sidebar state
   const [showSnippetSidebar, setShowSnippetSidebar] = useState(false);
   const [activeSubtask, setActiveSubtask] = useState<{taskId: string, subtaskId?: string} | null>(null);
+  const [snippetFilter, setSnippetFilter] = useState<'all' | 'standard' | 'encouragement' | 'error' | 'custom'>('all');
+  const [showAddSnippetForm, setShowAddSnippetForm] = useState(false);
+  const [newSnippetText, setNewSnippetText] = useState('');
 
   // Refs for textareas to handle cursor position
   const generalCommentRef = useRef<HTMLTextAreaElement>(null);
@@ -377,6 +380,26 @@ export default function TestFeedbackPage() {
     }, 0);
   };
 
+  // Handle adding snippet from sidebar form
+  const handleAddSnippetFromForm = () => {
+    if (newSnippetText.trim()) {
+      handleAddSnippet(newSnippetText.trim(), 'custom');
+      setNewSnippetText('');
+      setShowAddSnippetForm(false);
+    }
+  };
+
+  // Get category color for snippet badges
+  const getCategoryColor = (category?: string) => {
+    switch (category) {
+      case 'standard': return 'bg-stone-100 text-stone-700';
+      case 'encouragement': return 'bg-emerald-100 text-emerald-700';
+      case 'error': return 'bg-rose-100 text-rose-700';
+      case 'custom': return 'bg-violet-100 text-violet-700';
+      default: return 'bg-stone-100 text-stone-700';
+    }
+  };
+
   if (!course || !test) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -702,28 +725,147 @@ export default function TestFeedbackPage() {
                     {/* Snippet Sidebar */}
                     {showSnippetSidebar && (
                       <div className="w-80 flex-shrink-0">
-                        <div className="sticky top-4 bg-surface rounded-lg shadow-sm border border-border p-4 h-[calc(100vh-120px)] overflow-y-auto flex flex-col">
-                          <h4 className="text-lg font-display font-semibold text-text-primary mb-3 flex-shrink-0">
-                            {t('test.snippetsTitle')}
-                          </h4>
-                          {activeSubtask ? (
-                            <>
-                              <p className="text-sm text-text-secondary mb-4 flex-shrink-0">
-                                {t('test.snippetsDesc')}
+                        <div className="sticky top-4 bg-surface rounded-lg shadow-sm border border-border h-[calc(100vh-120px)] flex flex-col">
+                          {/* Header */}
+                          <div className="p-4 border-b border-border flex-shrink-0">
+                            <h4 className="text-lg font-display font-semibold text-text-primary mb-3">
+                              {t('test.snippetsTitle')}
+                            </h4>
+                            {activeSubtask && (
+                              <>
+                                <p className="text-xs text-text-secondary mb-3">
+                                  {t('test.snippetsDesc')}
+                                </p>
+                                {/* Filter buttons */}
+                                <div className="flex gap-1 flex-wrap">
+                                  <button
+                                    onClick={() => setSnippetFilter('all')}
+                                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                                      snippetFilter === 'all' ? 'bg-brand text-white' : 'bg-surface-alt text-text-secondary hover:bg-gray-200'
+                                    }`}
+                                  >
+                                    {t('common.all')} ({allSnippets.length})
+                                  </button>
+                                  <button
+                                    onClick={() => setSnippetFilter('standard')}
+                                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                                      snippetFilter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-stone-100'
+                                    }`}
+                                  >
+                                    Standard
+                                  </button>
+                                  <button
+                                    onClick={() => setSnippetFilter('encouragement')}
+                                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                                      snippetFilter === 'encouragement' ? 'bg-success text-white' : 'bg-surface-alt text-text-secondary hover:bg-emerald-100'
+                                    }`}
+                                  >
+                                    {t('snippets.encouragement') || 'Oppmuntrande'}
+                                  </button>
+                                  <button
+                                    onClick={() => setSnippetFilter('error')}
+                                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                                      snippetFilter === 'error' ? 'bg-danger text-white' : 'bg-surface-alt text-text-secondary hover:bg-red-100'
+                                    }`}
+                                  >
+                                    {t('snippets.error') || 'Feil'}
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Snippet list */}
+                          <div className="flex-1 overflow-y-auto min-h-0 p-2">
+                            {!activeSubtask ? (
+                              <p className="text-sm text-text-disabled text-center py-8">
+                                {t('test.snippetsClickTextarea')}
                               </p>
-                              <div className="flex-1 overflow-y-auto min-h-0">
-                                <SnippetPicker
-                                  snippets={allSnippets}
-                                  onInsert={insertSnippetIntoSubtask}
-                                  onAddSnippet={handleAddSnippet}
-                                  onDeleteSnippet={handleDeleteSnippet}
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            <p className="text-sm text-text-disabled text-center py-8">
-                              {t('test.snippetsClickTextarea')}
-                            </p>
+                            ) : (() => {
+                              const filteredSnippets = snippetFilter === 'all'
+                                ? allSnippets
+                                : allSnippets.filter(s => s.category === snippetFilter);
+
+                              return filteredSnippets.length === 0 ? (
+                                <p className="text-sm text-text-disabled text-center py-4">
+                                  {t('snippets.noSnippets') || 'Ingen snøggtekstar å vise'}
+                                </p>
+                              ) : (
+                                <div className="space-y-1">
+                                  {filteredSnippets.map(snippet => (
+                                    <div
+                                      key={snippet.id}
+                                      className="group flex items-center gap-2 p-2 hover:bg-surface-alt rounded-lg transition-colors"
+                                    >
+                                      <button
+                                        onClick={() => insertSnippetIntoSubtask(snippet.text)}
+                                        className="flex-1 text-left text-sm text-text-primary hover:text-brand transition-colors"
+                                      >
+                                        <span className={`inline-block px-2 py-0.5 rounded text-xs mr-2 ${getCategoryColor(snippet.category)}`}>
+                                          {snippet.category || 'standard'}
+                                        </span>
+                                        {snippet.text}
+                                      </button>
+                                      {snippet.category === 'custom' && (
+                                        <button
+                                          onClick={() => handleDeleteSnippet(snippet.id)}
+                                          className="opacity-0 group-hover:opacity-100 p-1 text-danger hover:bg-red-50 rounded transition-opacity"
+                                        >
+                                          <Trash2 size={14} />
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              );
+                            })()}
+                          </div>
+
+                          {/* Add new snippet form */}
+                          {activeSubtask && (
+                            <div className="p-3 border-t border-border bg-stone-50 flex-shrink-0">
+                              {showAddSnippetForm ? (
+                                <div className="space-y-2">
+                                  <input
+                                    type="text"
+                                    value={newSnippetText}
+                                    onChange={(e) => setNewSnippetText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') handleAddSnippetFromForm();
+                                      if (e.key === 'Escape') setShowAddSnippetForm(false);
+                                    }}
+                                    placeholder={t('snippets.addPlaceholder') || 'Skriv inn ny snøggtekst...'}
+                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-sm text-text-primary"
+                                    autoFocus
+                                  />
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={handleAddSnippetFromForm}
+                                      className="flex-1 px-3 py-1.5 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
+                                    >
+                                      {t('common.add')}
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setShowAddSnippetForm(false);
+                                        setNewSnippetText('');
+                                      }}
+                                      className="px-3 py-1.5 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition-colors text-sm"
+                                    >
+                                      {t('common.cancel')}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setShowAddSnippetForm(true)}
+                                  className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200 transition-colors text-sm"
+                                >
+                                  <Plus size={16} />
+                                  {t('snippets.addNew') || 'Lag ny snøggtekst'}
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
