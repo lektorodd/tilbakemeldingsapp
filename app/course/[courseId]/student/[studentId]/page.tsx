@@ -119,12 +119,13 @@ export default function StudentDashboardPage() {
           {testPerformance.length === 0 ? (
             <p className="text-gray-500 text-center py-8">No tests yet</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {testPerformance.map(test => (
-                <div key={test.testId}>
+                <div key={test.testId} className="flex gap-3">
+                  {/* Test card - 85% width */}
                   <Link
                     href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
-                    className="block border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
+                    className="flex-[0.85] border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
@@ -164,42 +165,44 @@ export default function StudentDashboardPage() {
                     </div>
                   </Link>
 
-                  {/* Score distribution histogram - outside the card */}
-                  <div className="mt-1 px-2">
-                    <div className="flex items-end gap-0.5 h-8 mb-1">
-                      {[0, 1, 2, 3, 4, 5, 6].map(score => {
-                        const count = test.scoreDistribution[score] || 0;
-                        const maxCount = Math.max(...Object.values(test.scoreDistribution));
-                        const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                  {/* Score distribution histogram box - 15% width */}
+                  <div className="flex-[0.15] border border-gray-200 rounded-lg p-2 bg-gray-50">
+                    <div className="flex flex-col h-full justify-between">
+                      <div className="flex items-end gap-0.5 flex-1 mb-1" style={{ minHeight: '60px' }}>
+                        {[0, 1, 2, 3, 4, 5, 6].map(score => {
+                          const count = test.scoreDistribution[score] || 0;
+                          const maxCount = Math.max(...Object.values(test.scoreDistribution));
+                          const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
-                        // Determine color based on score
-                        let barColor = 'bg-red-600';
-                        if (score >= 5) barColor = 'bg-green-600';
-                        else if (score >= 3) barColor = 'bg-yellow-600';
+                          // Determine color based on score
+                          let barColor = 'bg-red-600';
+                          if (score >= 5) barColor = 'bg-green-600';
+                          else if (score >= 3) barColor = 'bg-yellow-600';
 
-                        return (
-                          <div
-                            key={score}
-                            className="flex-1 relative group"
-                            title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
-                          >
-                            <div className="h-8 flex flex-col justify-end">
-                              <div
-                                className={`${barColor} ${count > 0 ? '' : 'bg-gray-300'} rounded-t transition-all`}
-                                style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
-                              />
+                          return (
+                            <div
+                              key={score}
+                              className="flex-1 relative group h-full"
+                              title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
+                            >
+                              <div className="h-full flex flex-col justify-end">
+                                <div
+                                  className={`${barColor} ${count > 0 ? '' : 'bg-gray-300'} rounded-t transition-all`}
+                                  style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
+                                />
+                              </div>
                             </div>
+                          );
+                        })}
+                      </div>
+                      {/* Labels for histogram */}
+                      <div className="flex gap-0.5">
+                        {[0, 1, 2, 3, 4, 5, 6].map(score => (
+                          <div key={score} className="flex-1 text-center text-xs text-gray-600">
+                            {score}
                           </div>
-                        );
-                      })}
-                    </div>
-                    {/* Labels for histogram */}
-                    <div className="flex gap-0.5">
-                      {[0, 1, 2, 3, 4, 5, 6].map(score => (
-                        <div key={score} className="flex-1 text-center text-xs text-gray-500">
-                          {score}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
