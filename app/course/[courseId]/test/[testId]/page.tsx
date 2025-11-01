@@ -1021,6 +1021,7 @@ export default function TestFeedbackPage() {
                     placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
+                  </div>
                 )}
 
                 {/* Oral Feedback Section */}
