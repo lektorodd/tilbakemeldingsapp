@@ -165,7 +165,12 @@
     "selectStudentPrompt": "Velg en elev for å gi tilbakemelding",
     "snippets": "Snøggtekstar",
     "snippetInsert": "Set inn snøggtekst",
-    "saveAsSnippet": "Lagre som snøggtekst"
+    "saveAsSnippet": "Lagre som snøggtekst",
+    "showSnippets": "Vis snøggtekstar",
+    "hideSnippets": "Gøym snøggtekstar",
+    "snippetsTitle": "Snøggtekstar",
+    "snippetsDesc": "Klikk på ein snøggtekst for å setje han inn ved markøren.",
+    "snippetsClickTextarea": "Klikk på eit kommentarfelt for å aktivere snøggtekst-innsetjing."
   },
   "dashboard": {
     "title": "Elevdashboard",

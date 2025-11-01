@@ -165,7 +165,12 @@
     "selectStudentPrompt": "Select a student to provide feedback",
     "snippets": "Quick Texts",
     "snippetInsert": "Insert quick text",
-    "saveAsSnippet": "Save as quick text"
+    "saveAsSnippet": "Save as quick text",
+    "showSnippets": "Show Snippets",
+    "hideSnippets": "Hide Snippets",
+    "snippetsTitle": "Quick Text Snippets",
+    "snippetsDesc": "Click a snippet to insert it at your cursor position.",
+    "snippetsClickTextarea": "Click on a task comment field to activate quick text insertion."
   },
   "dashboard": {
     "title": "Student Dashboard",

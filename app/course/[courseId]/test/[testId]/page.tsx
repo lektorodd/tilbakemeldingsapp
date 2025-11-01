@@ -7,13 +7,13 @@ import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calc
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2 } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { loadGlobalSnippets, addGlobalSnippet, deleteGlobalSnippet, getAllSnippetsForTest } from '@/utils/snippetStorage';
 
 export default function TestFeedbackPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,9 +26,14 @@ export default function TestFeedbackPage() {
   const [currentFeedback, setCurrentFeedback] = useState<TestFeedbackData | null>(null);
   const [allSnippets, setAllSnippets] = useState<FeedbackSnippet[]>([]);
 
+  // Snippet sidebar state
+  const [showSnippetSidebar, setShowSnippetSidebar] = useState(false);
+  const [activeSubtask, setActiveSubtask] = useState<{taskId: string, subtaskId?: string} | null>(null);
+
   // Refs for textareas to handle cursor position
   const generalCommentRef = useRef<HTMLTextAreaElement>(null);
   const individualCommentRef = useRef<HTMLTextAreaElement>(null);
+  const subtaskTextareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map());
 
   useEffect(() => {
     loadData();
@@ -193,6 +198,7 @@ export default function TestFeedbackPage() {
         individualComment: feedback.individualComment,
         totalPoints: score,
         maxPoints: 60,
+        language,
       });
 
       const filename = `${test.name.replace(/[^a-z0-9]/gi, '_')}_${student.name.replace(/[^a-z0-9]/gi, '_')}`;
@@ -231,6 +237,7 @@ export default function TestFeedbackPage() {
       individualComment: currentFeedback.individualComment,
       totalPoints: score,
       maxPoints: 60,
+      language,
     });
 
     const filename = `${selectedStudent.name.replace(/\s+/g, '_')}_${test.name.replace(/\s+/g, '_')}.typ`;
@@ -252,6 +259,7 @@ export default function TestFeedbackPage() {
       individualComment: currentFeedback.individualComment,
       totalPoints: score,
       maxPoints: 60,
+      language,
     });
 
     const filename = `${selectedStudent.name.replace(/\s+/g, '_')}_${test.name.replace(/\s+/g, '_')}.typ`;
@@ -341,6 +349,32 @@ export default function TestFeedbackPage() {
       const snippets = getAllSnippetsForTest(test.snippets);
       setAllSnippets(snippets);
     }
+  };
+
+  // Insert snippet into active subtask textarea
+  const insertSnippetIntoSubtask = (text: string) => {
+    if (!activeSubtask) return;
+
+    const key = `${activeSubtask.taskId}-${activeSubtask.subtaskId || 'main'}`;
+    const textarea = subtaskTextareaRefs.current.get(key);
+
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = textarea.value;
+
+    const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+
+    // Update feedback with new comment
+    handleUpdateFeedback(activeSubtask.taskId, activeSubtask.subtaskId, { comment: newValue });
+
+    // Set cursor position after the inserted text
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + text.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
   };
 
   if (!course || !test) {
@@ -545,8 +579,22 @@ export default function TestFeedbackPage() {
                 </div>
 
                 {/* Task Feedback */}
-                <div className="space-y-6 mb-6">
-                  <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
+                    <button
+                      onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
+                      className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
+                      title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
+                    >
+                      {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+                      {showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
+                    </button>
+                  </div>
+
+                  <div className="flex gap-4">
+                    {/* Task list */}
+                    <div className={`space-y-6 mb-6 transition-all ${showSnippetSidebar ? 'flex-1' : 'w-full'}`}>
                   {test.tasks.map(task => (
                     <div key={task.id}>
                       {task.hasSubtasks ? (
@@ -581,10 +629,14 @@ export default function TestFeedbackPage() {
                                     {t('test.commentLabel')}
                                   </label>
                                   <textarea
+                                    ref={(el) => {
+                                      if (el) subtaskTextareaRefs.current.set(`${task.id}-${subtask.id}`, el);
+                                    }}
                                     value={feedback.comment}
                                     onChange={(e) =>
                                       handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
                                     }
+                                    onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: subtask.id })}
                                     rows={3}
                                     className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                     placeholder={t('test.commentPlaceholder1')}
@@ -625,10 +677,14 @@ export default function TestFeedbackPage() {
                                     {t('test.commentLabel')}
                                   </label>
                                   <textarea
+                                    ref={(el) => {
+                                      if (el) subtaskTextareaRefs.current.set(`${task.id}-main`, el);
+                                    }}
                                     value={feedback.comment}
                                     onChange={(e) =>
                                       handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
                                     }
+                                    onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: undefined })}
                                     rows={3}
                                     className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                     placeholder={t('test.commentPlaceholder2')}
@@ -641,6 +697,36 @@ export default function TestFeedbackPage() {
                       )}
                     </div>
                   ))}
+                    </div>
+
+                    {/* Snippet Sidebar */}
+                    {showSnippetSidebar && (
+                      <div className="w-80 flex-shrink-0">
+                        <div className="sticky top-4 bg-surface rounded-lg shadow-sm border border-border p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                          <h4 className="text-lg font-display font-semibold text-text-primary mb-3">
+                            {t('test.snippetsTitle')}
+                          </h4>
+                          {activeSubtask ? (
+                            <>
+                              <p className="text-sm text-text-secondary mb-4">
+                                {t('test.snippetsDesc')}
+                              </p>
+                              <SnippetPicker
+                                snippets={allSnippets}
+                                onInsert={insertSnippetIntoSubtask}
+                                onAddSnippet={handleAddSnippet}
+                                onDeleteSnippet={handleDeleteSnippet}
+                              />
+                            </>
+                          ) : (
+                            <p className="text-sm text-text-disabled text-center py-8">
+                              {t('test.snippetsClickTextarea')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Individual Comment */}

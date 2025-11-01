@@ -10,7 +10,60 @@ interface ExportData {
   individualComment: string;
   totalPoints: number;
   maxPoints: number;
+  language?: 'en' | 'nb' | 'nn';
 }
+
+// Translation strings for Typst template
+const translations = {
+  en: {
+    feedback: 'Feedback',
+    student: 'Student',
+    score: 'Score',
+    studentNumber: 'Student Number',
+    date: 'Date',
+    generalFeedback: 'General Feedback',
+    taskComments: 'Task Comments',
+    task: 'Task',
+    points: 'Points',
+    comment: 'Comment',
+    noTaskComments: 'No task comments.',
+    individualFeedback: 'Individual Feedback',
+    generatedWith: 'Generated with Math Test Feedback App',
+    lang: 'en',
+  },
+  nb: {
+    feedback: 'Tilbakemelding',
+    student: 'Student',
+    score: 'Poengsum',
+    studentNumber: 'Studentnummer',
+    date: 'Dato',
+    generalFeedback: 'Generell tilbakemelding',
+    taskComments: 'Oppgavekommentarer',
+    task: 'Oppgave',
+    points: 'Poeng',
+    comment: 'Kommentar',
+    noTaskComments: 'Ingen oppgavekommentarer.',
+    individualFeedback: 'Individuell tilbakemelding',
+    generatedWith: 'Generert med Math Test Feedback App',
+    lang: 'nb',
+  },
+  nn: {
+    feedback: 'Tilbakemelding',
+    student: 'Elev',
+    score: 'Poengsum',
+    studentNumber: 'Elevnummer',
+    date: 'Dato',
+    generalFeedback: 'Generell tilbakemelding',
+    taskComments: 'Oppgåvekommentarar',
+    task: 'Oppgåve',
+    points: 'Poeng',
+    comment: 'Kommentar',
+    noTaskComments: 'Ingen oppgåvekommentarar.',
+    individualFeedback: 'Individuell tilbakemelding',
+    generatedWith: 'Generert med Math Test Feedback App',
+    lang: 'nn',
+  },
+};
 
 export function generateTypstDocument(data: ExportData): string {
   const {
@@ -23,7 +76,11 @@ export function generateTypstDocument(data: ExportData): string {
     individualComment,
     totalPoints,
     maxPoints,
+    language = 'nb',
   } = data;
+
+  // Get translations for selected language
+  const t = translations[language];
 
   // Helper function to get feedback for a task/subtask
   const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback | undefined => {
@@ -67,18 +124,18 @@ export function generateTypstDocument(data: ExportData): string {
   columns: (auto, auto, 1fr),
   stroke: 0.5pt,
   align: (center, center, left),
-  [*Oppgave*], [*Poeng*], [*Kommentar*],
+  [*${t.task}*], [*${t.points}*], [*${t.comment}*],
 ${taskRows.join('\n')}
-)` : 'Ingen oppgavekommentarer.';
+)` : t.noTaskComments;
 
-  const typstContent = `#set document(title: "${testName} - Tilbakemelding")
+  const typstContent = `#set document(title: "${testName} - ${t.feedback}")
 #set page(
   paper: "a4",
   margin: (x: 2.5cm, y: 2.5cm),
 )
 #set text(
   size: 11pt,
-  lang: "nb",
+  lang: "${t.lang}",
 )
 #set par(justify: true)
 
@@ -88,7 +145,7 @@ ${taskRows.join('\n')}
 #align(center)[
   #text(size: 18pt, weight: "bold")[${testName}]
 
-  #text(size: 14pt)[Tilbakemelding]
+  #text(size: 14pt)[${t.feedback}]
 ]
 
 #v(1em)
@@ -96,29 +153,29 @@ ${taskRows.join('\n')}
 #grid(
   columns: 2,
   gutter: 1em,
-  [*Student:* ${studentName}],
-  [*Poengsum:* ${totalPoints}/${maxPoints}],
-  ${studentNumber ? `[*Studentnummer:* ${studentNumber}],` : ''}
-  [*Dato:* #datetime.today().display()],
+  [*${t.student}:* ${studentName}],
+  [*${t.score}:* ${totalPoints}/${maxPoints}],
+  ${studentNumber ? `[*${t.studentNumber}:* ${studentNumber}],` : ''}
+  [*${t.date}:* #datetime.today().display()],
 )
 
 #line(length: 100%, stroke: 0.5pt)
 
 #v(1em)
 
-== Generell tilbakemelding
+== ${t.generalFeedback}
 
 ${escapeTypst(generalComment)}
 
 #v(1em)
 
-== Oppgavekommentarer
+== ${t.taskComments}
 
 ${taskTable}
 
 #v(1em)
 
-== Individuell tilbakemelding
+== ${t.individualFeedback}
 
 ${escapeTypst(individualComment)}
 
@@ -126,7 +183,7 @@ ${escapeTypst(individualComment)}
 
 #align(center)[
   #text(size: 9pt, fill: gray)[
-    Generert med Math Test Feedback App
+    ${t.generatedWith}
   ]
 ]
 `;
