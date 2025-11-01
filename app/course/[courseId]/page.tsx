@@ -24,6 +24,10 @@ export default function CourseDetailPage() {
   const [newTestDescription, setNewTestDescription] = useState('');
   const [newTestDate, setNewTestDate] = useState('');
   const [newTestTaskCount, setNewTestTaskCount] = useState('5');
+  const [newTestHasTwoParts, setNewTestHasTwoParts] = useState(false);
+  const [newTestPart1Count, setNewTestPart1Count] = useState('3');
+  const [newTestPart2Count, setNewTestPart2Count] = useState('2');
+  const [newTestRestartNumbering, setNewTestRestartNumbering] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -110,34 +114,90 @@ export default function CourseDetailPage() {
       return;
     }
 
-    const taskCount = parseInt(newTestTaskCount) || 5;
-    if (taskCount < 1 || taskCount > 50) {
-      alert('Please enter a valid number of tasks (1-50)');
-      return;
+    let tasks: any[] = [];
+
+    if (newTestHasTwoParts) {
+      // Two-part test
+      const part1Count = parseInt(newTestPart1Count) || 3;
+      const part2Count = parseInt(newTestPart2Count) || 2;
+
+      if (part1Count < 1 || part1Count > 50 || part2Count < 1 || part2Count > 50) {
+        alert('Please enter valid number of tasks for each part (1-50)');
+        return;
+      }
+
+      // Generate Part 1 tasks (no aids)
+      for (let i = 0; i < part1Count; i++) {
+        tasks.push({
+          id: `task-${i + 1}`,
+          label: String(i + 1),
+          subtasks: [],
+          hasSubtasks: false,
+          labels: [],
+          category: undefined,
+          part: 1,
+        });
+      }
+
+      // Generate Part 2 tasks (all aids)
+      for (let i = 0; i < part2Count; i++) {
+        const taskNumber = newTestRestartNumbering ? i + 1 : part1Count + i + 1;
+        tasks.push({
+          id: `task-${part1Count + i + 1}`,
+          label: String(taskNumber),
+          subtasks: [],
+          hasSubtasks: false,
+          labels: [],
+          category: undefined,
+          part: 2,
+        });
+      }
+
+      addTestToCourse(courseId, {
+        name: newTestName,
+        description: newTestDescription || undefined,
+        date: newTestDate,
+        tasks,
+        generalComment: '',
+        hasTwoParts: true,
+        part1TaskCount: part1Count,
+        part2TaskCount: part2Count,
+        restartNumberingInPart2: newTestRestartNumbering,
+      });
+    } else {
+      // Single-part test (traditional)
+      const taskCount = parseInt(newTestTaskCount) || 5;
+      if (taskCount < 1 || taskCount > 50) {
+        alert('Please enter a valid number of tasks (1-50)');
+        return;
+      }
+
+      tasks = Array.from({ length: taskCount }, (_, i) => ({
+        id: `task-${i + 1}`,
+        label: String(i + 1),
+        subtasks: [],
+        hasSubtasks: false,
+        labels: [],
+        category: undefined,
+      }));
+
+      addTestToCourse(courseId, {
+        name: newTestName,
+        description: newTestDescription || undefined,
+        date: newTestDate,
+        tasks,
+        generalComment: '',
+      });
     }
-
-    // Generate tasks
-    const tasks = Array.from({ length: taskCount }, (_, i) => ({
-      id: `task-${i + 1}`,
-      label: String(i + 1),
-      subtasks: [],
-      hasSubtasks: false,
-      labels: [],
-      category: undefined,
-    }));
-
-    addTestToCourse(courseId, {
-      name: newTestName,
-      description: newTestDescription || undefined,
-      date: newTestDate,
-      tasks,
-      generalComment: '',
-    });
 
     setNewTestName('');
     setNewTestDescription('');
     setNewTestDate('');
     setNewTestTaskCount('5');
+    setNewTestHasTwoParts(false);
+    setNewTestPart1Count('3');
+    setNewTestPart2Count('2');
+    setNewTestRestartNumbering(false);
     setShowAddTestModal(false);
     loadData();
   };
@@ -504,21 +564,98 @@ export default function CourseDetailPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Tasks:
+                {/* Two-part test checkbox */}
+                <div className="border-t pt-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newTestHasTwoParts}
+                      onChange={(e) => setNewTestHasTwoParts(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Two-part test (Part 1: no aids, Part 2: all aids)
+                    </span>
                   </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={newTestTaskCount}
-                    onChange={(e) => setNewTestTaskCount(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    placeholder="5"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Tasks will be numbered 1, 2, 3... (you can customize later)</p>
+                  <p className="text-xs text-gray-500 mt-1 ml-6">
+                    Enable to configure different sections with different allowed aids
+                  </p>
                 </div>
+
+                {/* Standard task count - only show when NOT two-part */}
+                {!newTestHasTwoParts && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Number of Tasks:
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="50"
+                      value={newTestTaskCount}
+                      onChange={(e) => setNewTestTaskCount(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      placeholder="5"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Tasks will be numbered 1, 2, 3... (you can customize later)</p>
+                  </div>
+                )}
+
+                {/* Two-part configuration - only show when enabled */}
+                {newTestHasTwoParts && (
+                  <div className="space-y-3 bg-blue-50 p-4 rounded-md border border-blue-200">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Part 1 Tasks (no aids):
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={newTestPart1Count}
+                          onChange={(e) => setNewTestPart1Count(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          placeholder="3"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Part 2 Tasks (all aids):
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={newTestPart2Count}
+                          onChange={(e) => setNewTestPart2Count(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          placeholder="2"
+                        />
+                      </div>
+                    </div>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={newTestRestartNumbering}
+                        onChange={(e) => setNewTestRestartNumbering(e.target.checked)}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        Restart numbering in Part 2 (1, 2, 3... instead of continuing)
+                      </span>
+                    </label>
+
+                    <p className="text-xs text-gray-600">
+                      {newTestRestartNumbering
+                        ? `Part 1: Tasks 1-${newTestPart1Count || 3} (no aids), Part 2: Tasks 1-${newTestPart2Count || 2} (all aids)`
+                        : `Part 1: Tasks 1-${newTestPart1Count || 3} (no aids), Part 2: Tasks ${(parseInt(newTestPart1Count) || 3) + 1}-${(parseInt(newTestPart1Count) || 3) + (parseInt(newTestPart2Count) || 2)} (all aids)`
+                      }
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
@@ -529,6 +666,10 @@ export default function CourseDetailPage() {
                     setNewTestDescription('');
                     setNewTestDate('');
                     setNewTestTaskCount('5');
+                    setNewTestHasTwoParts(false);
+                    setNewTestPart1Count('3');
+                    setNewTestPart2Count('2');
+                    setNewTestRestartNumbering(false);
                   }}
                   className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
                 >

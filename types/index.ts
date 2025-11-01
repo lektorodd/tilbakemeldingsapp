@@ -5,6 +5,7 @@ export interface Task {
   hasSubtasks: boolean;
   labels: string[]; // e.g., ["logarithms", "equations", "algebra"]
   category?: number; // 1, 2, or 3
+  part?: 1 | 2; // 1 = no aids, 2 = all aids
 }
 
 export interface Subtask {
@@ -92,6 +93,11 @@ export interface CourseTest {
   tasks: Task[];
   generalComment: string;
   studentFeedbacks: TestFeedbackData[]; // Feedback for each student on this test
+  // Part configuration for two-part tests (Part 1: no aids, Part 2: all aids)
+  hasTwoParts?: boolean;
+  part1TaskCount?: number;
+  part2TaskCount?: number;
+  restartNumberingInPart2?: boolean;
   createdDate: string;
   lastModified: string;
 }

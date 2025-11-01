@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getStudentDetailedAnalytics } from '@/utils/courseStorage';
-import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function StudentDashboardPage() {
@@ -28,7 +28,7 @@ export default function StudentDashboardPage() {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
   }
 
-  const { student, course, testPerformance, labelPerformance, categoryPerformance, overallStats } = analytics;
+  const { student, course, testPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
 
   const getScoreColor = (score: number): string => {
     const percentage = (score / 60) * 100;
@@ -210,7 +210,7 @@ export default function StudentDashboardPage() {
 
         {/* Performance by Category */}
         {categoryPerformance.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 size={24} className="text-blue-600" />
               <h2 className="text-2xl font-bold text-gray-800">Performance by Category</h2>
@@ -246,6 +246,67 @@ export default function StudentDashboardPage() {
           </div>
         )}
 
+        {/* Performance by Part (No aids vs All aids) */}
+        {partPerformance && partPerformance.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen size={24} className="text-indigo-600" />
+              <h2 className="text-2xl font-bold text-gray-800">Performance by Test Part</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {partPerformance.map(part => (
+                <div key={part.part} className={`border-2 rounded-lg p-6 ${
+                  part.part === 1 ? 'border-orange-300 bg-orange-50' : 'border-blue-300 bg-blue-50'
+                }`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">{part.description}</h3>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {part.part === 1 ? 'Only pen and pencil allowed' : 'All aids allowed (calculator, textbook, etc.)'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-3xl font-bold ${part.averageScore >= 5 ? 'text-green-600' : part.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
+                        {part.averageScore.toFixed(1)}
+                      </p>
+                      <p className="text-xs text-gray-500">/ 6</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 mb-3">{part.taskCount} tasks completed</p>
+
+                  {/* Progress bar */}
+                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${
+                        part.averageScore >= 5 ? 'bg-green-600' :
+                        part.averageScore >= 3.5 ? 'bg-yellow-600' : 'bg-red-600'
+                      }`}
+                      style={{ width: `${(part.averageScore / 6) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Comparison insight */}
+            {partPerformance.length === 2 && (
+              <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <p className="text-sm text-indigo-900">
+                  <strong>Comparison:</strong>{' '}
+                  {partPerformance[0].averageScore > partPerformance[1].averageScore ? (
+                    <>Student performs better on <strong>no aids</strong> tasks ({partPerformance[0].averageScore.toFixed(1)}) than <strong>all aids</strong> tasks ({partPerformance[1].averageScore.toFixed(1)}). This may indicate strong foundational skills.</>
+                  ) : partPerformance[0].averageScore < partPerformance[1].averageScore ? (
+                    <>Student performs better on <strong>all aids</strong> tasks ({partPerformance[1].averageScore.toFixed(1)}) than <strong>no aids</strong> tasks ({partPerformance[0].averageScore.toFixed(1)}). Consider focusing on mental calculation and basic skills.</>
+                  ) : (
+                    <>Student performs equally well on both <strong>no aids</strong> and <strong>all aids</strong> tasks ({partPerformance[0].averageScore.toFixed(1)}).</>
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Help Section */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="font-semibold text-blue-900 mb-2">Understanding the Dashboard:</h3>
@@ -253,6 +314,7 @@ export default function StudentDashboardPage() {
             <li>• <strong>Attempt Rate</strong> shows how many tasks the student tries (more than 0 points)</li>
             <li>• <strong>Theme Performance</strong> shows average scores for different skill areas</li>
             <li>• <strong>Category Performance</strong> shows average scores by difficulty/type</li>
+            <li>• <strong>Test Part Performance</strong> compares no aids vs all aids performance</li>
             <li>• Color coding: Green (≥5/6), Yellow (≥3.5/6), Red (&lt;3.5/6)</li>
           </ul>
         </div>

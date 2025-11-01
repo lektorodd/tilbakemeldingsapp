@@ -189,6 +189,18 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                   className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="e.g., 1, 2"
                 />
+
+                {/* Part indicator badge */}
+                {task.part && (
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    task.part === 1
+                      ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                      : 'bg-blue-100 text-blue-800 border border-blue-300'
+                  }`}>
+                    {task.part === 1 ? 'Part 1: No aids' : 'Part 2: All aids'}
+                  </span>
+                )}
+
                 <label className="flex items-center gap-2 ml-4">
                   <input
                     type="checkbox"

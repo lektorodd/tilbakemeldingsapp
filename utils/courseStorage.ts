@@ -561,6 +561,37 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     .filter(c => c.taskCount > 0)
     .sort((a, b) => a.category - b.category);
 
+  // Performance by part (no aids vs all aids)
+  const partPerformance = new Map<1 | 2, { totalPoints: number; taskCount: number }>();
+  partPerformance.set(1, { totalPoints: 0, taskCount: 0 }); // Part 1: No aids
+  partPerformance.set(2, { totalPoints: 0, taskCount: 0 }); // Part 2: All aids
+
+  course.tests.forEach(test => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
+    if (!feedback || !feedback.completedDate) return;
+
+    feedback.taskFeedbacks.forEach(taskFeedback => {
+      const task = test.tasks.find(t => t.id === taskFeedback.taskId);
+      if (!task || !task.part) return;
+
+      const data = partPerformance.get(task.part);
+      if (data) {
+        data.totalPoints += taskFeedback.points;
+        data.taskCount += 1;
+      }
+    });
+  });
+
+  const partStats = Array.from(partPerformance.entries())
+    .map(([part, data]) => ({
+      part,
+      averageScore: data.taskCount > 0 ? data.totalPoints / data.taskCount : 0,
+      taskCount: data.taskCount,
+      description: part === 1 ? 'Part 1: No aids' : 'Part 2: All aids',
+    }))
+    .filter(p => p.taskCount > 0)
+    .sort((a, b) => a.part - b.part);
+
   // Overall stats
   const completedTests = testPerformance.filter(t => t.completed);
   const averageScore = completedTests.length > 0
@@ -576,6 +607,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     testPerformance,
     labelPerformance: labelStats,
     categoryPerformance: categoryStats,
+    partPerformance: partStats,
     overallStats: {
       completedTests: completedTests.length,
       totalTests: course.tests.length,
