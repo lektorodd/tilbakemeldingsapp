@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData, FeedbackSnippet } from '@/types';
-import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
+import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData, FeedbackSnippet, OralFeedbackData } from '@/types';
+import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore, getOralFeedback, updateOralFeedback, calculateOralScore } from '@/utils/courseStorage';
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2 } from 'lucide-react';
+import OralFeedbackForm from '@/components/OralFeedbackForm';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, MessageSquare, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { loadGlobalSnippets, addGlobalSnippet, deleteGlobalSnippet, getAllSnippetsForTest } from '@/utils/snippetStorage';
@@ -24,6 +25,8 @@ export default function TestFeedbackPage() {
   const [test, setTest] = useState<CourseTest | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<TestFeedbackData | null>(null);
+  const [currentOralFeedback, setCurrentOralFeedback] = useState<OralFeedbackData | null>(null);
+  const [feedbackMode, setFeedbackMode] = useState<'written' | 'oral'>('written');
   const [allSnippets, setAllSnippets] = useState<FeedbackSnippet[]>([]);
 
   // Snippet sidebar state
@@ -81,6 +84,14 @@ export default function TestFeedbackPage() {
         studentId: selectedStudent.id,
         taskFeedbacks: [],
         individualComment: '',
+      });
+
+      // Load oral feedback
+      const oralFeedback = getOralFeedback(courseId, testId, selectedStudent.id);
+      setCurrentOralFeedback(oralFeedback || {
+        studentId: selectedStudent.id,
+        dimensions: [],
+        generalObservations: '',
       });
     }
   }, [selectedStudent, course, test, courseId, testId]);
@@ -161,6 +172,45 @@ export default function TestFeedbackPage() {
 
     updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
     setCurrentFeedback(updatedFeedback);
+  };
+
+  // Oral feedback handlers
+  const handleOralFeedbackChange = (oralFeedback: OralFeedbackData) => {
+    if (!selectedStudent) return;
+
+    const calculatedScore = calculateOralScore(oralFeedback);
+    const updatedOralFeedback = {
+      ...oralFeedback,
+      score: calculatedScore,
+    };
+
+    updateOralFeedback(courseId, testId, selectedStudent.id, updatedOralFeedback);
+    setCurrentOralFeedback(updatedOralFeedback);
+  };
+
+  const handleMarkOralComplete = () => {
+    if (!currentOralFeedback || !selectedStudent) return;
+
+    const updatedOralFeedback = {
+      ...currentOralFeedback,
+      completedDate: new Date().toISOString(),
+    };
+
+    updateOralFeedback(courseId, testId, selectedStudent.id, updatedOralFeedback);
+    setCurrentOralFeedback(updatedOralFeedback);
+    alert(t('oral.markedComplete'));
+  };
+
+  const handleUnmarkOralComplete = () => {
+    if (!currentOralFeedback || !selectedStudent) return;
+
+    const updatedOralFeedback = {
+      ...currentOralFeedback,
+      completedDate: undefined,
+    };
+
+    updateOralFeedback(courseId, testId, selectedStudent.id, updatedOralFeedback);
+    setCurrentOralFeedback(updatedOralFeedback);
   };
 
   const handleExportAllPDFs = async () => {
@@ -566,18 +616,22 @@ export default function TestFeedbackPage() {
 
           {/* Feedback form */}
           <div className="lg:col-span-3">
-            {selectedStudent && currentFeedback ? (
+            {selectedStudent && currentFeedback && currentOralFeedback ? (
               <div className="bg-surface rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between mb-6">
+                <div className="flex items-start justify-between mb-4">
                   <div>
                     <h2 className="text-2xl font-display font-bold text-text-primary">{selectedStudent.name}</h2>
                     {selectedStudent.studentNumber && (
                       <p className="text-sm text-text-secondary">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
                     )}
-                    <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
+                    <p className="text-3xl font-display font-bold text-brand mt-2">
+                      {feedbackMode === 'written' ? currentScore : (currentOralFeedback.score || 0)} / 60
+                    </p>
                   </div>
                   <div className="flex gap-2">
-                    {currentFeedback.completedDate ? (
+                    {feedbackMode === 'written' ? (
+                      <>
+                        {currentFeedback.completedDate ? (
                       <button
                         onClick={handleUnmarkComplete}
                         className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200 transition-colors font-medium"
@@ -595,26 +649,76 @@ export default function TestFeedbackPage() {
                         {t('test.markComplete')}
                       </button>
                     )}
-                    <button
-                      onClick={handleCompilePDF}
-                      className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
-                      title={t('test.compileToPDF')}
-                    >
-                      <Download size={18} />
-                      {t('test.generatePDF')}
-                    </button>
-                    <button
-                      onClick={handleExportTypst}
-                      className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                      title={t('test.downloadTypSource')}
-                    >
-                      <FileText size={18} />
-                      .typ
-                    </button>
+                        <button
+                          onClick={handleCompilePDF}
+                          className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                          title={t('test.compileToPDF')}
+                        >
+                          <Download size={18} />
+                          {t('test.generatePDF')}
+                        </button>
+                        <button
+                          onClick={handleExportTypst}
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                          title={t('test.downloadTypSource')}
+                        >
+                          <FileText size={18} />
+                          .typ
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {currentOralFeedback.completedDate ? (
+                          <button
+                            onClick={handleUnmarkOralComplete}
+                            className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200 transition-colors font-medium"
+                            title={t('test.clickToUnmarkComplete')}
+                          >
+                            <CheckCircle size={18} />
+                            {t('test.completedClickToUndo')}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={handleMarkOralComplete}
+                            className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
+                          >
+                            <CheckCircle size={18} />
+                            {t('test.markComplete')}
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
 
-                {/* Task Feedback */}
+                {/* Feedback Mode Tabs */}
+                <div className="flex gap-2 mb-6 border-b border-border">
+                  <button
+                    onClick={() => setFeedbackMode('written')}
+                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
+                      feedbackMode === 'written'
+                        ? 'border-brand text-brand font-semibold'
+                        : 'border-transparent text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <ClipboardList size={18} />
+                    {t('test.writtenFeedback')}
+                  </button>
+                  <button
+                    onClick={() => setFeedbackMode('oral')}
+                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${
+                      feedbackMode === 'oral'
+                        ? 'border-brand text-brand font-semibold'
+                        : 'border-transparent text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <MessageSquare size={18} />
+                    {t('test.oralFeedback')}
+                  </button>
+                </div>
+
+                {/* Written Feedback Section */}
+                {feedbackMode === 'written' && (
                 <div className="relative">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
@@ -918,6 +1022,17 @@ export default function TestFeedbackPage() {
                     placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
+                </div>
+                )}
+
+                {/* Oral Feedback Section */}
+                {feedbackMode === 'oral' && currentOralFeedback && (
+                  <OralFeedbackForm
+                    oralFeedback={currentOralFeedback}
+                    onOralFeedbackChange={handleOralFeedbackChange}
+                    studentName={selectedStudent.name}
+                  />
+                )}
               </div>
             ) : (
               <div className="bg-surface rounded-lg shadow-sm p-12 flex items-center justify-center">
