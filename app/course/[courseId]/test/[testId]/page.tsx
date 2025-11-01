@@ -702,21 +702,23 @@ export default function TestFeedbackPage() {
                     {/* Snippet Sidebar */}
                     {showSnippetSidebar && (
                       <div className="w-80 flex-shrink-0">
-                        <div className="sticky top-4 bg-surface rounded-lg shadow-sm border border-border p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                          <h4 className="text-lg font-display font-semibold text-text-primary mb-3">
+                        <div className="sticky top-4 bg-surface rounded-lg shadow-sm border border-border p-4 h-[calc(100vh-120px)] overflow-y-auto flex flex-col">
+                          <h4 className="text-lg font-display font-semibold text-text-primary mb-3 flex-shrink-0">
                             {t('test.snippetsTitle')}
                           </h4>
                           {activeSubtask ? (
                             <>
-                              <p className="text-sm text-text-secondary mb-4">
+                              <p className="text-sm text-text-secondary mb-4 flex-shrink-0">
                                 {t('test.snippetsDesc')}
                               </p>
-                              <SnippetPicker
-                                snippets={allSnippets}
-                                onInsert={insertSnippetIntoSubtask}
-                                onAddSnippet={handleAddSnippet}
-                                onDeleteSnippet={handleDeleteSnippet}
-                              />
+                              <div className="flex-1 overflow-y-auto min-h-0">
+                                <SnippetPicker
+                                  snippets={allSnippets}
+                                  onInsert={insertSnippetIntoSubtask}
+                                  onAddSnippet={handleAddSnippet}
+                                  onDeleteSnippet={handleDeleteSnippet}
+                                />
+                              </div>
                             </>
                           ) : (
                             <p className="text-sm text-text-disabled text-center py-8">
