@@ -445,10 +445,6 @@ export default function TestFeedbackPage() {
     }
   };
 
-  if (!course || !test) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
-  }
-
   const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback => {
     if (!currentFeedback) return { taskId, subtaskId, points: 0, comment: '' };
 
@@ -459,6 +455,10 @@ export default function TestFeedbackPage() {
   };
 
   const currentScore = currentFeedback && test ? calculateStudentScore(test.tasks, currentFeedback.taskFeedbacks) : 0;
+
+  if (!course || !test) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
+  }
 
   return (
     <main className="min-h-screen bg-background py-8 px-4">
