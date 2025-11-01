@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData } from '@/types';
 
 const COURSES_KEY = 'math-feedback-courses';
 let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
@@ -189,33 +189,75 @@ export function getStudentFeedback(courseId: string, testId: string, studentId: 
   return test.studentFeedbacks.find(f => f.studentId === studentId) || null;
 }
 
-// Oral feedback operations
-export function updateOralFeedback(
+// Oral Test CRUD operations
+export function addOralTest(courseId: string, oralTest: OralTest): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) {
+    course.oralTests = [];
+  }
+
+  course.oralTests.push(oralTest);
+  saveCourse(course);
+}
+
+export function updateOralTest(courseId: string, oralTestId: string, updates: Partial<OralTest>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) {
+    throw new Error('No oral tests in course');
+  }
+
+  const oralTestIndex = course.oralTests.findIndex(t => t.id === oralTestId);
+  if (oralTestIndex === -1) throw new Error('Oral test not found');
+
+  course.oralTests[oralTestIndex] = {
+    ...course.oralTests[oralTestIndex],
+    ...updates,
+    lastModified: new Date().toISOString(),
+  };
+
+  saveCourse(course);
+}
+
+export function deleteOralTest(courseId: string, oralTestId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) return;
+
+  course.oralTests = course.oralTests.filter(t => t.id !== oralTestId);
+  saveCourse(course);
+}
+
+// Oral Assessment operations
+export function updateOralAssessment(
   courseId: string,
-  testId: string,
+  oralTestId: string,
   studentId: string,
   updates: Partial<OralFeedbackData>
 ): void {
   const course = loadCourse(courseId);
   if (!course) throw new Error('Course not found');
 
-  const test = course.tests.find(t => t.id === testId);
-  if (!test) throw new Error('Test not found');
-
-  // Initialize oralFeedbacks array if it doesn't exist
-  if (!test.oralFeedbacks) {
-    test.oralFeedbacks = [];
+  if (!course.oralTests) {
+    throw new Error('No oral tests in course');
   }
 
-  const feedbackIndex = test.oralFeedbacks.findIndex(f => f.studentId === studentId);
+  const oralTest = course.oralTests.find(t => t.id === oralTestId);
+  if (!oralTest) throw new Error('Oral test not found');
 
-  if (feedbackIndex >= 0) {
-    test.oralFeedbacks[feedbackIndex] = {
-      ...test.oralFeedbacks[feedbackIndex],
+  const assessmentIndex = oralTest.studentAssessments.findIndex(a => a.studentId === studentId);
+
+  if (assessmentIndex >= 0) {
+    oralTest.studentAssessments[assessmentIndex] = {
+      ...oralTest.studentAssessments[assessmentIndex],
       ...updates,
     };
   } else {
-    test.oralFeedbacks.push({
+    oralTest.studentAssessments.push({
       studentId,
       dimensions: [],
       generalObservations: '',
@@ -226,24 +268,26 @@ export function updateOralFeedback(
   saveCourse(course);
 }
 
-export function getOralFeedback(courseId: string, testId: string, studentId: string): OralFeedbackData | null {
+export function getOralAssessment(courseId: string, oralTestId: string, studentId: string): OralFeedbackData | null {
   const course = loadCourse(courseId);
-  if (!course) return null;
+  if (!course || !course.oralTests) return null;
 
-  const test = course.tests.find(t => t.id === testId);
-  if (!test || !test.oralFeedbacks) return null;
+  const oralTest = course.oralTests.find(t => t.id === oralTestId);
+  if (!oralTest) return null;
 
-  return test.oralFeedbacks.find(f => f.studentId === studentId) || null;
+  return oralTest.studentAssessments.find(a => a.studentId === studentId) || null;
 }
 
-export function deleteOralFeedback(courseId: string, testId: string, studentId: string): void {
+export function deleteOralAssessment(courseId: string, oralTestId: string, studentId: string): void {
   const course = loadCourse(courseId);
   if (!course) throw new Error('Course not found');
 
-  const test = course.tests.find(t => t.id === testId);
-  if (!test || !test.oralFeedbacks) return;
+  if (!course.oralTests) return;
 
-  test.oralFeedbacks = test.oralFeedbacks.filter(f => f.studentId !== studentId);
+  const oralTest = course.oralTests.find(t => t.id === oralTestId);
+  if (!oralTest) return;
+
+  oralTest.studentAssessments = oralTest.studentAssessments.filter(a => a.studentId !== studentId);
   saveCourse(course);
 }
 
