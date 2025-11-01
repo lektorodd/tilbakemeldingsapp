@@ -100,7 +100,6 @@ export interface CourseTest {
   tasks: Task[];
   generalComment: string;
   studentFeedbacks: TestFeedbackData[]; // Feedback for each student on this test
-  oralFeedbacks?: OralFeedbackData[]; // Oral assessment data for students (LK20-based)
   // Part configuration for two-part tests (Part 1: no aids, Part 2: all aids)
   hasTwoParts?: boolean;
   part1TaskCount?: number;
@@ -111,12 +110,26 @@ export interface CourseTest {
   lastModified: string;
 }
 
+// Oral Assessment - separate from written tests
+export interface OralTest {
+  id: string;
+  name: string; // e.g., "Oral Exam - Derivatives"
+  description?: string;
+  date: string; // Assessment date
+  topics?: string[]; // Topics covered (e.g., ["derivatives", "integrals"])
+  studentAssessments: OralFeedbackData[]; // Assessments for each student
+  generalNotes?: string; // General notes about this oral assessment
+  createdDate: string;
+  lastModified: string;
+}
+
 export interface Course {
   id: string;
   name: string; // e.g., "Math 10A - Fall 2024"
   description?: string;
   students: CourseStudent[]; // All students in this course
-  tests: CourseTest[]; // All tests in this course
+  tests: CourseTest[]; // Written tests in this course
+  oralTests?: OralTest[]; // Oral assessments in this course
   availableLabels: string[]; // Course-specific labels (e.g., ["fractions", "logarithms", "equations"])
   createdDate: string;
   lastModified: string;
