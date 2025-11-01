@@ -26,7 +26,7 @@
     "addNew": "Create new snippet"
   },
   "home": {
-    "title": "Math Test Feedback",
+    "title": "Feedback tool for math teachers",
     "subtitle": "Manage courses, tests, and student feedback",
     "createCourse": "Create New Course",
     "noCourses": "No courses created yet",
