@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { LanguageProvider } from '@/contexts/LanguageContext'
-import Navbar from '@/components/Navbar'
+import ClientLayout from '@/components/ClientLayout'
 
 export const metadata: Metadata = {
   title: 'Math Test Feedback App',
@@ -16,10 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-gray-50">
-        <LanguageProvider>
-          <Navbar />
+        <ClientLayout>
           {children}
-        </LanguageProvider>
+        </ClientLayout>
       </body>
     </html>
   )
