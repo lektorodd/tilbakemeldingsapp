@@ -27,33 +27,33 @@ export default function StudentDashboardPage() {
   }, [courseId, studentId]);
 
   if (!analytics) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">Loading...</div>;
   }
 
   const { student, course, testPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
 
   const getScoreColor = (score: number): string => {
     const percentage = (score / 60) * 100;
-    if (percentage >= 83) return 'text-green-600'; // 5/6 = 83%
+    if (percentage >= 83) return 'text-emerald-600'; // 5/6 = 83%
     if (percentage >= 58) return 'text-yellow-600'; // 3.5/6 = 58%
     return 'text-red-600';
   };
 
   const getScoreBgColor = (score: number): string => {
     const percentage = (score / 60) * 100;
-    if (percentage >= 83) return 'bg-green-100';
+    if (percentage >= 83) return 'bg-emerald-100';
     if (percentage >= 58) return 'bg-yellow-100';
     return 'bg-red-100';
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-amber-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <Link
             href={`/course/${courseId}`}
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
+            className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-800 mb-2"
           >
             <ArrowLeft size={20} />
             {t('common.back')}
@@ -69,7 +69,7 @@ export default function StudentDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Award size={20} className="text-blue-600" />
+              <Award size={20} className="text-rose-600" />
               <h3 className="font-semibold text-gray-800">{t('dashboard.avgScore')}</h3>
             </div>
             <p className={`text-3xl font-bold ${getScoreColor(overallStats.averageScore)}`}>
@@ -80,10 +80,10 @@ export default function StudentDashboardPage() {
 
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
-              <BarChart3 size={20} className="text-green-600" />
+              <BarChart3 size={20} className="text-emerald-600" />
               <h3 className="font-semibold text-gray-800">{t('dashboard.completedTests')}</h3>
             </div>
-            <p className="text-3xl font-bold text-green-600">
+            <p className="text-3xl font-bold text-emerald-600">
               {overallStats.completedTests}
             </p>
             <p className="text-sm text-gray-600">/ {overallStats.totalTests}</p>
@@ -91,10 +91,10 @@ export default function StudentDashboardPage() {
 
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Target size={20} className="text-purple-600" />
+              <Target size={20} className="text-violet-600" />
               <h3 className="font-semibold text-gray-800">{t('dashboard.attemptRate')}</h3>
             </div>
-            <p className="text-3xl font-bold text-purple-600">
+            <p className="text-3xl font-bold text-violet-600">
               {overallStats.averageAttemptRate.toFixed(0)}%
             </p>
             <p className="text-sm text-gray-600">{t('dashboard.tasksAttempted')}</p>
@@ -127,11 +127,11 @@ export default function StudentDashboardPage() {
                   {/* Test card - 85% width */}
                   <Link
                     href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
-                    className="flex-[0.85] border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
+                    className="flex-[0.85] border border-gray-200 rounded-lg p-4 hover:border-rose-500 hover:shadow-md transition cursor-pointer"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-800 hover:text-blue-600 transition">{test.testName}</h4>
+                        <h4 className="font-semibold text-gray-800 hover:text-rose-600 transition">{test.testName}</h4>
                         <p className="text-xs text-gray-500">
                           {new Date(test.testDate).toLocaleDateString('nb-NO')}
                         </p>
@@ -141,7 +141,7 @@ export default function StudentDashboardPage() {
                           {test.score} / {test.maxScore}
                         </p>
                         {test.completed ? (
-                          <p className="text-xs text-green-600">{t('test.completed')}</p>
+                          <p className="text-xs text-emerald-600">{t('test.completed')}</p>
                         ) : (
                           <p className="text-xs text-gray-500">{t('test.notCompleted')}</p>
                         )}
@@ -152,7 +152,7 @@ export default function StudentDashboardPage() {
                     <div className="mb-2">
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${test.score >= 50 ? 'bg-green-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600'}`}
+                          className={`h-full ${test.score >= 50 ? 'bg-emerald-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600'}`}
                           style={{ width: `${(test.score / test.maxScore) * 100}%` }}
                         />
                       </div>
@@ -168,12 +168,12 @@ export default function StudentDashboardPage() {
                   </Link>
 
                   {/* Score distribution histogram box - 15% width */}
-                  <div className="flex-[0.15] border border-gray-200 rounded-lg p-2 bg-gray-50">
+                  <div className="flex-[0.15] border border-gray-200 rounded-lg p-2 bg-amber-50">
                     <div className="flex flex-col h-full justify-between">
                       <div className="flex items-end gap-0.5 flex-1 mb-1" style={{ minHeight: '60px' }}>
                         {(() => {
                           // Use the same color as the progress bar for all histogram bars
-                          const barColor = test.score >= 50 ? 'bg-green-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600';
+                          const barColor = test.score >= 50 ? 'bg-emerald-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600';
 
                           return [0, 1, 2, 3, 4, 5, 6].map(score => {
                             const count = test.scoreDistribution[score] || 0;
@@ -217,7 +217,7 @@ export default function StudentDashboardPage() {
         {labelPerformance.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Tag size={24} className="text-purple-600" />
+              <Tag size={24} className="text-violet-600" />
               <h2 className="text-2xl font-bold text-gray-800">{t('dashboard.performanceByTheme')}</h2>
             </div>
 
@@ -225,11 +225,11 @@ export default function StudentDashboardPage() {
               {labelPerformance.map(label => (
                 <div key={label.label} className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-violet-600 text-white rounded-full text-sm font-medium">
                       {label.label}
                     </span>
                     <div className="text-right">
-                      <p className={`text-xl font-bold ${label.averageScore >= 5 ? 'text-green-600' : label.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <p className={`text-xl font-bold ${label.averageScore >= 5 ? 'text-emerald-600' : label.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
                         {label.averageScore.toFixed(1)}
                       </p>
                       <p className="text-xs text-gray-500">/ 6</p>
@@ -241,7 +241,7 @@ export default function StudentDashboardPage() {
                   <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${
-                        label.averageScore >= 5 ? 'bg-green-600' :
+                        label.averageScore >= 5 ? 'bg-emerald-600' :
                         label.averageScore >= 3.5 ? 'bg-yellow-600' : 'bg-red-600'
                       }`}
                       style={{ width: `${(label.averageScore / 6) * 100}%` }}
@@ -257,7 +257,7 @@ export default function StudentDashboardPage() {
         {categoryPerformance.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <BarChart3 size={24} className="text-blue-600" />
+              <BarChart3 size={24} className="text-rose-600" />
               <h2 className="text-2xl font-bold text-gray-800">{t('dashboard.performanceByCategory')}</h2>
             </div>
 
@@ -267,7 +267,7 @@ export default function StudentDashboardPage() {
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-semibold text-gray-800">{cat.description}</h3>
                     <div className="text-right">
-                      <p className={`text-2xl font-bold ${cat.averageScore >= 5 ? 'text-green-600' : cat.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <p className={`text-2xl font-bold ${cat.averageScore >= 5 ? 'text-emerald-600' : cat.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
                         {cat.averageScore.toFixed(1)}
                       </p>
                       <p className="text-xs text-gray-500">/ 6</p>
@@ -279,7 +279,7 @@ export default function StudentDashboardPage() {
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${
-                        cat.averageScore >= 5 ? 'bg-green-600' :
+                        cat.averageScore >= 5 ? 'bg-emerald-600' :
                         cat.averageScore >= 3.5 ? 'bg-yellow-600' : 'bg-red-600'
                       }`}
                       style={{ width: `${(cat.averageScore / 6) * 100}%` }}
@@ -312,7 +312,7 @@ export default function StudentDashboardPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className={`text-3xl font-bold ${part.averageScore >= 5 ? 'text-green-600' : part.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <p className={`text-3xl font-bold ${part.averageScore >= 5 ? 'text-emerald-600' : part.averageScore >= 3.5 ? 'text-yellow-600' : 'text-red-600'}`}>
                         {part.averageScore.toFixed(1)}
                       </p>
                       <p className="text-xs text-gray-500">/ 6</p>
@@ -324,7 +324,7 @@ export default function StudentDashboardPage() {
                   <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${
-                        part.averageScore >= 5 ? 'bg-green-600' :
+                        part.averageScore >= 5 ? 'bg-emerald-600' :
                         part.averageScore >= 3.5 ? 'bg-yellow-600' : 'bg-red-600'
                       }`}
                       style={{ width: `${(part.averageScore / 6) * 100}%` }}
@@ -360,7 +360,7 @@ export default function StudentDashboardPage() {
         {/* Help Section */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="font-semibold text-blue-900 mb-2">{t('dashboard.helpTitle')}</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <ul className="text-sm text-rose-800 space-y-1">
             <li>• {t('dashboard.helpAttemptRate')}</li>
             <li>• {t('dashboard.helpTheme')}</li>
             <li>• {t('dashboard.helpCategory')}</li>

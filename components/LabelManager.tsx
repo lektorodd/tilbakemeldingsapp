@@ -36,12 +36,12 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
     <div className="bg-white rounded-lg shadow-md p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Tag size={20} className="text-purple-600" />
+          <Tag size={20} className="text-violet-600" />
           <h3 className="text-lg font-semibold text-gray-800">Course Labels</h3>
         </div>
         <button
           onClick={() => setShowAddLabel(!showAddLabel)}
-          className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm"
+          className="flex items-center gap-1 px-3 py-1 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
         >
           <Plus size={16} />
           Add Label
@@ -55,13 +55,13 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
-            className="flex-1 px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-gray-900"
+            className="flex-1 px-3 py-1.5 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-gray-900"
             placeholder="e.g., logarithms, fractions, equations"
             autoFocus
           />
           <button
             onClick={handleAddLabel}
-            className="px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
+            className="px-3 py-1.5 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm"
           >
             Add
           </button>

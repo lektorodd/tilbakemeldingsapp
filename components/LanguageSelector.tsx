@@ -12,7 +12,7 @@ export default function LanguageSelector() {
         onClick={() => setLanguage('en')}
         className={`px-2 py-1 rounded transition ${
           language === 'en'
-            ? 'text-blue-600 font-semibold'
+            ? 'text-rose-600 font-semibold'
             : 'text-gray-400 hover:text-gray-600'
         }`}
       >
@@ -23,7 +23,7 @@ export default function LanguageSelector() {
         onClick={() => setLanguage('nb')}
         className={`px-2 py-1 rounded transition ${
           language === 'nb'
-            ? 'text-blue-600 font-semibold'
+            ? 'text-rose-600 font-semibold'
             : 'text-gray-400 hover:text-gray-600'
         }`}
       >
@@ -34,7 +34,7 @@ export default function LanguageSelector() {
         onClick={() => setLanguage('nn')}
         className={`px-2 py-1 rounded transition ${
           language === 'nn'
-            ? 'text-blue-600 font-semibold'
+            ? 'text-rose-600 font-semibold'
             : 'text-gray-400 hover:text-gray-600'
         }`}
       >

@@ -284,7 +284,7 @@ export default function TestFeedbackPage() {
   };
 
   if (!course || !test) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">{t('common.loading')}</div>;
+    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback => {
@@ -299,13 +299,13 @@ export default function TestFeedbackPage() {
   const currentScore = currentFeedback && test ? calculateStudentScore(test.tasks, currentFeedback.taskFeedbacks) : 0;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-amber-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <Link
               href={`/course/${courseId}`}
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
+              className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-800 mb-2"
             >
               <ArrowLeft size={20} />
               {t('test.backToCourse')}
@@ -317,7 +317,7 @@ export default function TestFeedbackPage() {
           <div className="flex gap-3">
             <button
               onClick={handleSaveTest}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
             >
               <Save size={18} />
               {t('test.saveTestConfig')}
@@ -348,7 +348,7 @@ export default function TestFeedbackPage() {
             <h3 className="text-lg font-semibold text-gray-800">{t('test.generalCommentTitle')}</h3>
             <button
               onClick={() => insertLinkTemplate(generalCommentRef, true)}
-              className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+              className="flex items-center gap-1 px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
               title="Insert link template"
             >
               <Link2 size={16} />
@@ -361,7 +361,7 @@ export default function TestFeedbackPage() {
             value={test.generalComment}
             onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
+            className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
             placeholder={t('test.generalCommentPlaceholder')}
           />
         </div>
@@ -387,8 +387,8 @@ export default function TestFeedbackPage() {
                         key={student.id}
                         className={`p-3 border rounded-lg transition ${
                           selectedStudent?.id === student.id
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-300 hover:bg-gray-50'
+                            ? 'border-rose-500 bg-rose-50'
+                            : 'border-stone-300 hover:bg-gray-50'
                         }`}
                       >
                         <div className="flex items-start justify-between">
@@ -399,19 +399,19 @@ export default function TestFeedbackPage() {
                             <div className="flex items-center gap-2">
                               <h4 className="font-medium text-gray-800">{student.name}</h4>
                               {isCompleted && (
-                                <CheckCircle size={16} className="text-green-600" />
+                                <CheckCircle size={16} className="text-emerald-600" />
                               )}
                             </div>
                             {student.studentNumber && (
                               <p className="text-xs text-gray-500">#{student.studentNumber}</p>
                             )}
-                            <p className="text-sm font-semibold text-blue-600 mt-1">
+                            <p className="text-sm font-semibold text-rose-600 mt-1">
                               {score} / 60
                             </p>
                           </div>
                           <Link
                             href={`/course/${courseId}/student/${student.id}`}
-                            className="p-1 text-purple-600 hover:bg-purple-100 rounded transition"
+                            className="p-1 text-violet-600 hover:bg-violet-100 rounded transition"
                             title={t('test.viewStudentDashboard')}
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -436,13 +436,13 @@ export default function TestFeedbackPage() {
                     {selectedStudent.studentNumber && (
                       <p className="text-sm text-gray-600">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
                     )}
-                    <p className="text-3xl font-bold text-blue-600 mt-2">{currentScore} / 60</p>
+                    <p className="text-3xl font-bold text-rose-600 mt-2">{currentScore} / 60</p>
                   </div>
                   <div className="flex gap-2">
                     {currentFeedback.completedDate ? (
                       <button
                         onClick={handleUnmarkComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition font-medium"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-md hover:bg-emerald-200 transition font-medium"
                         title={t('test.clickToUnmarkComplete')}
                       >
                         <CheckCircle size={18} />
@@ -451,7 +451,7 @@ export default function TestFeedbackPage() {
                     ) : (
                       <button
                         onClick={handleMarkComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
                       >
                         <CheckCircle size={18} />
                         {t('test.markComplete')}
@@ -459,7 +459,7 @@ export default function TestFeedbackPage() {
                     )}
                     <button
                       onClick={handleCompilePDF}
-                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
                       title={t('test.compileToPDF')}
                     >
                       <Download size={18} />
@@ -499,7 +499,7 @@ export default function TestFeedbackPage() {
                                       onChange={(e) =>
                                         handleUpdateFeedback(task.id, subtask.id, { points: Number(e.target.value) })
                                       }
-                                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                                      className="px-3 py-1.5 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                                     >
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                         <option key={p} value={p}>{p}</option>
@@ -518,7 +518,7 @@ export default function TestFeedbackPage() {
                                       handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
                                     }
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
+                                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
                                     placeholder={t('test.commentPlaceholder1')}
                                   />
                                 </div>
@@ -543,7 +543,7 @@ export default function TestFeedbackPage() {
                                       onChange={(e) =>
                                         handleUpdateFeedback(task.id, undefined, { points: Number(e.target.value) })
                                       }
-                                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                                      className="px-3 py-1.5 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                                     >
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                         <option key={p} value={p}>{p}</option>
@@ -562,7 +562,7 @@ export default function TestFeedbackPage() {
                                       handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
                                     }
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
+                                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
                                     placeholder={t('test.commentPlaceholder2')}
                                   />
                                 </div>
@@ -583,7 +583,7 @@ export default function TestFeedbackPage() {
                     </label>
                     <button
                       onClick={() => insertLinkTemplate(individualCommentRef, false)}
-                      className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs"
+                      className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-xs"
                       title="Insert link template"
                     >
                       <Link2 size={14} />
@@ -595,7 +595,7 @@ export default function TestFeedbackPage() {
                     value={currentFeedback.individualComment}
                     onChange={(e) => handleUpdateIndividualComment(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 font-mono text-sm text-gray-900"
                     placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
