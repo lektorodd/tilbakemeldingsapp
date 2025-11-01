@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LanguageSelector from './LanguageSelector';
-import { Home } from 'lucide-react';
+import { Home, HelpCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Navbar() {
@@ -27,8 +27,16 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right side - Language selector */}
-          <div className="flex items-center">
+          {/* Right side - Help button + Language selector */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/help"
+              className="flex items-center gap-1 px-3 py-1.5 text-violet-600 hover:bg-violet-50 rounded-md transition"
+              title={t('help.title')}
+            >
+              <HelpCircle size={20} />
+              <span className="hidden sm:inline text-sm font-medium">{t('common.help')}</span>
+            </Link>
             <LanguageSelector />
           </div>
         </div>
