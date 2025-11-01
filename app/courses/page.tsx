@@ -56,7 +56,7 @@ export default function CoursesPage() {
   };
 
   const handleDeleteCourse = (courseId: string) => {
-    if (confirm('Are you sure you want to delete this course? This will delete all students, tests, and feedback within it.')) {
+    if (confirm(t('course.deleteConfirmFull'))) {
       deleteCourse(courseId);
       loadData();
     }
@@ -66,14 +66,14 @@ export default function CoursesPage() {
     const success = await setupAutoSaveDirectory();
     if (success) {
       setAutoSaveEnabled(true);
-      alert('Auto-save enabled! All completed feedback will be automatically saved to the selected folder.');
+      alert(t('course.autoSaveEnabled'));
     }
   };
 
   const handleDisableAutoSave = () => {
     disableAutoSave();
     setAutoSaveEnabled(false);
-    alert('Auto-save disabled.');
+    alert(t('course.autoSaveDisabled'));
   };
 
   const handleExportAll = () => {
@@ -94,8 +94,8 @@ export default function CoursesPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Math Test Feedback App</h1>
-            <p className="text-gray-600">Manage courses, students, and tests</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('home.title')}</h1>
+            <p className="text-gray-600">{t('home.subtitle')}</p>
           </div>
           <div className="flex gap-3">
             <button
@@ -103,14 +103,14 @@ export default function CoursesPage() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
             >
               <Download size={18} />
-              Export All
+              {t('course.exportAll')}
             </button>
             <Link
               href="/archive"
               className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
             >
               <FolderOpen size={18} />
-              Old Archive
+              {t('course.oldArchive')}
             </Link>
           </div>
         </div>
@@ -121,11 +121,11 @@ export default function CoursesPage() {
             <div className="flex items-center gap-3">
               <Settings size={24} className="text-gray-600" />
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Auto-Save Settings</h3>
+                <h3 className="text-lg font-semibold text-gray-800">{t('course.autoSaveSettings')}</h3>
                 <p className="text-sm text-gray-600">
                   {autoSaveEnabled
-                    ? 'Completed feedback is automatically saved to your selected folder'
-                    : 'Enable auto-save to automatically save completed feedback to a local folder'}
+                    ? t('course.autoSaveEnabledDesc')
+                    : t('course.autoSaveDisabledDesc')}
                 </p>
               </div>
             </div>
@@ -134,14 +134,14 @@ export default function CoursesPage() {
                 onClick={handleDisableAutoSave}
                 className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
               >
-                Disable Auto-Save
+                {t('course.disableAutoSave')}
               </button>
             ) : (
               <button
                 onClick={handleSetupAutoSave}
                 className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
               >
-                Setup Auto-Save Folder
+                {t('course.setupAutoSave')}
               </button>
             )}
           </div>
@@ -154,23 +154,23 @@ export default function CoursesPage() {
             className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-medium"
           >
             <Plus size={20} />
-            Create New Course
+            {t('home.createCourse')}
           </button>
         </div>
 
         {/* Courses grid */}
         {courses.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No courses yet</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('home.noCourses')}</h3>
             <p className="text-gray-600 mb-6">
-              Create your first course to start managing students and tests
+              {t('home.subtitle')}
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
               className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-medium"
             >
               <Plus size={20} />
-              Create Your First Course
+              {t('home.createCourse')}
             </button>
           </div>
         ) : (
@@ -190,7 +190,7 @@ export default function CoursesPage() {
                         <p className="text-sm text-gray-600 mb-2">{course.description}</p>
                       )}
                       <p className="text-xs text-gray-500">
-                        Created: {new Date(course.createdDate).toLocaleDateString('nb-NO')}
+                        {t('course.createdDate')}: {new Date(course.createdDate).toLocaleDateString('nb-NO')}
                       </p>
                     </div>
                     <button
@@ -205,18 +205,18 @@ export default function CoursesPage() {
                     <div className="flex items-center gap-2 text-gray-700">
                       <Users size={18} />
                       <span className="text-sm">
-                        {course.students.length} {course.students.length === 1 ? 'student' : 'students'}
+                        {course.students.length} {t('course.students').toLowerCase()}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-700">
                       <FileText size={18} />
                       <span className="text-sm">
-                        {course.tests.length} {course.tests.length === 1 ? 'test' : 'tests'}
+                        {course.tests.length} {t('course.tests').toLowerCase()}
                       </span>
                     </div>
                     {totalPossible > 0 && (
                       <div className="text-sm text-gray-600">
-                        {completedCount} / {totalPossible} feedback completed
+                        {completedCount} / {totalPossible} {t('course.completedFeedback')}
                       </div>
                     )}
                   </div>
@@ -225,7 +225,7 @@ export default function CoursesPage() {
                     href={`/course/${course.id}`}
                     className="block text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                   >
-                    Open Course
+                    {t('course.openCourse')}
                   </Link>
                 </div>
               );
@@ -237,33 +237,33 @@ export default function CoursesPage() {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Create New Course</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('course.createCourseTitle')}</h2>
 
               <div className="space-y-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Course Name (required):
+                    {t('course.courseNameLabel')}
                   </label>
                   <input
                     type="text"
                     value={newCourseName}
                     onChange={(e) => setNewCourseName(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    placeholder="e.g., Math 10A - Fall 2024"
+                    placeholder={t('home.courseNamePlaceholder')}
                     autoFocus
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description (optional):
+                    {t('course.courseDescriptionLabel')}
                   </label>
                   <input
                     type="text"
                     value={newCourseDescription}
                     onChange={(e) => setNewCourseDescription(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    placeholder="e.g., Advanced mathematics"
+                    placeholder={t('course.courseDescriptionPlaceholder')}
                   />
                 </div>
               </div>
@@ -277,13 +277,13 @@ export default function CoursesPage() {
                   }}
                   className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleCreateCourse}
                   className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                 >
-                  Create Course
+                  {t('course.createCourseButton')}
                 </button>
               </div>
             </div>
