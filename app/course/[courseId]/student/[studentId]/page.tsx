@@ -119,36 +119,34 @@ export default function StudentDashboardPage() {
           {testPerformance.length === 0 ? (
             <p className="text-gray-500 text-center py-8">No tests yet</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {testPerformance.map(test => (
-                <Link
-                  key={test.testId}
-                  href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
-                  className="block border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h4 className="font-semibold text-gray-800 hover:text-blue-600 transition">{test.testName}</h4>
-                      <p className="text-xs text-gray-500">
-                        {new Date(test.testDate).toLocaleDateString('nb-NO')}
-                      </p>
+                <div key={test.testId}>
+                  <Link
+                    href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
+                    className="block border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h4 className="font-semibold text-gray-800 hover:text-blue-600 transition">{test.testName}</h4>
+                        <p className="text-xs text-gray-500">
+                          {new Date(test.testDate).toLocaleDateString('nb-NO')}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-2xl font-bold ${getScoreColor(test.score)}`}>
+                          {test.score} / {test.maxScore}
+                        </p>
+                        {test.completed ? (
+                          <p className="text-xs text-green-600">Completed</p>
+                        ) : (
+                          <p className="text-xs text-gray-500">Not completed</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className={`text-2xl font-bold ${getScoreColor(test.score)}`}>
-                        {test.score} / {test.maxScore}
-                      </p>
-                      {test.completed ? (
-                        <p className="text-xs text-green-600">Completed</p>
-                      ) : (
-                        <p className="text-xs text-gray-500">Not completed</p>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Progress bar and score distribution histogram */}
-                  <div className="mb-2 flex items-center gap-2">
-                    {/* Progress bar - 85% width */}
-                    <div className="flex-[0.85]">
+                    {/* Progress bar */}
+                    <div className="mb-2">
                       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full ${test.score >= 50 ? 'bg-green-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600'}`}
@@ -157,8 +155,18 @@ export default function StudentDashboardPage() {
                       </div>
                     </div>
 
-                    {/* Score distribution histogram - 15% width */}
-                    <div className="flex-[0.15] flex items-end gap-0.5 h-6">
+                    {/* Attempt rate */}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Tasks attempted:</span>
+                      <span className="font-medium text-gray-800">
+                        {test.tasksAttempted} / {test.totalTasks} ({test.attemptPercentage.toFixed(0)}%)
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* Score distribution histogram - outside the card */}
+                  <div className="mt-1 px-2">
+                    <div className="flex items-end gap-0.5 h-8 mb-1">
                       {[0, 1, 2, 3, 4, 5, 6].map(score => {
                         const count = test.scoreDistribution[score] || 0;
                         const maxCount = Math.max(...Object.values(test.scoreDistribution));
@@ -175,7 +183,7 @@ export default function StudentDashboardPage() {
                             className="flex-1 relative group"
                             title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
                           >
-                            <div className="h-6 flex flex-col justify-end">
+                            <div className="h-8 flex flex-col justify-end">
                               <div
                                 className={`${barColor} ${count > 0 ? '' : 'bg-gray-300'} rounded-t transition-all`}
                                 style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
@@ -185,16 +193,16 @@ export default function StudentDashboardPage() {
                         );
                       })}
                     </div>
+                    {/* Labels for histogram */}
+                    <div className="flex gap-0.5">
+                      {[0, 1, 2, 3, 4, 5, 6].map(score => (
+                        <div key={score} className="flex-1 text-center text-xs text-gray-500">
+                          {score}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-
-                  {/* Attempt rate */}
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Tasks attempted:</span>
-                    <span className="font-medium text-gray-800">
-                      {test.tasksAttempted} / {test.totalTasks} ({test.attemptPercentage.toFixed(0)}%)
-                    </span>
-                  </div>
-                </Link>
+                </div>
               ))}
             </div>
           )}
