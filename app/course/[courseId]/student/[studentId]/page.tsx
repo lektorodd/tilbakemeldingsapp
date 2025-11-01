@@ -5,12 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { getStudentDetailedAnalytics } from '@/utils/courseStorage';
 import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function StudentDashboardPage() {
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
   const studentId = params.studentId as string;
+  const { t } = useLanguage();
 
   const [analytics, setAnalytics] = useState<ReturnType<typeof getStudentDetailedAnalytics>>(null);
 
@@ -352,13 +354,13 @@ export default function StudentDashboardPage() {
 
         {/* Help Section */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">Understanding the Dashboard:</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">{t('dashboard.helpTitle')}</h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• <strong>Attempt Rate</strong> shows how many tasks the student tries (more than 0 points)</li>
-            <li>• <strong>Theme Performance</strong> shows average scores for different skill areas</li>
-            <li>• <strong>Category Performance</strong> shows average scores by difficulty/type</li>
-            <li>• <strong>Test Part Performance</strong> compares no aids vs all aids performance</li>
-            <li>• Color coding: Green (≥5/6), Yellow (≥3.5/6), Red (&lt;3.5/6)</li>
+            <li>• {t('dashboard.helpAttemptRate')}</li>
+            <li>• {t('dashboard.helpTheme')}</li>
+            <li>• {t('dashboard.helpCategory')}</li>
+            <li>• {t('dashboard.helpPart')}</li>
+            <li>• {t('dashboard.helpColors')}</li>
           </ul>
         </div>
       </div>
