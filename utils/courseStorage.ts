@@ -719,11 +719,46 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     .filter(p => p.taskCount > 0)
     .sort((a, b) => a.part - b.part);
 
-  // Overall stats
+  // Performance across oral assessments
+  const oralPerformance = (course.oralTests || []).map(oralTest => {
+    const assessment = oralTest.studentAssessments.find(a => a.studentId === studentId);
+    if (!assessment) {
+      return {
+        oralTestId: oralTest.id,
+        oralTestName: oralTest.name,
+        oralTestDate: oralTest.date,
+        score: 0,
+        maxScore: 60,
+        completed: false,
+        dimensions: [],
+      };
+    }
+
+    return {
+      oralTestId: oralTest.id,
+      oralTestName: oralTest.name,
+      oralTestDate: oralTest.date,
+      score: assessment.score || calculateOralScore(assessment),
+      maxScore: 60,
+      completed: !!assessment.completedDate,
+      dimensions: assessment.dimensions,
+    };
+  }).sort((a, b) => new Date(a.oralTestDate).getTime() - new Date(b.oralTestDate).getTime());
+
+  // Overall stats (including oral assessments)
   const completedTests = testPerformance.filter(t => t.completed);
-  const averageScore = completedTests.length > 0
-    ? completedTests.reduce((sum, t) => sum + t.score, 0) / completedTests.length
+  const completedOralTests = oralPerformance.filter(o => o.completed);
+
+  const totalCompletedAssessments = completedTests.length + completedOralTests.length;
+  const allScores = [
+    ...completedTests.map(t => t.score),
+    ...completedOralTests.map(o => o.score),
+  ];
+
+  const averageScore = totalCompletedAssessments > 0
+    ? allScores.reduce((sum, score) => sum + score, 0) / totalCompletedAssessments
     : 0;
+
   const averageAttemptRate = testPerformance.length > 0
     ? testPerformance.reduce((sum, t) => sum + t.attemptPercentage, 0) / testPerformance.length
     : 0;
@@ -732,12 +767,15 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     student,
     course,
     testPerformance,
+    oralPerformance,
     labelPerformance: labelStats,
     categoryPerformance: categoryStats,
     partPerformance: partStats,
     overallStats: {
       completedTests: completedTests.length,
       totalTests: course.tests.length,
+      completedOralTests: completedOralTests.length,
+      totalOralTests: (course.oralTests || []).length,
       averageScore,
       averageAttemptRate,
     },

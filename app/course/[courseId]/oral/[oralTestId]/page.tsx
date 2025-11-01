@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, OralTest, CourseStudent, OralFeedbackData, OralFeedbackDimension, OralFeedbackDimensionType } from '@/types';
 import { loadCourse, updateOralAssessment, getOralAssessment, calculateOralScore } from '@/utils/courseStorage';
+import { generateOralTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import OralFeedbackForm from '@/components/OralFeedbackForm';
-import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function OralAssessmentPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -149,6 +150,42 @@ export default function OralAssessmentPage() {
     return !!assessment?.completedDate;
   };
 
+  const handleDownloadTypst = () => {
+    if (!selectedStudent || !currentFeedback || !oralTest) return;
+
+    const typstContent = generateOralTypstDocument({
+      studentName: selectedStudent.name,
+      studentNumber: selectedStudent.studentNumber,
+      oralTestName: oralTest.name,
+      oralTestDate: oralTest.date,
+      oralFeedback: currentFeedback,
+      language,
+    });
+
+    const filename = `${oralTest.name}-${selectedStudent.name}.typ`;
+    downloadTypstFile(typstContent, filename);
+  };
+
+  const handleGeneratePDF = async () => {
+    if (!selectedStudent || !currentFeedback || !oralTest) return;
+
+    const typstContent = generateOralTypstDocument({
+      studentName: selectedStudent.name,
+      studentNumber: selectedStudent.studentNumber,
+      oralTestName: oralTest.name,
+      oralTestDate: oralTest.date,
+      oralFeedback: currentFeedback,
+      language,
+    });
+
+    const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
+    const success = await compileAndDownloadPDF(typstContent, filename);
+
+    if (success) {
+      alert(t('test.pdfCompiledSuccess'));
+    }
+  };
+
   if (!course || !oralTest) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -259,7 +296,7 @@ export default function OralAssessmentPage() {
                   <h2 className="text-2xl font-display font-bold text-text-primary">
                     {selectedStudent.name}
                   </h2>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
@@ -285,6 +322,22 @@ export default function OralAssessmentPage() {
                         {t('test.markComplete')}
                       </button>
                     )}
+                    <button
+                      onClick={handleGeneratePDF}
+                      className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                      title={t('test.compileToPDF')}
+                    >
+                      <FileText size={18} />
+                      {t('test.generatePDF')}
+                    </button>
+                    <button
+                      onClick={handleDownloadTypst}
+                      className="flex items-center gap-2 px-4 py-2 bg-stone-500 text-white rounded-lg hover:bg-stone-600 transition"
+                      title={t('test.downloadTypSource')}
+                    >
+                      <Download size={18} />
+                      .typ
+                    </button>
                   </div>
                 </div>
 

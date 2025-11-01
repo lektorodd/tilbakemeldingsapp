@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getStudentDetailedAnalytics } from '@/utils/courseStorage';
-import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -30,7 +30,7 @@ export default function StudentDashboardPage() {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
   }
 
-  const { student, course, testPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
+  const { student, course, testPerformance, oralPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
 
   const getScoreColor = (score: number): string => {
     const percentage = (score / 60) * 100;
@@ -212,6 +212,74 @@ export default function StudentDashboardPage() {
             </div>
           )}
         </div>
+
+        {/* Oral Assessments Performance */}
+        {oralPerformance && oralPerformance.length > 0 && (
+          <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare size={24} className="text-purple-600" />
+              <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
+            </div>
+
+            {oralPerformance.filter(o => o.score > 0).length === 0 ? (
+              <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
+            ) : (
+              <div className="space-y-3">
+                {oralPerformance.map(oral => (
+                  <Link
+                    key={oral.oralTestId}
+                    href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
+                    className="border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer block"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h4 className="font-semibold text-text-primary hover:text-purple-600 transition-colors">{oral.oralTestName}</h4>
+                        <p className="text-xs text-text-disabled">
+                          {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-2xl font-bold ${getScoreColor(oral.score)}`}>
+                          {oral.score} / {oral.maxScore}
+                        </p>
+                        {oral.completed ? (
+                          <p className="text-xs text-success">{t('test.completed')}</p>
+                        ) : (
+                          <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="mb-2">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${oral.score >= 50 ? 'bg-purple-600' : oral.score >= 35 ? 'bg-purple-400' : 'bg-purple-300'}`}
+                          style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Dimension breakdown */}
+                    {oral.dimensions && oral.dimensions.length > 0 && (
+                      <div className="flex gap-1 flex-wrap">
+                        {oral.dimensions.map((dim, idx) => (
+                          <div
+                            key={idx}
+                            className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-700"
+                            title={`${dim.dimension}: ${dim.points}/6`}
+                          >
+                            {dim.points}/6
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Performance by Theme Labels */}
         {labelPerformance.length > 0 && (
