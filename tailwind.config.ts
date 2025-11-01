@@ -13,7 +13,6 @@ const config: Config = {
         background: '#FAFAFA',
         surface: '#FFFFFF',
         'surface-alt': '#F4F4F5',
-        border: '#E5E7EB',
 
         // Text colors
         'text-primary': '#1A1A1A',
@@ -32,6 +31,10 @@ const config: Config = {
         warning: '#F59E0B',
         danger: '#EF4444',
         focus: '#3B82F6',
+      },
+      borderColor: {
+        DEFAULT: '#E5E7EB',
+        border: '#E5E7EB',
       },
       fontFamily: {
         sans: ['Inter', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
