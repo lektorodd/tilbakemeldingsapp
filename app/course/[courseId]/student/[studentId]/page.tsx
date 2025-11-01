@@ -92,25 +92,25 @@ export default function StudentDashboardPage() {
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <Target size={20} className="text-purple-600" />
-              <h3 className="font-semibold text-gray-800">Attempt Rate</h3>
+              <h3 className="font-semibold text-gray-800">{t('dashboard.attemptRate')}</h3>
             </div>
             <p className="text-3xl font-bold text-purple-600">
               {overallStats.averageAttemptRate.toFixed(0)}%
             </p>
-            <p className="text-sm text-gray-600">tasks attempted</p>
+            <p className="text-sm text-gray-600">{t('dashboard.tasksAttempted')}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp size={20} className="text-orange-600" />
-              <h3 className="font-semibold text-gray-800">Progress</h3>
+              <h3 className="font-semibold text-gray-800">{t('dashboard.progress')}</h3>
             </div>
             <p className="text-3xl font-bold text-orange-600">
               {testPerformance.length > 0 && testPerformance[testPerformance.length - 1].score > 0
                 ? testPerformance[testPerformance.length - 1].score
                 : '-'}
             </p>
-            <p className="text-sm text-gray-600">latest test</p>
+            <p className="text-sm text-gray-600">{t('dashboard.latestTest')}</p>
           </div>
         </div>
 
@@ -141,9 +141,9 @@ export default function StudentDashboardPage() {
                           {test.score} / {test.maxScore}
                         </p>
                         {test.completed ? (
-                          <p className="text-xs text-green-600">Completed</p>
+                          <p className="text-xs text-green-600">{t('test.completed')}</p>
                         ) : (
-                          <p className="text-xs text-gray-500">Not completed</p>
+                          <p className="text-xs text-gray-500">{t('test.notCompleted')}</p>
                         )}
                       </div>
                     </div>
@@ -160,7 +160,7 @@ export default function StudentDashboardPage() {
 
                     {/* Attempt rate */}
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Tasks attempted:</span>
+                      <span className="text-gray-600">{t('dashboard.tasksAttempted')}:</span>
                       <span className="font-medium text-gray-800">
                         {test.tasksAttempted} / {test.totalTasks} ({test.attemptPercentage.toFixed(0)}%)
                       </span>
@@ -218,7 +218,7 @@ export default function StudentDashboardPage() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Tag size={24} className="text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Theme</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('dashboard.performanceByTheme')}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -235,7 +235,7 @@ export default function StudentDashboardPage() {
                       <p className="text-xs text-gray-500">/ 6</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-600">{label.taskCount} tasks</p>
+                  <p className="text-xs text-gray-600">{label.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
                   <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
@@ -258,7 +258,7 @@ export default function StudentDashboardPage() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 size={24} className="text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Category</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('dashboard.performanceByCategory')}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -273,7 +273,7 @@ export default function StudentDashboardPage() {
                       <p className="text-xs text-gray-500">/ 6</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-600 mb-2">{cat.taskCount} tasks</p>
+                  <p className="text-xs text-gray-600 mb-2">{cat.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -296,7 +296,7 @@ export default function StudentDashboardPage() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <BookOpen size={24} className="text-indigo-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Test Part</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('dashboard.performanceByPart')}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -306,9 +306,9 @@ export default function StudentDashboardPage() {
                 }`}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{part.description}</h3>
+                      <h3 className="text-lg font-semibold text-gray-800">{part.part === 1 ? t('dashboard.part1NoAids') : t('dashboard.part2AllAids')}</h3>
                       <p className="text-xs text-gray-600 mt-1">
-                        {part.part === 1 ? 'Only pen and pencil allowed' : 'All aids allowed (calculator, textbook, etc.)'}
+                        {part.part === 1 ? t('dashboard.noAidsPencilOnly') : t('dashboard.allAidsAllowed')}
                       </p>
                     </div>
                     <div className="text-right">
@@ -318,7 +318,7 @@ export default function StudentDashboardPage() {
                       <p className="text-xs text-gray-500">/ 6</p>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-700 mb-3">{part.taskCount} tasks completed</p>
+                  <p className="text-sm text-gray-700 mb-3">{part.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
                   <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -338,13 +338,18 @@ export default function StudentDashboardPage() {
             {partPerformance.length === 2 && (
               <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
                 <p className="text-sm text-indigo-900">
-                  <strong>Comparison:</strong>{' '}
+                  <strong>{t('dashboard.comparison')}:</strong>{' '}
                   {partPerformance[0].averageScore > partPerformance[1].averageScore ? (
-                    <>Student performs better on <strong>no aids</strong> tasks ({partPerformance[0].averageScore.toFixed(1)}) than <strong>all aids</strong> tasks ({partPerformance[1].averageScore.toFixed(1)}). This may indicate strong foundational skills.</>
+                    t('dashboard.betterNoAids')
+                      .replace('{score1}', partPerformance[0].averageScore.toFixed(1))
+                      .replace('{score2}', partPerformance[1].averageScore.toFixed(1))
                   ) : partPerformance[0].averageScore < partPerformance[1].averageScore ? (
-                    <>Student performs better on <strong>all aids</strong> tasks ({partPerformance[1].averageScore.toFixed(1)}) than <strong>no aids</strong> tasks ({partPerformance[0].averageScore.toFixed(1)}). Consider focusing on mental calculation and basic skills.</>
+                    t('dashboard.betterAllAids')
+                      .replace('{score1}', partPerformance[1].averageScore.toFixed(1))
+                      .replace('{score2}', partPerformance[0].averageScore.toFixed(1))
                   ) : (
-                    <>Student performs equally well on both <strong>no aids</strong> and <strong>all aids</strong> tasks ({partPerformance[0].averageScore.toFixed(1)}).</>
+                    t('dashboard.equalPerformance')
+                      .replace('{score}', partPerformance[0].averageScore.toFixed(1))
                   )}
                 </p>
               </div>
