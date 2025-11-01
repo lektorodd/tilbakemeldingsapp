@@ -199,6 +199,25 @@
     "avgClassScore": "Klassesnitt",
     "performanceByTest": "Prestasjoner per prøve",
     "performanceByTheme": "Prestasjoner per tema",
-    "performanceByCategory": "Prestasjoner per kategori"
+    "performanceByCategory": "Prestasjoner per kategori",
+    "backToCourse": "Tilbake til kurs",
+    "courseAnalyticsTitle": "{courseName} - Analyse",
+    "performanceAnalysisDesc": "Prestasjonsanalyse etter tema og kategorier",
+    "totalLabels": "Totalt temaer",
+    "performanceByLabel": "Prestasjoner per tema",
+    "overallPerformance": "Overordnet prestasjon",
+    "tasksCount": "({count} oppgaver)",
+    "studentPerformance": "Elevprestasjoner",
+    "tasksCompleted": "{count} oppgaver fullført",
+    "noStudentDataForLabel": "Ingen elevdata for dette temaet",
+    "clickLabelPrompt": "Klikk på et tema for å se elevprestasjoner",
+    "noLabelData": "Ingen temadata tilgjengelig. Legg til temaer i kurset og tilordne dem til oppgaver for å se prestasjonsanalyse.",
+    "noCategoryData": "Ingen kategoridata tilgjengelig. Tilordne kategorier (1, 2, 3) til oppgavene for å se prestasjonsanalyse.",
+    "categoryGuide": "Kategoriveiledning: Kategorier hjelper deg å gruppere oppgaver etter vanskelighetsgrad eller emne. Tilordne kategorier når du konfigurerer prøveoppgaver for å spore prestasjonsmønstre.",
+    "howToUseAnalytics": "Hvordan bruke analyse:",
+    "analyticsHelp1": "Temaer hjelper deg å spore prestasjoner på tvers av emner (f.eks. \"logaritmer\", \"brøker\")",
+    "analyticsHelp2": "Kategorier hjelper deg å gruppere oppgaver etter vanskelighetsgrad eller type (1, 2, 3)",
+    "analyticsHelp3": "Klikk på et tema for å se individuelle elevprestasjoner for det emnet",
+    "analyticsHelp4": "Grønn (5-6), Gul (3.5-4.9), Rød (<3.5) indikerer prestasjonsnivåer"
   }
 }

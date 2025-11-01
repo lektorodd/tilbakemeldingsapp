@@ -199,6 +199,25 @@
     "avgClassScore": "Class Average",
     "performanceByTest": "Performance by Test",
     "performanceByTheme": "Performance by Theme",
-    "performanceByCategory": "Performance by Category"
+    "performanceByCategory": "Performance by Category",
+    "backToCourse": "Back to Course",
+    "courseAnalyticsTitle": "{courseName} - Analytics",
+    "performanceAnalysisDesc": "Performance analysis by labels and categories",
+    "totalLabels": "Total Labels",
+    "performanceByLabel": "Performance by Label",
+    "overallPerformance": "Overall Performance",
+    "tasksCount": "({count} tasks)",
+    "studentPerformance": "Student Performance",
+    "tasksCompleted": "{count} tasks completed",
+    "noStudentDataForLabel": "No student data for this label",
+    "clickLabelPrompt": "Click on a label to see student performance",
+    "noLabelData": "No label data available. Add labels to your course and assign them to tasks to see performance analytics.",
+    "noCategoryData": "No category data available. Assign categories (1, 2, 3) to your tasks to see performance analytics.",
+    "categoryGuide": "Category Guide: Categories help you group tasks by difficulty or topic. Assign categories when configuring test tasks to track performance patterns.",
+    "howToUseAnalytics": "How to use analytics:",
+    "analyticsHelp1": "Labels help you track performance across themes (e.g., \"logarithms\", \"fractions\")",
+    "analyticsHelp2": "Categories help you group tasks by difficulty or type (1, 2, 3)",
+    "analyticsHelp3": "Click on a label to see individual student performance for that theme",
+    "analyticsHelp4": "Green (5-6), Yellow (3.5-4.9), Red (<3.5) indicate performance levels"
   }
 }

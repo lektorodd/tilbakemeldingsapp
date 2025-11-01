@@ -6,8 +6,10 @@ import { Course, LabelPerformance, CategoryPerformance } from '@/types';
 import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils/courseStorage';
 import { ArrowLeft, Tag, BarChart3, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CourseAnalyticsPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -24,7 +26,7 @@ export default function CourseAnalyticsPage() {
   const loadData = () => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert('Course not found');
+      alert(t('course.courseNotFound'));
       router.push('/courses');
       return;
     }
@@ -47,7 +49,7 @@ export default function CourseAnalyticsPage() {
   };
 
   if (!course) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   const selectedLabelData = selectedLabel ? labelPerformance.find(lp => lp.label === selectedLabel) : null;
@@ -62,10 +64,10 @@ export default function CourseAnalyticsPage() {
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
           >
             <ArrowLeft size={20} />
-            Back to Course
+            {t('analytics.backToCourse')}
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">{course.name} - Analytics</h1>
-          <p className="text-gray-600">Performance analysis by labels and categories</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('analytics.courseAnalyticsTitle').replace('{courseName}', course.name)}</h1>
+          <p className="text-gray-600">{t('analytics.performanceAnalysisDesc')}</p>
         </div>
 
         {/* Summary Cards */}
@@ -73,7 +75,7 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <Users size={20} className="text-blue-600" />
-              <h3 className="font-semibold text-gray-800">Total Students</h3>
+              <h3 className="font-semibold text-gray-800">{t('course.totalStudents')}</h3>
             </div>
             <p className="text-3xl font-bold text-blue-600">{course.students.length}</p>
           </div>
@@ -81,7 +83,7 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <BarChart3 size={20} className="text-green-600" />
-              <h3 className="font-semibold text-gray-800">Total Tests</h3>
+              <h3 className="font-semibold text-gray-800">{t('course.totalTests')}</h3>
             </div>
             <p className="text-3xl font-bold text-green-600">{course.tests.length}</p>
           </div>
@@ -89,7 +91,7 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex items-center gap-2 mb-2">
               <Tag size={20} className="text-purple-600" />
-              <h3 className="font-semibold text-gray-800">Total Labels</h3>
+              <h3 className="font-semibold text-gray-800">{t('analytics.totalLabels')}</h3>
             </div>
             <p className="text-3xl font-bold text-purple-600">{course.availableLabels.length}</p>
           </div>
@@ -100,13 +102,13 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Tag size={24} className="text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Label</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByLabel')}</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Label Summary */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Overall Performance</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('analytics.overallPerformance')}</h3>
                 <div className="space-y-2">
                   {labelPerformance.map(lp => (
                     <div
@@ -123,7 +125,7 @@ export default function CourseAnalyticsPage() {
                           <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-medium">
                             {lp.label}
                           </span>
-                          <span className="text-xs text-gray-500">({lp.taskCount} tasks)</span>
+                          <span className="text-xs text-gray-500">{t('analytics.tasksCount').replace('{count}', lp.taskCount.toString())}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`text-2xl font-bold ${getScoreColor(lp.averageScore)}`}>
@@ -153,7 +155,7 @@ export default function CourseAnalyticsPage() {
                 {selectedLabelData ? (
                   <>
                     <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Student Performance: <span className="text-purple-600">{selectedLabelData.label}</span>
+                      {t('analytics.studentPerformance')}: <span className="text-purple-600">{selectedLabelData.label}</span>
                     </h3>
                     <div className="space-y-2 max-h-96 overflow-y-auto">
                       {selectedLabelData.studentScores.length > 0 ? (
@@ -166,7 +168,7 @@ export default function CourseAnalyticsPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-2 text-xs text-gray-500">
-                              <span>{ss.completedTasks} tasks completed</span>
+                              <span>{t('analytics.tasksCompleted').replace('{count}', ss.completedTasks.toString())}</span>
                             </div>
                             {/* Progress bar */}
                             <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
@@ -181,7 +183,7 @@ export default function CourseAnalyticsPage() {
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-gray-500 text-center py-4">No student data for this label</p>
+                        <p className="text-sm text-gray-500 text-center py-4">{t('analytics.noStudentDataForLabel')}</p>
                       )}
                     </div>
                   </>
@@ -189,7 +191,7 @@ export default function CourseAnalyticsPage() {
                   <div className="flex items-center justify-center h-full text-gray-400">
                     <div className="text-center">
                       <Tag size={48} className="mx-auto mb-2 opacity-50" />
-                      <p>Click on a label to see student performance</p>
+                      <p>{t('analytics.clickLabelPrompt')}</p>
                     </div>
                   </div>
                 )}
@@ -200,10 +202,10 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Tag size={24} className="text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Label</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByLabel')}</h2>
             </div>
             <p className="text-gray-500 text-center py-8">
-              No label data available. Add labels to your course and assign them to tasks to see performance analytics.
+              {t('analytics.noLabelData')}
             </p>
           </div>
         )}
@@ -213,7 +215,7 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={24} className="text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Category</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByCategory')}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -222,7 +224,7 @@ export default function CourseAnalyticsPage() {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">{cp.description}</h3>
-                      <p className="text-xs text-gray-500">{cp.taskCount} tasks</p>
+                      <p className="text-xs text-gray-500">{t('analytics.tasksCount').replace('{count}', cp.taskCount.toString())}</p>
                     </div>
                     <div className="text-right">
                       <p className={`text-3xl font-bold ${getScoreColor(cp.averageScore)}`}>
@@ -248,8 +250,7 @@ export default function CourseAnalyticsPage() {
 
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Category Guide:</strong> Categories help you group tasks by difficulty or topic.
-                Assign categories when configuring test tasks to track performance patterns.
+                <strong>{t('analytics.categoryGuide')}</strong>
               </p>
             </div>
           </div>
@@ -257,22 +258,22 @@ export default function CourseAnalyticsPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={24} className="text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-800">Performance by Category</h2>
+              <h2 className="text-2xl font-bold text-gray-800">{t('analytics.performanceByCategory')}</h2>
             </div>
             <p className="text-gray-500 text-center py-8">
-              No category data available. Assign categories (1, 2, 3) to your tasks to see performance analytics.
+              {t('analytics.noCategoryData')}
             </p>
           </div>
         )}
 
         {/* Help Section */}
         <div className="mt-6 bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <h3 className="font-semibold text-purple-900 mb-2">How to use analytics:</h3>
+          <h3 className="font-semibold text-purple-900 mb-2">{t('analytics.howToUseAnalytics')}</h3>
           <ul className="text-sm text-purple-800 space-y-1">
-            <li>• <strong>Labels</strong> help you track performance across themes (e.g., "logarithms", "fractions")</li>
-            <li>• <strong>Categories</strong> help you group tasks by difficulty or type (1, 2, 3)</li>
-            <li>• Click on a label to see individual student performance for that theme</li>
-            <li>• Green (5-6), Yellow (3.5-4.9), Red (&lt;3.5) indicate performance levels</li>
+            <li>• {t('analytics.analyticsHelp1')}</li>
+            <li>• {t('analytics.analyticsHelp2')}</li>
+            <li>• {t('analytics.analyticsHelp3')}</li>
+            <li>• {t('analytics.analyticsHelp4')}</li>
           </ul>
         </div>
       </div>
