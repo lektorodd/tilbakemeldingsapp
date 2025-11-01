@@ -123,7 +123,6 @@ export default function TestFeedbackPage() {
 
     updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
     setCurrentFeedback(updatedFeedback);
-    loadData();
   };
 
   const handleUpdateIndividualComment = (comment: string) => {
@@ -136,7 +135,6 @@ export default function TestFeedbackPage() {
 
     updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
     setCurrentFeedback(updatedFeedback);
-    loadData();
   };
 
   const handleMarkComplete = () => {
@@ -163,7 +161,6 @@ export default function TestFeedbackPage() {
 
     updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
     setCurrentFeedback(updatedFeedback);
-    loadData();
   };
 
   const handleExportAllPDFs = async () => {
@@ -294,7 +291,6 @@ export default function TestFeedbackPage() {
       };
       updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
       setCurrentFeedback(updatedFeedback);
-      loadData();
     }
 
     // Set cursor position after the inserted text
@@ -325,7 +321,6 @@ export default function TestFeedbackPage() {
       };
       updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
       setCurrentFeedback(updatedFeedback);
-      loadData();
     }
 
     // Set cursor position after the inserted text
