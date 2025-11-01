@@ -5,8 +5,10 @@ import { Course } from '@/types';
 import { loadAllCourses, deleteCourse, setupAutoSaveDirectory, isAutoSaveEnabled, disableAutoSave, exportAllCourses } from '@/utils/courseStorage';
 import { Plus, Trash2, Users, FileText, Settings, Download, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CoursesPage() {
+  const { t } = useLanguage();
   const [courses, setCourses] = useState<Course[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newCourseName, setNewCourseName] = useState('');
@@ -25,7 +27,7 @@ export default function CoursesPage() {
 
   const handleCreateCourse = () => {
     if (!newCourseName.trim()) {
-      alert('Please enter a course name');
+      alert(t('course.courseNameRequired'));
       return;
     }
 
