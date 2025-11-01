@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance } from '@/types';
+import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData } from '@/types';
 
 const COURSES_KEY = 'math-feedback-courses';
 let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
@@ -187,6 +187,72 @@ export function getStudentFeedback(courseId: string, testId: string, studentId: 
   if (!test) return null;
 
   return test.studentFeedbacks.find(f => f.studentId === studentId) || null;
+}
+
+// Oral feedback operations
+export function updateOralFeedback(
+  courseId: string,
+  testId: string,
+  studentId: string,
+  updates: Partial<OralFeedbackData>
+): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test) throw new Error('Test not found');
+
+  // Initialize oralFeedbacks array if it doesn't exist
+  if (!test.oralFeedbacks) {
+    test.oralFeedbacks = [];
+  }
+
+  const feedbackIndex = test.oralFeedbacks.findIndex(f => f.studentId === studentId);
+
+  if (feedbackIndex >= 0) {
+    test.oralFeedbacks[feedbackIndex] = {
+      ...test.oralFeedbacks[feedbackIndex],
+      ...updates,
+    };
+  } else {
+    test.oralFeedbacks.push({
+      studentId,
+      dimensions: [],
+      generalObservations: '',
+      ...updates,
+    });
+  }
+
+  saveCourse(course);
+}
+
+export function getOralFeedback(courseId: string, testId: string, studentId: string): OralFeedbackData | null {
+  const course = loadCourse(courseId);
+  if (!course) return null;
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test || !test.oralFeedbacks) return null;
+
+  return test.oralFeedbacks.find(f => f.studentId === studentId) || null;
+}
+
+export function deleteOralFeedback(courseId: string, testId: string, studentId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test || !test.oralFeedbacks) return;
+
+  test.oralFeedbacks = test.oralFeedbacks.filter(f => f.studentId !== studentId);
+  saveCourse(course);
+}
+
+export function calculateOralScore(oralFeedback: OralFeedbackData): number {
+  if (oralFeedback.dimensions.length === 0) return 0;
+
+  const totalPoints = oralFeedback.dimensions.reduce((sum, dim) => sum + dim.points, 0);
+  const averagePoints = totalPoints / oralFeedback.dimensions.length;
+  return Math.round(averagePoints * 10);
 }
 
 // Scoring calculations

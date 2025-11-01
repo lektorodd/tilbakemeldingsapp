@@ -100,6 +100,7 @@ export interface CourseTest {
   tasks: Task[];
   generalComment: string;
   studentFeedbacks: TestFeedbackData[]; // Feedback for each student on this test
+  oralFeedbacks?: OralFeedbackData[]; // Oral assessment data for students (LK20-based)
   // Part configuration for two-part tests (Part 1: no aids, Part 2: all aids)
   hasTwoParts?: boolean;
   part1TaskCount?: number;
@@ -182,5 +183,31 @@ export interface CategoryPerformance {
   averageScore: number;
   taskCount: number;
   description: string; // e.g., "Category 1 (Easy)", "Category 2 (Medium)", "Category 3 (Hard)"
+}
+
+// Oral feedback types - LK20-based assessment dimensions
+export type OralFeedbackDimensionType =
+  | 'strategy' // Strategival og metode
+  | 'reasoning' // Resonnering og argumentasjon
+  | 'representations' // Representasjonar
+  | 'modeling' // Modellering / anvending
+  | 'communication' // Kommunikasjon
+  | 'subject_knowledge'; // Fagleg forståing (kunnskapsområde)
+
+export interface OralFeedbackDimension {
+  dimension: OralFeedbackDimensionType;
+  points: number; // 0-6
+  comment: string; // Additional notes on this dimension
+}
+
+export interface OralFeedbackData {
+  studentId: string;
+  dimensions: OralFeedbackDimension[]; // All 6 dimensions
+  generalObservations: string; // Overall notes from the oral assessment
+  taskReferences?: string[]; // Which tasks/topics were discussed
+  recordedDate?: string; // When the oral assessment took place
+  duration?: number; // Duration in minutes
+  completedDate?: string; // When the teacher finished the assessment
+  score?: number; // Calculated average across dimensions (0-60 scale)
 }
 

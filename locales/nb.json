@@ -186,7 +186,74 @@
     "hideSnippets": "Skjul hurtigtekster",
     "snippetsTitle": "Hurtigtekster",
     "snippetsDesc": "Klikk på en hurtigtekst for å sette den inn ved markøren.",
-    "snippetsClickTextarea": "Klikk på et kommentarfelt for å aktivere hurtigtekst-innsetting."
+    "snippetsClickTextarea": "Klikk på et kommentarfelt for å aktivere hurtigtekst-innsetting.",
+    "writtenFeedback": "Skriftlig tilbakemelding",
+    "oralFeedback": "Muntlig vurdering"
+  },
+  "oral": {
+    "title": "Muntlig vurdering",
+    "subtitle": "LK20-basert vurdering med 6 dimensjoner",
+    "calculatedScore": "Beregnet resultat",
+    "scoreExplanation": "Gjennomsnitt på tvers av dimensjoner × 10 = 0–60 skala",
+    "recordedDate": "Vurderingsdato",
+    "duration": "Varighet",
+    "minutes": "minutter",
+    "dimensionsTitle": "Vurderingsdimensjoner (LK20)",
+    "points": "Poeng",
+    "rubricGuide": "Vis kriterieveiledning",
+    "dimensionComment": "Kommentar for denne dimensjonen",
+    "dimensionCommentPlaceholder": "Notater om observasjoner...",
+    "generalObservations": "Generelle observasjoner",
+    "generalObservationsPlaceholder": "Helhetlige notater fra den muntlige vurderingen...",
+    "taskReferences": "Oppgavereferanser",
+    "taskReferencesPlaceholder": "f.eks. Oppgave 1, Oppgave 3a, Logaritmer",
+    "taskReferencesHelp": "Kommaseparert liste over oppgaver/temaer som ble diskutert",
+    "completedOn": "Fullført",
+    "markedComplete": "Muntlig vurdering merket som fullført!",
+    "dimension": {
+      "strategy": {
+        "label": "Strategivalg og metode",
+        "description": "Hvilken strategi velger eleven? Kan eleven forklare hvorfor denne framgangsmåten er fornuftig?",
+        "rubric2": "Velger en strategi, men den er delvis tilfeldig eller lite relevant.",
+        "rubric4": "Velger en relevant strategi, men den blir ikke fullt ut gjennomført eller ikke helt presis.",
+        "rubric6": "Velger en presis og relevant strategi raskt, og justerer ved behov underveis."
+      },
+      "reasoning": {
+        "label": "Resonnering og argumentasjon",
+        "description": "Kan eleven forklare tankerekkene sine, begrunne resultat, og vurdere om noe er gyldig / gir mening?",
+        "rubric2": "Forklarer noe, men med brudd i logikk, hopp eller manglende begrunnelse.",
+        "rubric4": "Forklarer tanker forståelig med delvis begrunnelse, men ikke full soliditet.",
+        "rubric6": "Har en sammenhengende, logisk, godt begrunnet matematisk argumentasjon."
+      },
+      "representations": {
+        "label": "Representasjoner",
+        "description": "Hvordan bruker eleven grafer / algebra / tabell / verbal forklaring? Klarer de å gå mellom representasjoner?",
+        "rubric2": "Bruker 1 representasjon, men sliter med å bruke den presist.",
+        "rubric4": "Bruker flere representasjoner, men med noe unøyaktighet i overgangene.",
+        "rubric6": "Bruker relevante representasjoner presist, og veksler mellom dem naturlig."
+      },
+      "modeling": {
+        "label": "Modellering / anvendelse",
+        "description": "Klarer eleven å knytte matematikken til situasjonen / problemstillingen og vurdere modell / resultat?",
+        "rubric2": "Knytter matematikk litt til kontekst, men overfladisk.",
+        "rubric4": "Kan forklare sammenheng til kontekst, men har begrenset vurdering av gyldighet.",
+        "rubric6": "Vurderer modell / resultat kritisk og viser bevissthet om begrensninger og anvendelser."
+      },
+      "communication": {
+        "label": "Kommunikasjon",
+        "description": "Presisjon i matematisk språk og logisk struktur i muntlig forklaring.",
+        "rubric2": "Språket er forståelig, men med unøyaktige fagbegreper eller uklare forklaringer.",
+        "rubric4": "Bruker matematisk språk ganske godt, men noe uklar struktur eller logikk.",
+        "rubric6": "Kommuniserer presist med korrekt matematisk språk og klar struktur."
+      },
+      "subject_knowledge": {
+        "label": "Faglig forståelse (kunnskapsområde)",
+        "description": "I hvilken grad viser eleven faglig forståelse av det matematiske innholdsområdet oppgaven handler om? (f.eks. potenser, logaritmer, derivasjon, sannsynlighet…)",
+        "rubric2": "Har enkel / fragmentert forståelse av det aktuelle innholdsområdet.",
+        "rubric4": "Har god forståelse av innholdet, men mangler sikkerhet i deler av det.",
+        "rubric6": "Har trygg, solid faglig forståelse og kan bruke kunnskapen fleksibelt."
+      }
+    }
   },
   "dashboard": {
     "title": "Elevdashboard",

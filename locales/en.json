@@ -186,7 +186,74 @@
     "hideSnippets": "Hide Snippets",
     "snippetsTitle": "Snippets",
     "snippetsDesc": "Click a snippet to insert it at your cursor position.",
-    "snippetsClickTextarea": "Click on a task comment field to activate snippet insertion."
+    "snippetsClickTextarea": "Click on a task comment field to activate snippet insertion.",
+    "writtenFeedback": "Written Feedback",
+    "oralFeedback": "Oral Assessment"
+  },
+  "oral": {
+    "title": "Oral Assessment",
+    "subtitle": "LK20-based assessment with 6 dimensions",
+    "calculatedScore": "Calculated Score",
+    "scoreExplanation": "Average across dimensions × 10 = 0–60 scale",
+    "recordedDate": "Assessment Date",
+    "duration": "Duration",
+    "minutes": "minutes",
+    "dimensionsTitle": "Assessment Dimensions (LK20)",
+    "points": "Points",
+    "rubricGuide": "Show rubric guide",
+    "dimensionComment": "Comment for this dimension",
+    "dimensionCommentPlaceholder": "Notes on observations...",
+    "generalObservations": "General Observations",
+    "generalObservationsPlaceholder": "Overall notes from the oral assessment...",
+    "taskReferences": "Task References",
+    "taskReferencesPlaceholder": "e.g. Task 1, Task 3a, Logarithms",
+    "taskReferencesHelp": "Comma-separated list of tasks/topics discussed",
+    "completedOn": "Completed",
+    "markedComplete": "Oral assessment marked as complete!",
+    "dimension": {
+      "strategy": {
+        "label": "Strategy and Method",
+        "description": "What strategy does the student choose? Can the student explain why this approach makes sense?",
+        "rubric2": "Chooses a strategy, but it is partially random or not very relevant.",
+        "rubric4": "Chooses a relevant strategy, but it is not fully carried out or not entirely precise.",
+        "rubric6": "Quickly chooses a precise and relevant strategy, and adjusts as needed along the way."
+      },
+      "reasoning": {
+        "label": "Reasoning and Argumentation",
+        "description": "Can the student explain their reasoning, justify results, and assess whether something is valid / makes sense?",
+        "rubric2": "Explains somewhat, but with breaks in logic, gaps, or missing justification.",
+        "rubric4": "Explains thoughts understandably with partial justification, but not full solidity.",
+        "rubric6": "Has a coherent, logical, well-justified mathematical argumentation."
+      },
+      "representations": {
+        "label": "Representations",
+        "description": "How does the student use graphs / algebra / tables / verbal explanation? Can they move between representations?",
+        "rubric2": "Uses 1 representation, but struggles to use it precisely.",
+        "rubric4": "Uses multiple representations, but with some inaccuracy in the transitions.",
+        "rubric6": "Uses relevant representations precisely, and switches between them naturally."
+      },
+      "modeling": {
+        "label": "Modeling / Application",
+        "description": "Can the student connect the mathematics to the situation / problem and evaluate the model / result?",
+        "rubric2": "Connects mathematics somewhat to context, but superficially.",
+        "rubric4": "Can explain connection to context, but has limited assessment of validity.",
+        "rubric6": "Critically evaluates model / result and shows awareness of limitations and applications."
+      },
+      "communication": {
+        "label": "Communication",
+        "description": "Precision in mathematical language and logical structure in oral explanation.",
+        "rubric2": "Language is understandable, but with imprecise terms or unclear explanations.",
+        "rubric4": "Uses mathematical language fairly well, but somewhat unclear structure or logic.",
+        "rubric6": "Communicates precisely with correct mathematical language and clear structure."
+      },
+      "subject_knowledge": {
+        "label": "Subject Knowledge (Content Area)",
+        "description": "To what extent does the student show subject knowledge of the mathematical content area the task deals with? (e.g. powers, logarithms, derivatives, probability…)",
+        "rubric2": "Has simple / fragmented understanding of the relevant content area.",
+        "rubric4": "Has good understanding of the content, but lacks confidence in parts of it.",
+        "rubric6": "Has confident, solid subject understanding and can use the knowledge flexibly."
+      }
+    }
   },
   "dashboard": {
     "title": "Student Dashboard",

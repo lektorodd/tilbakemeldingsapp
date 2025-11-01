@@ -186,7 +186,74 @@
     "hideSnippets": "Gøym snøggtekstar",
     "snippetsTitle": "Snøggtekstar",
     "snippetsDesc": "Klikk på ein snøggtekst for å setje han inn ved markøren.",
-    "snippetsClickTextarea": "Klikk på eit kommentarfelt for å aktivere snøggtekst-innsetjing."
+    "snippetsClickTextarea": "Klikk på eit kommentarfelt for å aktivere snøggtekst-innsetjing.",
+    "writtenFeedback": "Skriftleg tilbakemelding",
+    "oralFeedback": "Munnleg vurdering"
+  },
+  "oral": {
+    "title": "Munnleg vurdering",
+    "subtitle": "LK20-basert vurdering med 6 dimensjonar",
+    "calculatedScore": "Utrekna resultat",
+    "scoreExplanation": "Gjennomsnitt på tvers av dimensjonar × 10 = 0–60 skala",
+    "recordedDate": "Vurderingsdato",
+    "duration": "Varigheit",
+    "minutes": "minutt",
+    "dimensionsTitle": "Vurderingsdimensjonar (LK20)",
+    "points": "Poeng",
+    "rubricGuide": "Vis kriterieveiledning",
+    "dimensionComment": "Kommentar for denne dimensjonen",
+    "dimensionCommentPlaceholder": "Notat om observasjonar...",
+    "generalObservations": "Generelle observasjonar",
+    "generalObservationsPlaceholder": "Heilskaplege notat frå den munnlege vurderinga...",
+    "taskReferences": "Oppgåvereferansar",
+    "taskReferencesPlaceholder": "t.d. Oppgåve 1, Oppgåve 3a, Logaritmar",
+    "taskReferencesHelp": "Kommaseparert liste over oppgåver/tema som vart diskuterte",
+    "completedOn": "Fullført",
+    "markedComplete": "Munnleg vurdering merka som fullført!",
+    "dimension": {
+      "strategy": {
+        "label": "Strategival og metode",
+        "description": "Kva strategi vel eleven? Kan eleven forklare kvifor denne framgangsmåten er fornuftig?",
+        "rubric2": "Vel ein strategi, men den er delvis tilfeldig eller lite relevant.",
+        "rubric4": "Vel ein relevant strategi, men den blir ikkje fullt ut gjennomført eller ikkje heilt presis.",
+        "rubric6": "Vel ein presis og relevant strategi raskt, og justerer ved behov undervegs."
+      },
+      "reasoning": {
+        "label": "Resonnering og argumentasjon",
+        "description": "Kan eleven forklare tankerekkene sine, grunngje resultat, og vurdere om noko er gyldig / gir meining?",
+        "rubric2": "Forklarer noko, men med brot i logikk, hopp eller manglande grunngjeving.",
+        "rubric4": "Forklarer tankar forståeleg med delvis grunngjeving, men ikkje full soliditet.",
+        "rubric6": "Har ein samanhengande, logisk, godt grunngitt matematisk argumentasjon."
+      },
+      "representations": {
+        "label": "Representasjonar",
+        "description": "Korleis brukar eleven grafar / algebra / tabell / verbal forklaring? Klarar dei å gå mellom representasjonar?",
+        "rubric2": "Brukar 1 representasjon, men sliter med å bruke den presist.",
+        "rubric4": "Brukar fleire representasjonar, men med noko unøyaktigheit i overgangane.",
+        "rubric6": "Brukar relevante representasjonar presist, og vekslar mellom dei naturleg."
+      },
+      "modeling": {
+        "label": "Modellering / anvending",
+        "description": "Klarar eleven å knytte matematikken til situasjonen / problemstillinga og vurdere modell / resultat?",
+        "rubric2": "Knyter matematikk litt til kontekst, men overflatisk.",
+        "rubric4": "Kan forklare samanheng til kontekst, men har avgrensa vurdering av gyldigheit.",
+        "rubric6": "Vurderer modell / resultat kritisk og viser bevisstheit om begrensingar og anvendingar."
+      },
+      "communication": {
+        "label": "Kommunikasjon",
+        "description": "Presisjon i matematisk språk og logisk struktur i munnleg forklaring.",
+        "rubric2": "Språket er forståeleg, men med unøyaktige fagomgrep eller uklare forklaringar.",
+        "rubric4": "Brukar matematisk språk nokså godt, men noko uklar struktur eller logikk.",
+        "rubric6": "Kommuniserer presist med korrekt matematisk språk og klar struktur."
+      },
+      "subject_knowledge": {
+        "label": "Fagleg forståing (kunnskapsområde)",
+        "description": "I kva grad viser eleven fagleg forståing av det matematiske innhaldsområdet oppgåva handlar om? (t.d. potenser, logaritmar, derivasjon, sannsyn…)",
+        "rubric2": "Har enkel / fragmentert forståing av det aktuelle innhaldsområdet.",
+        "rubric4": "Har god forståing av innhaldet, men manglar sikkerheit i deler av det.",
+        "rubric6": "Har trygg, solid fagleg forståing og kan bruke kunnskapen fleksibelt."
+      }
+    }
   },
   "dashboard": {
     "title": "Elevdashboard",
