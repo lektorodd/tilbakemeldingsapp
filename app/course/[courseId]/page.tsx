@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Course, CourseStudent, CourseTest } from '@/types';
-import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest } from '@/utils/courseStorage';
-import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3 } from 'lucide-react';
+import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
+import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest } from '@/utils/courseStorage';
+import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import LabelManager from '@/components/LabelManager';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -19,6 +19,7 @@ export default function CourseDetailPage() {
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
   const [showBulkAddStudentModal, setShowBulkAddStudentModal] = useState(false);
   const [showAddTestModal, setShowAddTestModal] = useState(false);
+  const [showAddOralTestModal, setShowAddOralTestModal] = useState(false);
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentNumber, setNewStudentNumber] = useState('');
   const [bulkStudentText, setBulkStudentText] = useState('');
@@ -30,6 +31,10 @@ export default function CourseDetailPage() {
   const [newTestPart1Count, setNewTestPart1Count] = useState('3');
   const [newTestPart2Count, setNewTestPart2Count] = useState('2');
   const [newTestRestartNumbering, setNewTestRestartNumbering] = useState(false);
+  const [newOralTestName, setNewOralTestName] = useState('');
+  const [newOralTestDescription, setNewOralTestDescription] = useState('');
+  const [newOralTestDate, setNewOralTestDate] = useState('');
+  const [newOralTestTopics, setNewOralTestTopics] = useState('');
 
   useEffect(() => {
     loadData();
@@ -211,6 +216,50 @@ export default function CourseDetailPage() {
     }
   };
 
+  const handleAddOralTest = () => {
+    if (!newOralTestName.trim()) {
+      alert(t('course.oralTestNameRequired'));
+      return;
+    }
+
+    if (!newOralTestDate) {
+      alert(t('course.oralTestDateRequired'));
+      return;
+    }
+
+    const topics = newOralTestTopics
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    const oralTest: OralTest = {
+      id: `oral-test-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+      name: newOralTestName,
+      description: newOralTestDescription || undefined,
+      date: newOralTestDate,
+      topics: topics.length > 0 ? topics : undefined,
+      studentAssessments: [],
+      createdDate: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+    };
+
+    addOralTest(courseId, oralTest);
+
+    setNewOralTestName('');
+    setNewOralTestDescription('');
+    setNewOralTestDate('');
+    setNewOralTestTopics('');
+    setShowAddOralTestModal(false);
+    loadData();
+  };
+
+  const handleDeleteOralTest = (oralTestId: string) => {
+    if (confirm(t('course.deleteOralTestConfirm'))) {
+      deleteOralTest(courseId, oralTestId);
+      loadData();
+    }
+  };
+
   const handleLabelsChange = (labels: string[]) => {
     if (!course) return;
     const updatedCourse = { ...course, availableLabels: labels };
@@ -369,6 +418,79 @@ export default function CourseDetailPage() {
                         >
                           <Edit size={14} className="inline mr-1" />
                           {t('test.giveFeedback')}
+                        </Link>
+                      </div>
+                    );
+                  })
+              )}
+            </div>
+          </div>
+
+          {/* Oral Assessments section */}
+          <div className="bg-surface rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <MessageSquare size={24} className="text-purple-600" />
+                <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
+                <span className="text-text-secondary">({course.oralTests?.length || 0})</span>
+              </div>
+              <button
+                onClick={() => setShowAddOralTestModal(true)}
+                className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+              >
+                <Plus size={16} />
+                {t('common.add')}
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {!course.oralTests || course.oralTests.length === 0 ? (
+                <p className="text-sm text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
+              ) : (
+                course.oralTests
+                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                  .map(oralTest => {
+                    const completedCount = oralTest.studentAssessments.filter(a => a.completedDate).length;
+                    return (
+                      <div
+                        key={oralTest.id}
+                        className="border border-border rounded-lg p-3 hover:bg-background"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-text-primary">{oralTest.name}</h4>
+                            {oralTest.description && (
+                              <p className="text-xs text-text-secondary">{oralTest.description}</p>
+                            )}
+                            {oralTest.topics && oralTest.topics.length > 0 && (
+                              <p className="text-xs text-purple-600 mt-1">
+                                {t('course.topics')}: {oralTest.topics.join(', ')}
+                              </p>
+                            )}
+                            <p className="text-xs text-text-disabled mt-1">
+                              {new Date(oralTest.date).toLocaleDateString('nb-NO', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </p>
+                            <p className="text-xs text-brand mt-1">
+                              {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteOralTest(oralTest.id)}
+                            className="p-1 text-danger hover:bg-red-50 rounded transition"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                        <Link
+                          href={`/course/${courseId}/oral/${oralTest.id}`}
+                          className="block text-center px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                        >
+                          <MessageSquare size={14} className="inline mr-1" />
+                          {t('course.giveOralAssessment')}
                         </Link>
                       </div>
                     );
@@ -682,6 +804,93 @@ export default function CourseDetailPage() {
                   className="flex-1 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
                 >
                   {t('course.addTestButton')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add oral test modal */}
+        {showAddOralTestModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('course.addOralTestTitle')}</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestNameLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newOralTestName}
+                    onChange={(e) => setNewOralTestName(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    placeholder={t('course.oralTestNamePlaceholder')}
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestDescriptionLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newOralTestDescription}
+                    onChange={(e) => setNewOralTestDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    placeholder={t('course.oralTestDescriptionPlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestDateLabel')}
+                  </label>
+                  <input
+                    type="date"
+                    value={newOralTestDate}
+                    onChange={(e) => setNewOralTestDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestTopicsLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newOralTestTopics}
+                    onChange={(e) => setNewOralTestTopics(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    placeholder={t('course.oralTestTopicsPlaceholder')}
+                  />
+                  <p className="text-xs text-text-disabled mt-1">
+                    {t('course.oralTestTopicsHelp')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowAddOralTestModal(false);
+                    setNewOralTestName('');
+                    setNewOralTestDescription('');
+                    setNewOralTestDate('');
+                    setNewOralTestTopics('');
+                  }}
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={handleAddOralTest}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                >
+                  {t('course.addOralTestButton')}
                 </button>
               </div>
             </div>
