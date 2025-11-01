@@ -90,7 +90,7 @@ export default function CoursesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-amber-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-start justify-between mb-8">
           <div>
@@ -100,14 +100,14 @@ export default function CoursesPage() {
           <div className="flex gap-3">
             <button
               onClick={handleExportAll}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
             >
               <Download size={18} />
               {t('course.exportAll')}
             </button>
             <Link
               href="/archive"
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
             >
               <FolderOpen size={18} />
               {t('course.oldArchive')}
@@ -132,14 +132,14 @@ export default function CoursesPage() {
             {autoSaveEnabled ? (
               <button
                 onClick={handleDisableAutoSave}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
+                className="px-4 py-2 bg-stone-600 text-white rounded-md hover:bg-stone-700 transition"
               >
                 {t('course.disableAutoSave')}
               </button>
             ) : (
               <button
                 onClick={handleSetupAutoSave}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
               >
                 {t('course.setupAutoSave')}
               </button>
@@ -151,7 +151,7 @@ export default function CoursesPage() {
         <div className="mb-6">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition font-medium"
           >
             <Plus size={20} />
             {t('home.createCourse')}
@@ -167,7 +167,7 @@ export default function CoursesPage() {
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-medium"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition font-medium"
             >
               <Plus size={20} />
               {t('home.createCourse')}
@@ -223,7 +223,7 @@ export default function CoursesPage() {
 
                   <Link
                     href={`/course/${course.id}`}
-                    className="block text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                    className="block text-center px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
                   >
                     {t('course.openCourse')}
                   </Link>
@@ -248,7 +248,7 @@ export default function CoursesPage() {
                     type="text"
                     value={newCourseName}
                     onChange={(e) => setNewCourseName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                     placeholder={t('home.courseNamePlaceholder')}
                     autoFocus
                   />
@@ -262,7 +262,7 @@ export default function CoursesPage() {
                     type="text"
                     value={newCourseDescription}
                     onChange={(e) => setNewCourseDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                     placeholder={t('course.courseDescriptionPlaceholder')}
                   />
                 </div>
@@ -275,13 +275,13 @@ export default function CoursesPage() {
                     setNewCourseName('');
                     setNewCourseDescription('');
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleCreateCourse}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
                 >
                   {t('course.createCourseButton')}
                 </button>

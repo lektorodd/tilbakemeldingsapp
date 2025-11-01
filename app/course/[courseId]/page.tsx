@@ -219,17 +219,17 @@ export default function CourseDetailPage() {
   };
 
   if (!course) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">{t('common.loading')}</div>;
+    return <div className="min-h-screen bg-amber-50 flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-amber-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
+              className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-800 mb-2"
             >
               <ArrowLeft size={20} />
               {t('course.backToCourses')}
@@ -239,7 +239,7 @@ export default function CourseDetailPage() {
           </div>
           <Link
             href={`/course/${courseId}/analytics`}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
           >
             <BarChart3 size={18} />
             {t('course.viewAnalytics')}
@@ -251,21 +251,21 @@ export default function CourseDetailPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Users size={24} className="text-blue-600" />
+                <Users size={24} className="text-rose-600" />
                 <h2 className="text-2xl font-bold text-gray-800">{t('course.students')}</h2>
                 <span className="text-gray-600">({course.students.length})</span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowAddStudentModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                  className="flex items-center gap-1 px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
                 >
                   <Plus size={16} />
                   {t('common.add')}
                 </button>
                 <button
                   onClick={() => setShowBulkAddStudentModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm"
+                  className="flex items-center gap-1 px-3 py-1 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
                 >
                   <Users size={16} />
                   {t('course.bulkAdd')}
@@ -280,7 +280,7 @@ export default function CourseDetailPage() {
                 course.students.map(student => (
                   <div
                     key={student.id}
-                    className="border border-gray-300 rounded-lg p-3 hover:bg-gray-50"
+                    className="border border-stone-300 rounded-lg p-3 hover:bg-amber-50"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div>
@@ -298,7 +298,7 @@ export default function CourseDetailPage() {
                     </div>
                     <Link
                       href={`/course/${courseId}/student/${student.id}`}
-                      className="block text-center px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm"
+                      className="block text-center px-3 py-1 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition text-sm"
                     >
                       <BarChart3 size={14} className="inline mr-1" />
                       {t('test.viewDashboard')}
@@ -313,13 +313,13 @@ export default function CourseDetailPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <FileText size={24} className="text-green-600" />
+                <FileText size={24} className="text-emerald-600" />
                 <h2 className="text-2xl font-bold text-gray-800">{t('course.tests')}</h2>
                 <span className="text-gray-600">({course.tests.length})</span>
               </div>
               <button
                 onClick={() => setShowAddTestModal(true)}
-                className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm"
+                className="flex items-center gap-1 px-3 py-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition text-sm"
               >
                 <Plus size={16} />
                 {t('common.add')}
@@ -337,7 +337,7 @@ export default function CourseDetailPage() {
                     return (
                       <div
                         key={test.id}
-                        className="border border-gray-300 rounded-lg p-3 hover:bg-gray-50"
+                        className="border border-stone-300 rounded-lg p-3 hover:bg-amber-50"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
@@ -352,7 +352,7 @@ export default function CourseDetailPage() {
                                 day: 'numeric',
                               })}
                             </p>
-                            <p className="text-xs text-blue-600 mt-1">
+                            <p className="text-xs text-rose-600 mt-1">
                               {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
                             </p>
                           </div>
@@ -365,7 +365,7 @@ export default function CourseDetailPage() {
                         </div>
                         <Link
                           href={`/course/${courseId}/test/${test.id}`}
-                          className="block text-center px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+                          className="block text-center px-3 py-1 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition text-sm"
                         >
                           <Edit size={14} className="inline mr-1" />
                           {t('test.giveFeedback')}
@@ -388,26 +388,26 @@ export default function CourseDetailPage() {
 
         {/* Quick stats */}
         {course.students.length > 0 && course.tests.length > 0 && (
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-900 mb-2">{t('course.courseOverview')}</h3>
+          <div className="mt-6 bg-amber-100 border border-amber-300 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-2">{t('course.courseOverview')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-blue-700">{t('course.totalStudents')}</p>
-                <p className="text-2xl font-bold text-blue-900">{course.students.length}</p>
+                <p className="text-gray-700">{t('course.totalStudents')}</p>
+                <p className="text-2xl font-bold text-rose-700">{course.students.length}</p>
               </div>
               <div>
-                <p className="text-blue-700">{t('course.totalTests')}</p>
-                <p className="text-2xl font-bold text-blue-900">{course.tests.length}</p>
+                <p className="text-gray-700">{t('course.totalTests')}</p>
+                <p className="text-2xl font-bold text-emerald-700">{course.tests.length}</p>
               </div>
               <div>
-                <p className="text-blue-700">{t('course.possibleFeedback')}</p>
-                <p className="text-2xl font-bold text-blue-900">
+                <p className="text-gray-700">{t('course.possibleFeedback')}</p>
+                <p className="text-2xl font-bold text-violet-700">
                   {course.students.length * course.tests.length}
                 </p>
               </div>
               <div>
-                <p className="text-blue-700">{t('test.completed')}</p>
-                <p className="text-2xl font-bold text-blue-900">
+                <p className="text-gray-700">{t('test.completed')}</p>
+                <p className="text-2xl font-bold text-amber-700">
                   {course.tests.reduce((sum, test) =>
                     sum + test.studentFeedbacks.filter(f => f.completedDate).length, 0
                   )}
@@ -432,7 +432,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                     placeholder={t('course.studentNamePlaceholder')}
                     autoFocus
                   />
@@ -446,7 +446,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newStudentNumber}
                     onChange={(e) => setNewStudentNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                     placeholder={t('course.studentNumberPlaceholder')}
                   />
                 </div>
@@ -459,13 +459,13 @@ export default function CourseDetailPage() {
                     setNewStudentName('');
                     setNewStudentNumber('');
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleAddStudent}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                  className="flex-1 px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-700 transition"
                 >
                   {t('course.addStudentButton')}
                 </button>
@@ -489,7 +489,7 @@ export default function CourseDetailPage() {
                     value={bulkStudentText}
                     onChange={(e) => setBulkStudentText(e.target.value)}
                     rows={10}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900 font-mono text-sm"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-900 font-mono text-sm"
                     placeholder={t('course.bulkAddPlaceholder')}
                     autoFocus
                   />
@@ -505,13 +505,13 @@ export default function CourseDetailPage() {
                     setShowBulkAddStudentModal(false);
                     setBulkStudentText('');
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleBulkAddStudents}
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+                  className="flex-1 px-4 py-2 bg-violet-600 text-white rounded-md hover:bg-violet-700 transition"
                 >
                   {t('course.addStudentsButton')}
                 </button>
@@ -535,7 +535,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newTestName}
                     onChange={(e) => setNewTestName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                     placeholder={t('course.testNamePlaceholder')}
                     autoFocus
                   />
@@ -549,7 +549,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newTestDescription}
                     onChange={(e) => setNewTestDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                     placeholder={t('course.testDescriptionPlaceholder')}
                   />
                 </div>
@@ -562,7 +562,7 @@ export default function CourseDetailPage() {
                     type="date"
                     value={newTestDate}
                     onChange={(e) => setNewTestDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                   />
                 </div>
 
@@ -573,7 +573,7 @@ export default function CourseDetailPage() {
                       type="checkbox"
                       checked={newTestHasTwoParts}
                       onChange={(e) => setNewTestHasTwoParts(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      className="w-4 h-4 text-rose-600 rounded focus:ring-2 focus:ring-rose-500"
                     />
                     <span className="text-sm font-medium text-gray-700">
                       {t('course.twoPart')}
@@ -596,7 +596,7 @@ export default function CourseDetailPage() {
                       max="50"
                       value={newTestTaskCount}
                       onChange={(e) => setNewTestTaskCount(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                       placeholder="5"
                     />
                     <p className="text-xs text-gray-500 mt-1">{t('course.taskNumberingHelp')}</p>
@@ -605,7 +605,7 @@ export default function CourseDetailPage() {
 
                 {/* Two-part configuration - only show when enabled */}
                 {newTestHasTwoParts && (
-                  <div className="space-y-3 bg-blue-50 p-4 rounded-md border border-blue-200">
+                  <div className="space-y-3 bg-amber-100 p-4 rounded-md border border-amber-300">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -617,7 +617,7 @@ export default function CourseDetailPage() {
                           max="30"
                           value={newTestPart1Count}
                           onChange={(e) => setNewTestPart1Count(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                           placeholder="3"
                         />
                       </div>
@@ -632,7 +632,7 @@ export default function CourseDetailPage() {
                           max="30"
                           value={newTestPart2Count}
                           onChange={(e) => setNewTestPart2Count(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 text-gray-900"
                           placeholder="2"
                         />
                       </div>
@@ -643,7 +643,7 @@ export default function CourseDetailPage() {
                         type="checkbox"
                         checked={newTestRestartNumbering}
                         onChange={(e) => setNewTestRestartNumbering(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                        className="w-4 h-4 text-rose-600 rounded focus:ring-2 focus:ring-rose-500"
                       />
                       <span className="text-sm text-gray-700">
                         {t('course.restartNumbering')}
@@ -673,13 +673,13 @@ export default function CourseDetailPage() {
                     setNewTestPart2Count('2');
                     setNewTestRestartNumbering(false);
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+                  className="flex-1 px-4 py-2 bg-stone-300 text-gray-700 rounded-md hover:bg-stone-400 transition"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleAddTest}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition"
                 >
                   {t('course.addTestButton')}
                 </button>
