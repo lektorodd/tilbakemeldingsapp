@@ -169,31 +169,31 @@ export default function StudentDashboardPage() {
                   <div className="flex-[0.15] border border-gray-200 rounded-lg p-2 bg-gray-50">
                     <div className="flex flex-col h-full justify-between">
                       <div className="flex items-end gap-0.5 flex-1 mb-1" style={{ minHeight: '60px' }}>
-                        {[0, 1, 2, 3, 4, 5, 6].map(score => {
-                          const count = test.scoreDistribution[score] || 0;
-                          const maxCount = Math.max(...Object.values(test.scoreDistribution));
-                          const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                        {(() => {
+                          // Use the same color as the progress bar for all histogram bars
+                          const barColor = test.score >= 50 ? 'bg-green-600' : test.score >= 35 ? 'bg-yellow-600' : 'bg-red-600';
 
-                          // Determine color based on score
-                          let barColor = 'bg-red-600';
-                          if (score >= 5) barColor = 'bg-green-600';
-                          else if (score >= 3) barColor = 'bg-yellow-600';
+                          return [0, 1, 2, 3, 4, 5, 6].map(score => {
+                            const count = test.scoreDistribution[score] || 0;
+                            const maxCount = Math.max(...Object.values(test.scoreDistribution));
+                            const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
-                          return (
-                            <div
-                              key={score}
-                              className="flex-1 relative group h-full"
-                              title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
-                            >
-                              <div className="h-full flex flex-col justify-end">
-                                <div
-                                  className={`${barColor} ${count > 0 ? '' : 'bg-gray-300'} rounded-t transition-all`}
-                                  style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
-                                />
+                            return (
+                              <div
+                                key={score}
+                                className="flex-1 relative group h-full"
+                                title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
+                              >
+                                <div className="h-full flex flex-col justify-end">
+                                  <div
+                                    className={`${count > 0 ? barColor : 'bg-gray-300'} rounded-t transition-all`}
+                                    style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          });
+                        })()}
                       </div>
                       {/* Labels for histogram */}
                       <div className="flex gap-0.5">
