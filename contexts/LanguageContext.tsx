@@ -23,11 +23,9 @@ const translations = {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('nb'); // Default to Norwegian Bokmål
-  const [mounted, setMounted] = useState(false);
 
   // Load language from localStorage on mount
   useEffect(() => {
-    setMounted(true);
     const stored = localStorage.getItem('language');
     if (stored && (stored === 'en' || stored === 'nb' || stored === 'nn')) {
       setLanguageState(stored);
@@ -36,7 +34,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('language', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
   };
 
   const t = (key: string): string => {
@@ -50,11 +50,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     return typeof value === 'string' ? value : key;
   };
-
-  // Don't render children until mounted to avoid hydration mismatch
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>
