@@ -8,8 +8,10 @@ import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from 
 import TaskConfiguration from '@/components/TaskConfiguration';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function TestFeedbackPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,14 +30,14 @@ export default function TestFeedbackPage() {
   const loadData = () => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert('Course not found');
+      alert(t('course.courseNotFound'));
       router.push('/courses');
       return;
     }
 
     const loadedTest = loadedCourse.tests.find(t => t.id === testId);
     if (!loadedTest) {
-      alert('Test not found');
+      alert(t('test.testNotFound'));
       router.push(`/course/${courseId}`);
       return;
     }
@@ -71,7 +73,7 @@ export default function TestFeedbackPage() {
   const handleSaveTest = () => {
     if (test) {
       updateTest(courseId, testId, test);
-      alert('Test configuration saved!');
+      alert(t('test.testConfigSaved'));
       loadData();
     }
   };
@@ -125,7 +127,7 @@ export default function TestFeedbackPage() {
     updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
     setCurrentFeedback(updatedFeedback);
     loadData();
-    alert('Feedback marked as complete and auto-saved!');
+    alert(t('test.feedbackMarkedComplete'));
   };
 
   const handleUnmarkComplete = () => {
@@ -147,12 +149,12 @@ export default function TestFeedbackPage() {
     const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
 
     if (completedFeedbacks.length === 0) {
-      alert('No completed feedback to export. Mark at least one student as complete first.');
+      alert(t('test.noCompletedFeedback'));
       return;
     }
 
     const confirmExport = confirm(
-      `Export PDFs for ${completedFeedbacks.length} completed student(s)?\n\nThis will download multiple files.`
+      t('test.exportPDFsConfirm').replace('{count}', completedFeedbacks.length.toString())
     );
 
     if (!confirmExport) return;
@@ -193,9 +195,9 @@ export default function TestFeedbackPage() {
     }
 
     if (failCount > 0) {
-      alert(`Export complete: ${successCount} succeeded, ${failCount} failed.`);
+      alert(t('test.exportComplete').replace('{success}', successCount.toString()).replace('{failed}', failCount.toString()));
     } else {
-      alert(`Successfully exported ${successCount} PDF(s)!`);
+      alert(t('test.exportSuccess').replace('{count}', successCount.toString()));
     }
   };
 
@@ -241,12 +243,12 @@ export default function TestFeedbackPage() {
 
     const success = await compileAndDownloadPDF(typstContent, filename);
     if (success) {
-      alert('PDF compiled and downloaded successfully!');
+      alert(t('test.pdfCompiledSuccess'));
     }
   };
 
   if (!course || !test) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">{t('common.loading')}</div>;
   }
 
   const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback => {
@@ -270,7 +272,7 @@ export default function TestFeedbackPage() {
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-2"
             >
               <ArrowLeft size={20} />
-              Back to Course
+              {t('test.backToCourse')}
             </Link>
             <h1 className="text-3xl font-bold text-gray-900">{test.name}</h1>
             <p className="text-gray-600">{course.name}</p>
@@ -282,15 +284,15 @@ export default function TestFeedbackPage() {
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
             >
               <Save size={18} />
-              Save Test Config
+              {t('test.saveTestConfig')}
             </button>
             <button
               onClick={handleExportAllPDFs}
               className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition"
-              title="Export PDFs for all completed students"
+              title={t('test.exportAllPDFs')}
             >
               <Download size={18} />
-              Export All PDFs
+              {t('test.exportAllPDFs')}
             </button>
           </div>
         </div>
@@ -306,14 +308,14 @@ export default function TestFeedbackPage() {
 
         {/* General Comment - Full Width */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">General Comment</h3>
-          <p className="text-sm text-gray-600 mb-2">This comment will appear on all student feedback PDFs</p>
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">{t('test.generalCommentTitle')}</h3>
+          <p className="text-sm text-gray-600 mb-2">{t('test.generalCommentDesc')}</p>
           <textarea
             value={test.generalComment}
             onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
             rows={4}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
-            placeholder="Same for all students..."
+            placeholder={t('test.generalCommentPlaceholder')}
           />
         </div>
 
@@ -322,11 +324,11 @@ export default function TestFeedbackPage() {
           {/* Students list */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-4 sticky top-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Students ({course.students.length})</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
 
               <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                 {course.students.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No students in course</p>
+                  <p className="text-sm text-gray-500 text-center py-4">{t('test.noStudentsInCourse')}</p>
                 ) : (
                   course.students.map(student => {
                     const feedback = getStudentFeedback(courseId, testId, student.id);
@@ -363,7 +365,7 @@ export default function TestFeedbackPage() {
                           <Link
                             href={`/course/${courseId}/student/${student.id}`}
                             className="p-1 text-purple-600 hover:bg-purple-100 rounded transition"
-                            title="View student dashboard"
+                            title={t('test.viewStudentDashboard')}
                             onClick={(e) => e.stopPropagation()}
                           >
                             <BarChart3 size={16} />
@@ -385,7 +387,7 @@ export default function TestFeedbackPage() {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-800">{selectedStudent.name}</h2>
                     {selectedStudent.studentNumber && (
-                      <p className="text-sm text-gray-600">Student #: {selectedStudent.studentNumber}</p>
+                      <p className="text-sm text-gray-600">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
                     )}
                     <p className="text-3xl font-bold text-blue-600 mt-2">{currentScore} / 60</p>
                   </div>
@@ -394,10 +396,10 @@ export default function TestFeedbackPage() {
                       <button
                         onClick={handleUnmarkComplete}
                         className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition font-medium"
-                        title="Click to un-mark as complete"
+                        title={t('test.clickToUnmarkComplete')}
                       >
                         <CheckCircle size={18} />
-                        Completed (click to undo)
+                        {t('test.completedClickToUndo')}
                       </button>
                     ) : (
                       <button
@@ -405,21 +407,21 @@ export default function TestFeedbackPage() {
                         className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                       >
                         <CheckCircle size={18} />
-                        Mark Complete
+                        {t('test.markComplete')}
                       </button>
                     )}
                     <button
                       onClick={handleCompilePDF}
                       className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
-                      title="Compile to PDF directly"
+                      title={t('test.compileToPDF')}
                     >
                       <Download size={18} />
-                      Generate PDF
+                      {t('test.generatePDF')}
                     </button>
                     <button
                       onClick={handleExportTypst}
                       className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition"
-                      title="Download .typ source file"
+                      title={t('test.downloadTypSource')}
                     >
                       <FileText size={18} />
                       .typ
@@ -429,12 +431,12 @@ export default function TestFeedbackPage() {
 
                 {/* Task Feedback */}
                 <div className="space-y-6 mb-6">
-                  <h3 className="text-xl font-semibold text-gray-800">Task Feedback</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">{t('test.taskFeedbackTitle')}</h3>
                   {test.tasks.map(task => (
                     <div key={task.id}>
                       {task.hasSubtasks ? (
                         <div className="space-y-4">
-                          <h4 className="text-lg font-semibold text-gray-700">Task {task.label}</h4>
+                          <h4 className="text-lg font-semibold text-gray-700">{t('test.task')} {task.label}</h4>
                           {task.subtasks.map(subtask => {
                             const feedback = getFeedback(task.id, subtask.id);
                             return (
@@ -444,7 +446,7 @@ export default function TestFeedbackPage() {
                                     {task.label}{subtask.label}:
                                   </label>
                                   <div className="flex items-center gap-2">
-                                    <label className="text-sm text-gray-600">Points:</label>
+                                    <label className="text-sm text-gray-600">{t('test.pointsLabel')}</label>
                                     <select
                                       value={feedback.points}
                                       onChange={(e) =>
@@ -461,7 +463,7 @@ export default function TestFeedbackPage() {
                                 </div>
                                 <div>
                                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Comment (Typst math supported):
+                                    {t('test.commentLabel')}
                                   </label>
                                   <textarea
                                     value={feedback.comment}
@@ -470,7 +472,7 @@ export default function TestFeedbackPage() {
                                     }
                                     rows={3}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
-                                    placeholder="e.g., Good work! $x = 5$"
+                                    placeholder={t('test.commentPlaceholder1')}
                                   />
                                 </div>
                               </div>
@@ -485,10 +487,10 @@ export default function TestFeedbackPage() {
                               <>
                                 <div className="flex items-center gap-4 mb-3">
                                   <label className="font-medium text-gray-700 min-w-[60px]">
-                                    Task {task.label}:
+                                    {t('test.task')} {task.label}:
                                   </label>
                                   <div className="flex items-center gap-2">
-                                    <label className="text-sm text-gray-600">Points:</label>
+                                    <label className="text-sm text-gray-600">{t('test.pointsLabel')}</label>
                                     <select
                                       value={feedback.points}
                                       onChange={(e) =>
@@ -505,7 +507,7 @@ export default function TestFeedbackPage() {
                                 </div>
                                 <div>
                                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Comment (Typst math supported):
+                                    {t('test.commentLabel')}
                                   </label>
                                   <textarea
                                     value={feedback.comment}
@@ -514,7 +516,7 @@ export default function TestFeedbackPage() {
                                     }
                                     rows={3}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
-                                    placeholder="e.g., Excellent! $integral x^2 d x = x^3/3 + C$"
+                                    placeholder={t('test.commentPlaceholder2')}
                                   />
                                 </div>
                               </>
@@ -529,14 +531,14 @@ export default function TestFeedbackPage() {
                 {/* Individual Comment */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Individual Comment (specific to this student):
+                    {t('test.individualCommentLabel')}
                   </label>
                   <textarea
                     value={currentFeedback.individualComment}
                     onChange={(e) => handleUpdateIndividualComment(e.target.value)}
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
-                    placeholder="Personal feedback for this student..."
+                    placeholder={t('test.individualCommentPlaceholder')}
                   />
                 </div>
               </div>
@@ -544,7 +546,7 @@ export default function TestFeedbackPage() {
               <div className="bg-white rounded-lg shadow-md p-12 flex items-center justify-center">
                 <div className="text-center text-gray-500">
                   <Circle size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>Select a student to provide feedback</p>
+                  <p>{t('test.selectStudentPrompt')}</p>
                 </div>
               </div>
             )}
