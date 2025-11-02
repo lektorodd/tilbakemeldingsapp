@@ -136,7 +136,16 @@
     "oralTestTopicsHelp": "Comma-separated list of topics to be covered",
     "addOralTestButton": "Add Oral Assessment",
     "oralTestNameRequired": "Please enter a name",
-    "oralTestDateRequired": "Please select a date"
+    "oralTestDateRequired": "Please select a date",
+    "courseLabels": "Course Labels",
+    "addLabelButton": "Add Label",
+    "addButton": "Add",
+    "cancelButton": "Cancel",
+    "noLabelsYet": "No labels yet. Add labels to categorize tasks by theme/skill.",
+    "labelsHelpText": "Labels help you track student performance across themes (e.g., \"fractions\", \"logarithms\"). Add multiple labels to tasks that cover multiple topics.",
+    "labelAlreadyExists": "This label already exists!",
+    "removeLabelConfirm": "Remove label \"{label}\"? This will not remove it from existing tasks.",
+    "labelPlaceholder": "e.g., logarithms, fractions, equations"
   },
   "test": {
     "giveFeedback": "Give Feedback",

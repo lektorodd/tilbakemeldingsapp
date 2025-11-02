@@ -136,7 +136,16 @@
     "oralTestTopicsHelp": "Kommaseparert liste over tema som skal dekkes",
     "addOralTestButton": "Legg til munnleg vurdering",
     "oralTestNameRequired": "Vennligst skriv inn eit namn",
-    "oralTestDateRequired": "Vennligst vel ein dato"
+    "oralTestDateRequired": "Vennligst vel ein dato",
+    "courseLabels": "Kursmerkelappar",
+    "addLabelButton": "Legg til merkelapp",
+    "addButton": "Legg til",
+    "cancelButton": "Avbryt",
+    "noLabelsYet": "Ingen merkelappar enno. Legg til merkelappar for å kategorisere oppgåver etter tema/ferdigheit.",
+    "labelsHelpText": "Merkelappar hjelper deg å spore elevprestasjonar på tvers av tema (t.d. \"brøk\", \"logaritmar\"). Legg til fleire merkelappar på oppgåver som dekker fleire emne.",
+    "labelAlreadyExists": "Denne merkelappen finst allereie!",
+    "removeLabelConfirm": "Fjern merkelappen \"{label}\"? Dette vil ikkje fjerne han frå eksisterande oppgåver.",
+    "labelPlaceholder": "t.d. logaritmar, brøk, likningar"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",

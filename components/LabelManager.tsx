@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Plus, X, Tag } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LabelManagerProps {
   labels: string[];
@@ -9,6 +10,7 @@ interface LabelManagerProps {
 }
 
 export default function LabelManager({ labels, onLabelsChange }: LabelManagerProps) {
+  const { t } = useLanguage();
   const [showAddLabel, setShowAddLabel] = useState(false);
   const [newLabel, setNewLabel] = useState('');
 
@@ -17,7 +19,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
 
     const trimmed = newLabel.trim().toLowerCase();
     if (labels.includes(trimmed)) {
-      alert('This label already exists!');
+      alert(t('course.labelAlreadyExists'));
       return;
     }
 
@@ -27,7 +29,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
   };
 
   const handleRemoveLabel = (label: string) => {
-    if (confirm(`Remove label "${label}"? This will not remove it from existing tasks.`)) {
+    if (confirm(t('course.removeLabelConfirm').replace('{label}', label))) {
       onLabelsChange(labels.filter(l => l !== label));
     }
   };
@@ -37,14 +39,14 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Tag size={20} className="text-brand" />
-          <h3 className="text-lg font-semibold text-text-primary">Course Labels</h3>
+          <h3 className="text-lg font-semibold text-text-primary">{t('course.courseLabels')}</h3>
         </div>
         <button
           onClick={() => setShowAddLabel(!showAddLabel)}
           className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
         >
           <Plus size={16} />
-          Add Label
+          {t('course.addLabelButton')}
         </button>
       </div>
 
@@ -56,14 +58,14 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
             onChange={(e) => setNewLabel(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
             className="flex-1 px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm text-text-primary"
-            placeholder="e.g., logarithms, fractions, equations"
+            placeholder={t('course.labelPlaceholder')}
             autoFocus
           />
           <button
             onClick={handleAddLabel}
             className="px-3 py-1.5 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition-colors text-sm"
           >
-            Add
+            {t('course.addButton')}
           </button>
           <button
             onClick={() => {
@@ -72,14 +74,14 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
             }}
             className="px-3 py-1.5 bg-gray-300 text-text-secondary rounded-lg hover:bg-gray-400 transition-colors text-sm"
           >
-            Cancel
+            {t('course.cancelButton')}
           </button>
         </div>
       )}
 
       <div className="flex flex-wrap gap-2">
         {labels.length === 0 ? (
-          <p className="text-sm text-text-disabled">No labels yet. Add labels to categorize tasks by theme/skill.</p>
+          <p className="text-sm text-text-disabled">{t('course.noLabelsYet')}</p>
         ) : (
           labels.map(label => (
             <div
@@ -99,7 +101,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
       </div>
 
       <p className="text-xs text-text-secondary mt-3">
-        Labels help you track student performance across themes (e.g., "fractions", "logarithms"). Add multiple labels to tasks that cover multiple topics.
+        {t('course.labelsHelpText')}
       </p>
     </div>
   );
