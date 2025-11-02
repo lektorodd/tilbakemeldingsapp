@@ -302,7 +302,6 @@ export default function TestAnalyticsPage() {
               <thead className="bg-gray-50 border-b border-border">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.task')}</th>
-                  {test.hasTwoParts && <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.part')}</th>}
                   <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.category')}</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.themeLabelsCol')}</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.avgScore')}</th>
@@ -313,7 +312,7 @@ export default function TestAnalyticsPage() {
               <tbody className="divide-y divide-border">
                 {sortedAnalytics.length === 0 ? (
                   <tr>
-                    <td colSpan={test.hasTwoParts ? 7 : 6} className="px-4 py-8 text-center text-text-disabled">
+                    <td colSpan={6} className="px-4 py-8 text-center text-text-disabled">
                       {t('test.noTasksMatch')}
                     </td>
                   </tr>
@@ -336,11 +335,6 @@ export default function TestAnalyticsPage() {
                           )}
                         </div>
                       </td>
-                      {test.hasTwoParts && (
-                        <td className="px-4 py-3 text-sm text-text-secondary">
-                          {ta.part ? `${t('test.part')} ${ta.part}` : '-'}
-                        </td>
-                      )}
                       <td className="px-4 py-3">
                         {ta.category ? (
                           <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${getCategoryColor(ta.category)}`}>
