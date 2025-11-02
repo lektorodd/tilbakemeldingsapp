@@ -8,7 +8,8 @@ import { calculateStudentScore, getTestTaskAnalytics } from './courseStorage';
  */
 export async function exportCourseToExcel(course: Course): Promise<void> {
   // Dynamic import for client-side only
-  const ExcelJS = (await import('exceljs')).default;
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = ExcelJSModule.default || ExcelJSModule;
   const workbook = new ExcelJS.Workbook();
 
   // Set workbook properties
