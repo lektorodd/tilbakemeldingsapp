@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics } from '@/types';
 
 const COURSES_KEY = 'math-feedback-courses';
 let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
@@ -791,6 +791,121 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
       averageScore,
       averageAttemptRate,
     },
+  };
+}
+
+// Test Task Analytics - Analyze task performance for a specific test
+export function getTestTaskAnalytics(courseId: string, testId: string): TaskAnalytics[] {
+  const course = loadCourse(courseId);
+  if (!course) return [];
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test) return [];
+
+  // Get completed feedback only
+  const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
+  const totalStudents = completedFeedbacks.length;
+
+  if (totalStudents === 0) return [];
+
+  const taskAnalytics: TaskAnalytics[] = [];
+
+  // Process each task
+  test.tasks.forEach((task) => {
+    if (task.hasSubtasks && task.subtasks.length > 0) {
+      // Process each subtask
+      task.subtasks.forEach((subtask) => {
+        const analytics = calculateTaskAnalytics(
+          task,
+          subtask,
+          completedFeedbacks,
+          totalStudents,
+          test.hasTwoParts
+        );
+        taskAnalytics.push(analytics);
+      });
+    } else {
+      // Process task without subtasks
+      const analytics = calculateTaskAnalytics(
+        task,
+        undefined,
+        completedFeedbacks,
+        totalStudents,
+        test.hasTwoParts
+      );
+      taskAnalytics.push(analytics);
+    }
+  });
+
+  return taskAnalytics;
+}
+
+function calculateTaskAnalytics(
+  task: Task,
+  subtask: { id: string; label: string; labels: string[]; category?: number } | undefined,
+  completedFeedbacks: TestFeedbackData[],
+  totalStudents: number,
+  hasTwoParts?: boolean
+): TaskAnalytics {
+  const taskId = task.id;
+  const subtaskId = subtask?.id;
+
+  // Collect all feedback for this task/subtask
+  const feedbacks = completedFeedbacks
+    .flatMap(f => f.taskFeedbacks)
+    .filter(tf =>
+      tf.taskId === taskId &&
+      (subtaskId ? tf.subtaskId === subtaskId : !tf.subtaskId)
+    );
+
+  // Calculate statistics
+  const scoreDistribution: Record<number, number> = {
+    0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0
+  };
+
+  let totalPoints = 0;
+  let attemptCount = 0; // Students who scored 1+ points
+
+  feedbacks.forEach(feedback => {
+    const points = Math.min(6, Math.max(0, feedback.points));
+    scoreDistribution[points]++;
+    totalPoints += points;
+
+    if (points >= 1) {
+      attemptCount++;
+    }
+  });
+
+  // Account for students who didn't attempt (no feedback entry)
+  const unattempted = totalStudents - feedbacks.length;
+  scoreDistribution[0] += unattempted;
+
+  const averageScore = feedbacks.length > 0 ? totalPoints / feedbacks.length : 0;
+  const attemptPercentage = totalStudents > 0 ? (attemptCount / totalStudents) * 100 : 0;
+
+  // Build labels
+  const label = subtask ? `${task.label}${subtask.label}` : task.label;
+  let fullLabel = label;
+
+  if (hasTwoParts && task.part) {
+    fullLabel = `Part ${task.part} - Task ${label}`;
+  } else {
+    fullLabel = `Task ${label}`;
+  }
+
+  return {
+    taskId,
+    subtaskId,
+    label,
+    fullLabel,
+    part: task.part,
+    category: subtask?.category ?? task.category,
+    labels: subtask?.labels ?? task.labels,
+    averageScore,
+    attemptCount,
+    attemptPercentage,
+    totalStudents,
+    scoreDistribution,
   };
 }
 

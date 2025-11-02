@@ -225,3 +225,19 @@ export interface OralFeedbackData {
   score?: number; // Calculated average across dimensions (0-60 scale)
 }
 
+// Task-level analytics for a specific test
+export interface TaskAnalytics {
+  taskId: string;
+  subtaskId?: string;
+  label: string; // e.g., "1", "1a", "2b"
+  fullLabel: string; // e.g., "Part 1 - Task 1a", "Task 2"
+  part?: 1 | 2;
+  category?: number;
+  labels: string[]; // Theme labels
+  averageScore: number; // Average points across all students who attempted
+  attemptCount: number; // Number of students who scored 1+ points
+  attemptPercentage: number; // Percentage of students who attempted (1+ points)
+  totalStudents: number; // Total students with completed feedback
+  scoreDistribution: Record<number, number>; // Count for each score 0-6
+}
+
