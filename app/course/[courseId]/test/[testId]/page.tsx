@@ -662,7 +662,18 @@ export default function TestFeedbackPage() {
                     <div key={task.id}>
                       {task.hasSubtasks ? (
                         <div className="space-y-4">
-                          <h4 className="text-lg font-semibold text-text-secondary">{t('test.task')} {task.label}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-lg font-semibold text-text-secondary">{t('test.task')} {task.label}</h4>
+                            {task.part && (
+                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                task.part === 1
+                                  ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                  : 'bg-blue-100 text-blue-800 border border-blue-300'
+                              }`}>
+                                {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
+                              </span>
+                            )}
+                          </div>
                           {task.subtasks.map(subtask => {
                             const feedback = getFeedback(task.id, subtask.id);
                             return (
@@ -716,9 +727,20 @@ export default function TestFeedbackPage() {
                             return (
                               <>
                                 <div className="flex items-center gap-4 mb-3">
-                                  <label className="font-medium text-text-secondary min-w-[60px]">
-                                    {t('test.task')} {task.label}:
-                                  </label>
+                                  <div className="flex items-center gap-2">
+                                    <label className="font-medium text-text-secondary min-w-[60px]">
+                                      {t('test.task')} {task.label}:
+                                    </label>
+                                    {task.part && (
+                                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                        task.part === 1
+                                          ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                          : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                      }`}>
+                                        {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
+                                      </span>
+                                    )}
+                                  </div>
                                   <div className="flex items-center gap-2">
                                     <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
                                     <select

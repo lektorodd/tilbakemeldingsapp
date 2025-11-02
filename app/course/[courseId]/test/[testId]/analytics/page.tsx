@@ -320,8 +320,21 @@ export default function TestAnalyticsPage() {
                 ) : (
                   sortedAnalytics.map((ta) => (
                     <tr key={`${ta.taskId}-${ta.subtaskId || 'main'}`} className="hover:bg-surface-alt transition">
-                      <td className="px-4 py-3 text-sm font-medium text-text-primary">
-                        {t('test.task')} {ta.label}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-text-primary">
+                            {t('test.task')} {ta.label}
+                          </span>
+                          {ta.part && (
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              ta.part === 1
+                                ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                : 'bg-blue-100 text-blue-800 border border-blue-300'
+                            }`}>
+                              {ta.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       {test.hasTwoParts && (
                         <td className="px-4 py-3 text-sm text-text-secondary">
