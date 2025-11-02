@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
 import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest } from '@/utils/courseStorage';
-import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare } from 'lucide-react';
+import { exportCourseToExcel } from '@/utils/excelExport';
+import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download } from 'lucide-react';
 import Link from 'next/link';
 import LabelManager from '@/components/LabelManager';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -56,6 +57,17 @@ export default function CourseDetailPage() {
       return;
     }
     setCourse(loadedCourse);
+  };
+
+  const handleExportToExcel = async () => {
+    if (!course) return;
+
+    try {
+      await exportCourseToExcel(course);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export course data. Please try again.');
+    }
   };
 
   const handleAddStudent = () => {
@@ -406,13 +418,22 @@ export default function CourseDetailPage() {
               </button>
             </div>
           </div>
-          <Link
-            href={`/course/${courseId}/analytics`}
-            className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
-          >
-            <BarChart3 size={18} />
-            {t('course.viewAnalytics')}
-          </Link>
+          <div className="flex gap-3">
+            <button
+              onClick={handleExportToExcel}
+              className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+            >
+              <Download size={18} />
+              Export to Excel
+            </button>
+            <Link
+              href={`/course/${courseId}/analytics`}
+              className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+            >
+              <BarChart3 size={18} />
+              {t('course.viewAnalytics')}
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

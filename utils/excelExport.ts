@@ -1,13 +1,14 @@
-import ExcelJS from 'exceljs';
 import { Course, CourseStudent, CourseTest, TaskAnalytics } from '@/types';
 import { calculateStudentScore, getTestTaskAnalytics } from './courseStorage';
 
 /**
  * Export course data to an Excel file with multiple sheets:
  * - One "Students" sheet with student overview and test scores
- * - One sheet per test with task analytics and student performance
+ * - One sheet per test with task analytics, student performance, and all comments
  */
 export async function exportCourseToExcel(course: Course): Promise<void> {
+  // Dynamic import for client-side only
+  const ExcelJS = (await import('exceljs')).default;
   const workbook = new ExcelJS.Workbook();
 
   // Set workbook properties
@@ -19,7 +20,7 @@ export async function exportCourseToExcel(course: Course): Promise<void> {
   // 1. Create Students Overview Sheet
   createStudentsSheet(workbook, course);
 
-  // 2. Create a sheet for each test
+  // 2. Create a sheet for each test with detailed feedback
   course.tests.forEach(test => {
     createTestSheet(workbook, course, test);
   });
@@ -32,7 +33,7 @@ export async function exportCourseToExcel(course: Course): Promise<void> {
 /**
  * Create the Students overview sheet
  */
-function createStudentsSheet(workbook: ExcelJS.Workbook, course: Course): void {
+function createStudentsSheet(workbook: any, course: Course): void {
   const sheet = workbook.addWorksheet('Students');
 
   // Define columns
@@ -133,9 +134,9 @@ function createStudentsSheet(workbook: ExcelJS.Workbook, course: Course): void {
 }
 
 /**
- * Create a sheet for a specific test
+ * Create a sheet for a specific test with detailed feedback and comments
  */
-function createTestSheet(workbook: ExcelJS.Workbook, course: Course, test: CourseTest): void {
+function createTestSheet(workbook: any, course: Course, test: CourseTest): void {
   const sanitizedTestName = sanitizeSheetName(test.name);
   const sheet = workbook.addWorksheet(sanitizedTestName);
 
@@ -143,42 +144,62 @@ function createTestSheet(workbook: ExcelJS.Workbook, course: Course, test: Cours
   const taskAnalytics = getTestTaskAnalytics(course.id, test.id);
 
   // Section 1: Test Information
-  sheet.mergeCells('A1:D1');
+  sheet.mergeCells('A1:F1');
   const titleCell = sheet.getCell('A1');
   titleCell.value = test.name;
-  titleCell.font = { bold: true, size: 16 };
-  titleCell.alignment = { horizontal: 'center' };
+  titleCell.font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+  titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
   titleCell.fill = {
     type: 'pattern',
     pattern: 'solid',
     fgColor: { argb: 'FF4472C4' },
   };
+  sheet.getRow(1).height = 30;
 
   sheet.getCell('A2').value = 'Test Date:';
+  sheet.getCell('A2').font = { bold: true };
   sheet.getCell('B2').value = new Date(test.date).toLocaleDateString();
+
   sheet.getCell('A3').value = 'Description:';
+  sheet.getCell('A3').font = { bold: true };
   sheet.getCell('B3').value = test.description || 'N/A';
+
   sheet.getCell('A4').value = 'Students Completed:';
+  sheet.getCell('A4').font = { bold: true };
   const completedCount = test.studentFeedbacks.filter(f => f.completedDate).length;
   sheet.getCell('B4').value = `${completedCount}/${course.students.length}`;
 
+  // General comment
+  if (test.generalComment) {
+    sheet.getCell('A5').value = 'General Comment:';
+    sheet.getCell('A5').font = { bold: true };
+    sheet.mergeCells('B5:F5');
+    const generalCommentCell = sheet.getCell('B5');
+    generalCommentCell.value = test.generalComment;
+    generalCommentCell.alignment = { wrapText: true, vertical: 'top' };
+    sheet.getRow(5).height = Math.max(30, Math.ceil(test.generalComment.length / 60) * 15);
+  }
+
   // Add spacing
-  sheet.getRow(5).height = 5;
+  let currentRow = 7;
+  sheet.getRow(currentRow - 1).height = 5;
 
   // Section 2: Task Analytics
-  sheet.mergeCells('A6:H6');
-  const analyticsTitle = sheet.getCell('A6');
+  sheet.mergeCells(`A${currentRow}:H${currentRow}`);
+  const analyticsTitle = sheet.getCell(`A${currentRow}`);
   analyticsTitle.value = 'Task Performance Analytics';
-  analyticsTitle.font = { bold: true, size: 14 };
-  analyticsTitle.alignment = { horizontal: 'center' };
+  analyticsTitle.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+  analyticsTitle.alignment = { horizontal: 'center', vertical: 'middle' };
   analyticsTitle.fill = {
     type: 'pattern',
     pattern: 'solid',
     fgColor: { argb: 'FF70AD47' },
   };
+  sheet.getRow(currentRow).height = 25;
+  currentRow++;
 
   // Task analytics header
-  const analyticsHeaderRow = sheet.getRow(7);
+  const analyticsHeaderRow = sheet.getRow(currentRow);
   analyticsHeaderRow.values = [
     'Task',
     'Part',
@@ -195,9 +216,11 @@ function createTestSheet(workbook: ExcelJS.Workbook, course: Course, test: Cours
     pattern: 'solid',
     fgColor: { argb: 'FFD9E1F2' },
   };
+  analyticsHeaderRow.alignment = { horizontal: 'center', vertical: 'middle' };
+  currentRow++;
 
   // Task analytics data
-  let currentRow = 8;
+  const analyticsStartRow = currentRow;
   taskAnalytics.forEach(analytics => {
     const row = sheet.getRow(currentRow);
 
@@ -223,105 +246,16 @@ function createTestSheet(workbook: ExcelJS.Workbook, course: Course, test: Cours
   sheet.getColumn(1).width = 20; // Task
   sheet.getColumn(2).width = 12; // Part
   sheet.getColumn(3).width = 12; // Category
-  sheet.getColumn(4).width = 25; // Labels
+  sheet.getColumn(4).width = 30; // Labels
   sheet.getColumn(5).width = 12; // Avg Score
   sheet.getColumn(6).width = 12; // Attempts
   sheet.getColumn(7).width = 12; // Attempt %
-  sheet.getColumn(8).width = 40; // Distribution
+  sheet.getColumn(8).width = 45; // Distribution
 
-  // Add spacing
-  currentRow++;
-  sheet.getRow(currentRow).height = 5;
-  currentRow++;
-
-  // Section 3: Student Scores
-  sheet.mergeCells(`A${currentRow}:F${currentRow}`);
-  const scoresTitle = sheet.getCell(`A${currentRow}`);
-  scoresTitle.value = 'Student Scores';
-  scoresTitle.font = { bold: true, size: 14 };
-  scoresTitle.alignment = { horizontal: 'center' };
-  scoresTitle.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FFFFC000' },
-  };
-  currentRow++;
-
-  // Student scores header
-  const scoresHeaderRow = sheet.getRow(currentRow);
-  scoresHeaderRow.values = [
-    'Student Name',
-    'Student Number',
-    'Score',
-    'Max Score',
-    'Percentage',
-    'Status',
-  ];
-  scoresHeaderRow.font = { bold: true };
-  scoresHeaderRow.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FFFCE4D6' },
-  };
-  currentRow++;
-
-  // Student scores data
-  const studentsStartRow = currentRow;
-  course.students.forEach(student => {
-    const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
-    const row = sheet.getRow(currentRow);
-
-    if (feedback && feedback.completedDate) {
-      const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
-      const percentage = (score / 60) * 100;
-
-      row.values = [
-        student.name,
-        student.studentNumber || 'N/A',
-        score,
-        60,
-        `${percentage.toFixed(1)}%`,
-        'Completed',
-      ];
-
-      // Color code based on percentage
-      const scoreCell = row.getCell(3);
-      if (percentage >= 80) {
-        scoreCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFC6EFCE' },
-        };
-      } else if (percentage < 50) {
-        scoreCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFFFC7CE' },
-        };
-      }
-    } else {
-      row.values = [
-        student.name,
-        student.studentNumber || 'N/A',
-        '-',
-        60,
-        '-',
-        'Not Completed',
-      ];
-    }
-
-    currentRow++;
-  });
-
-  // Set column widths for student section
-  sheet.getColumn(9).width = 25; // Student Name (if needed)
-  sheet.getColumn(10).width = 15; // Student Number
-
-  // Add borders to all data cells
-  const lastRow = currentRow - 1;
-  for (let row = 7; row <= lastRow; row++) {
+  // Add borders to analytics section
+  for (let row = analyticsStartRow - 1; row < currentRow; row++) {
     const currentRowObj = sheet.getRow(row);
-    currentRowObj.eachCell({ includeEmpty: true }, (cell) => {
+    currentRowObj.eachCell({ includeEmpty: false }, (cell: any) => {
       cell.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -330,18 +264,132 @@ function createTestSheet(workbook: ExcelJS.Workbook, course: Course, test: Cours
       };
     });
   }
-}
 
-/**
- * Helper function to get Excel column letter from index
- */
-function getColumnLetter(index: number): string {
-  let letter = '';
-  while (index >= 0) {
-    letter = String.fromCharCode((index % 26) + 65) + letter;
-    index = Math.floor(index / 26) - 1;
-  }
-  return letter;
+  // Add spacing
+  currentRow++;
+  sheet.getRow(currentRow).height = 5;
+  currentRow++;
+
+  // Section 3: Detailed Student Feedback with Comments
+  sheet.mergeCells(`A${currentRow}:H${currentRow}`);
+  const feedbackTitle = sheet.getCell(`A${currentRow}`);
+  feedbackTitle.value = 'Detailed Student Feedback';
+  feedbackTitle.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+  feedbackTitle.alignment = { horizontal: 'center', vertical: 'middle' };
+  feedbackTitle.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFFFC000' },
+  };
+  sheet.getRow(currentRow).height = 25;
+  currentRow++;
+
+  // Process each student's feedback
+  course.students.forEach(student => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
+
+    if (feedback && feedback.completedDate) {
+      const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
+      const percentage = (score / 60) * 100;
+
+      // Student header
+      sheet.mergeCells(`A${currentRow}:H${currentRow}`);
+      const studentHeader = sheet.getCell(`A${currentRow}`);
+      studentHeader.value = `${student.name} (${student.studentNumber || 'N/A'}) - Score: ${score}/60 (${percentage.toFixed(1)}%)`;
+      studentHeader.font = { bold: true, size: 12 };
+      studentHeader.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: percentage >= 80 ? { argb: 'FFC6EFCE' } : percentage >= 50 ? { argb: 'FFFFF4CC' } : { argb: 'FFFFC7CE' },
+      };
+      studentHeader.alignment = { horizontal: 'left', vertical: 'middle' };
+      sheet.getRow(currentRow).height = 20;
+      currentRow++;
+
+      // Task feedback header
+      const taskFeedbackHeader = sheet.getRow(currentRow);
+      taskFeedbackHeader.values = ['Task', 'Points', 'Comment'];
+      taskFeedbackHeader.font = { bold: true };
+      taskFeedbackHeader.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE7E6E6' },
+      };
+      currentRow++;
+
+      // Task feedbacks
+      feedback.taskFeedbacks.forEach(taskFeedback => {
+        const task = test.tasks.find(t => t.id === taskFeedback.taskId);
+        if (!task) return;
+
+        let taskLabel = task.label;
+        if (taskFeedback.subtaskId) {
+          const subtask = task.subtasks.find(st => st.id === taskFeedback.subtaskId);
+          if (subtask) {
+            taskLabel += subtask.label;
+          }
+        }
+
+        const row = sheet.getRow(currentRow);
+        row.values = [
+          taskLabel,
+          `${taskFeedback.points}/6`,
+          taskFeedback.comment || '-',
+        ];
+
+        // Merge comment cells for better readability
+        sheet.mergeCells(`C${currentRow}:H${currentRow}`);
+        const commentCell = sheet.getCell(`C${currentRow}`);
+        commentCell.alignment = { wrapText: true, vertical: 'top' };
+
+        // Auto-adjust row height based on comment length
+        if (taskFeedback.comment) {
+          const estimatedLines = Math.ceil(taskFeedback.comment.length / 100);
+          row.height = Math.max(15, estimatedLines * 15);
+        }
+
+        currentRow++;
+      });
+
+      // Individual comment
+      if (feedback.individualComment) {
+        const commentRow = sheet.getRow(currentRow);
+        commentRow.getCell(1).value = 'Individual Comment:';
+        commentRow.getCell(1).font = { bold: true, italic: true };
+        sheet.mergeCells(`B${currentRow}:H${currentRow}`);
+        const individualCommentCell = sheet.getCell(`B${currentRow}`);
+        individualCommentCell.value = feedback.individualComment;
+        individualCommentCell.alignment = { wrapText: true, vertical: 'top' };
+        individualCommentCell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFF9E6' },
+        };
+
+        const estimatedLines = Math.ceil(feedback.individualComment.length / 100);
+        commentRow.height = Math.max(20, estimatedLines * 15);
+        currentRow++;
+      }
+
+      // Add spacing between students
+      currentRow++;
+      sheet.getRow(currentRow).height = 3;
+      currentRow++;
+    } else {
+      // Student not completed
+      sheet.mergeCells(`A${currentRow}:H${currentRow}`);
+      const studentHeader = sheet.getCell(`A${currentRow}`);
+      studentHeader.value = `${student.name} (${student.studentNumber || 'N/A'}) - Not Completed`;
+      studentHeader.font = { bold: true, size: 12, color: { argb: 'FF999999' } };
+      studentHeader.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF2F2F2' },
+      };
+      currentRow++;
+      currentRow++;
+    }
+  });
 }
 
 /**
