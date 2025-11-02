@@ -495,7 +495,7 @@ export default function CourseDetailPage() {
               </button>
             </div>
 
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2">
               {course.tests.length === 0 ? (
                 <p className="text-sm text-text-disabled text-center py-8">{t('course.noTestsYet')}</p>
               ) : (
@@ -571,7 +571,7 @@ export default function CourseDetailPage() {
               </button>
             </div>
 
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2">
               {!course.oralTests || course.oralTests.length === 0 ? (
                 <p className="text-sm text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
               ) : (
