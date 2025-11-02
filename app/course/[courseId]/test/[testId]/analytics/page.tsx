@@ -141,7 +141,22 @@ export default function TestAnalyticsPage() {
               {t('test.taskAnalyticsTitle')}
             </h1>
           </div>
-          <h2 className="text-xl font-semibold text-text-secondary">{test.name}</h2>
+          <div className="flex items-center gap-4 mb-2">
+            <h2 className="text-xl font-semibold text-text-secondary">{test.name}</h2>
+            {course.tests.length > 1 && (
+              <select
+                value={testId}
+                onChange={(e) => router.push(`/course/${courseId}/test/${e.target.value}/analytics`)}
+                className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-brand focus:outline-none focus:ring-2 focus:ring-brand transition-all cursor-pointer"
+              >
+                {course.tests.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <p className="text-text-secondary">{course.name}</p>
         </div>
 
