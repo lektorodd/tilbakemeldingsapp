@@ -46,6 +46,18 @@ export function deleteCourse(courseId: string): void {
   }
 }
 
+export function updateCourse(courseId: string, updates: Partial<Course>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const updatedCourse = {
+    ...course,
+    ...updates,
+  };
+
+  saveCourse(updatedCourse);
+}
+
 export function getCourseSummaries(): CourseSummary[] {
   const courses = loadAllCourses();
   return courses.map(course => ({

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
-import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest } from '@/utils/courseStorage';
+import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest } from '@/utils/courseStorage';
 import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import LabelManager from '@/components/LabelManager';
@@ -20,6 +20,11 @@ export default function CourseDetailPage() {
   const [showBulkAddStudentModal, setShowBulkAddStudentModal] = useState(false);
   const [showAddTestModal, setShowAddTestModal] = useState(false);
   const [showAddOralTestModal, setShowAddOralTestModal] = useState(false);
+  const [showEditCourseModal, setShowEditCourseModal] = useState(false);
+  const [showEditTestModal, setShowEditTestModal] = useState(false);
+  const [showEditOralTestModal, setShowEditOralTestModal] = useState(false);
+  const [editingTest, setEditingTest] = useState<CourseTest | null>(null);
+  const [editingOralTest, setEditingOralTest] = useState<OralTest | null>(null);
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentNumber, setNewStudentNumber] = useState('');
   const [bulkStudentText, setBulkStudentText] = useState('');
@@ -35,6 +40,9 @@ export default function CourseDetailPage() {
   const [newOralTestDescription, setNewOralTestDescription] = useState('');
   const [newOralTestDate, setNewOralTestDate] = useState('');
   const [newOralTestTopics, setNewOralTestTopics] = useState('');
+  const [newOralTestLabels, setNewOralTestLabels] = useState<string[]>([]);
+  const [editCourseName, setEditCourseName] = useState('');
+  const [editCourseDescription, setEditCourseDescription] = useState('');
 
   useEffect(() => {
     loadData();
@@ -238,6 +246,7 @@ export default function CourseDetailPage() {
       description: newOralTestDescription || undefined,
       date: newOralTestDate,
       topics: topics.length > 0 ? topics : undefined,
+      labels: newOralTestLabels.length > 0 ? newOralTestLabels : undefined,
       studentAssessments: [],
       createdDate: new Date().toISOString(),
       lastModified: new Date().toISOString(),
@@ -249,6 +258,7 @@ export default function CourseDetailPage() {
     setNewOralTestDescription('');
     setNewOralTestDate('');
     setNewOralTestTopics('');
+    setNewOralTestLabels([]);
     setShowAddOralTestModal(false);
     loadData();
   };
@@ -267,6 +277,105 @@ export default function CourseDetailPage() {
     setCourse(updatedCourse);
   };
 
+  const handleEditCourse = () => {
+    if (!course) return;
+    setEditCourseName(course.name);
+    setEditCourseDescription(course.description || '');
+    setShowEditCourseModal(true);
+  };
+
+  const handleUpdateCourse = () => {
+    if (!editCourseName.trim()) {
+      alert(t('course.courseNameRequired'));
+      return;
+    }
+
+    updateCourse(courseId, {
+      name: editCourseName,
+      description: editCourseDescription || undefined,
+    });
+
+    setShowEditCourseModal(false);
+    loadData();
+  };
+
+  const handleEditTest = (test: CourseTest) => {
+    setEditingTest(test);
+    setNewTestName(test.name);
+    setNewTestDescription(test.description || '');
+    setNewTestDate(test.date);
+    setShowEditTestModal(true);
+  };
+
+  const handleUpdateTest = () => {
+    if (!editingTest) return;
+    if (!newTestName.trim()) {
+      alert(t('course.testNameRequired'));
+      return;
+    }
+    if (!newTestDate) {
+      alert(t('course.testDateRequired'));
+      return;
+    }
+
+    updateTest(courseId, editingTest.id, {
+      name: newTestName,
+      description: newTestDescription || undefined,
+      date: newTestDate,
+    });
+
+    setShowEditTestModal(false);
+    setEditingTest(null);
+    setNewTestName('');
+    setNewTestDescription('');
+    setNewTestDate('');
+    loadData();
+  };
+
+  const handleEditOralTest = (oralTest: OralTest) => {
+    setEditingOralTest(oralTest);
+    setNewOralTestName(oralTest.name);
+    setNewOralTestDescription(oralTest.description || '');
+    setNewOralTestDate(oralTest.date);
+    setNewOralTestTopics(oralTest.topics?.join(', ') || '');
+    setNewOralTestLabels(oralTest.labels || []);
+    setShowEditOralTestModal(true);
+  };
+
+  const handleUpdateOralTest = () => {
+    if (!editingOralTest) return;
+    if (!newOralTestName.trim()) {
+      alert(t('course.oralTestNameRequired'));
+      return;
+    }
+    if (!newOralTestDate) {
+      alert(t('course.oralTestDateRequired'));
+      return;
+    }
+
+    const topics = newOralTestTopics
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    updateOralTest(courseId, editingOralTest.id, {
+      name: newOralTestName,
+      description: newOralTestDescription || undefined,
+      date: newOralTestDate,
+      topics: topics.length > 0 ? topics : undefined,
+      labels: newOralTestLabels.length > 0 ? newOralTestLabels : undefined,
+    });
+
+    setShowEditOralTestModal(false);
+    setEditingOralTest(null);
+    setNewOralTestName('');
+    setNewOralTestDescription('');
+    setNewOralTestDate('');
+    setNewOralTestTopics('');
+    setNewOralTestLabels([]);
+    loadData();
+  };
+
   if (!course) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -283,8 +392,19 @@ export default function CourseDetailPage() {
               <ArrowLeft size={20} />
               {t('course.backToCourses')}
             </Link>
-            <h1 className="text-3xl font-display font-bold text-text-primary">{course.name}</h1>
-            {course.description && <p className="text-text-secondary">{course.description}</p>}
+            <div className="flex items-center gap-3">
+              <div>
+                <h1 className="text-3xl font-display font-bold text-text-primary">{course.name}</h1>
+                {course.description && <p className="text-text-secondary">{course.description}</p>}
+              </div>
+              <button
+                onClick={handleEditCourse}
+                className="p-2 text-brand hover:bg-rose-50 rounded transition"
+                title="Edit course details"
+              >
+                <Edit size={20} />
+              </button>
+            </div>
           </div>
           <Link
             href={`/course/${courseId}/analytics`}
@@ -405,12 +525,20 @@ export default function CourseDetailPage() {
                               {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
                             </p>
                           </div>
-                          <button
-                            onClick={() => handleDeleteTest(test.id)}
-                            className="p-1 text-danger hover:bg-red-50 rounded transition"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => handleEditTest(test)}
+                              className="p-1 text-brand hover:bg-rose-50 rounded transition"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTest(test.id)}
+                              className="p-1 text-danger hover:bg-red-50 rounded transition"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                         <Link
                           href={`/course/${courseId}/test/${test.id}`}
@@ -478,12 +606,20 @@ export default function CourseDetailPage() {
                               {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
                             </p>
                           </div>
-                          <button
-                            onClick={() => handleDeleteOralTest(oralTest.id)}
-                            className="p-1 text-danger hover:bg-red-50 rounded transition"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => handleEditOralTest(oralTest)}
+                              className="p-1 text-purple-600 hover:bg-purple-50 rounded transition"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteOralTest(oralTest.id)}
+                              className="p-1 text-danger hover:bg-red-50 rounded transition"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </div>
                         <Link
                           href={`/course/${courseId}/oral/${oralTest.id}`}
@@ -871,6 +1007,37 @@ export default function CourseDetailPage() {
                     {t('course.oralTestTopicsHelp')}
                   </p>
                 </div>
+
+                {/* Labels selector */}
+                {course.availableLabels.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
+                      {t('course.themeLabels')} (optional)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {course.availableLabels.map(label => (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => {
+                            if (newOralTestLabels.includes(label)) {
+                              setNewOralTestLabels(newOralTestLabels.filter(l => l !== label));
+                            } else {
+                              setNewOralTestLabels([...newOralTestLabels, label]);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-full text-sm transition ${
+                            newOralTestLabels.includes(label)
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
@@ -881,6 +1048,7 @@ export default function CourseDetailPage() {
                     setNewOralTestDescription('');
                     setNewOralTestDate('');
                     setNewOralTestTopics('');
+                    setNewOralTestLabels([]);
                   }}
                   className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
                 >
@@ -891,6 +1059,239 @@ export default function CourseDetailPage() {
                   className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
                 >
                   {t('course.addOralTestButton')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Course modal */}
+        {showEditCourseModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">Edit Course</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.courseNameLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={editCourseName}
+                    onChange={(e) => setEditCourseName(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.courseDescriptionLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={editCourseDescription}
+                    onChange={(e) => setEditCourseDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
+                    placeholder={t('course.courseDescriptionPlaceholder')}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowEditCourseModal(false)}
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={handleUpdateCourse}
+                  className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                >
+                  {t('common.save')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Test modal */}
+        {showEditTestModal && editingTest && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">Edit Test</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.testNameLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newTestName}
+                    onChange={(e) => setNewTestName(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.courseDescriptionLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newTestDescription}
+                    onChange={(e) => setNewTestDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
+                    placeholder={t('course.testDescriptionPlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.testDateLabel')}
+                  </label>
+                  <input
+                    type="date"
+                    value={newTestDate}
+                    onChange={(e) => setNewTestDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowEditTestModal(false);
+                    setEditingTest(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={handleUpdateTest}
+                  className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                >
+                  {t('common.save')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Oral Test modal */}
+        {showEditOralTestModal && editingOralTest && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">Edit Oral Assessment</h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestNameLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newOralTestName}
+                    onChange={(e) => setNewOralTestName(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestDescriptionLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newOralTestDescription}
+                    onChange={(e) => setNewOralTestDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    placeholder={t('course.oralTestDescriptionPlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestDateLabel')}
+                  </label>
+                  <input
+                    type="date"
+                    value={newOralTestDate}
+                    onChange={(e) => setNewOralTestDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.oralTestTopicsLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newOralTestTopics}
+                    onChange={(e) => setNewOralTestTopics(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    placeholder={t('course.oralTestTopicsPlaceholder')}
+                  />
+                  <p className="text-xs text-text-disabled mt-1">
+                    {t('course.oralTestTopicsHelp')}
+                  </p>
+                </div>
+
+                {/* Labels selector */}
+                {course.availableLabels.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
+                      {t('course.themeLabels')} (optional)
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {course.availableLabels.map(label => (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => {
+                            if (newOralTestLabels.includes(label)) {
+                              setNewOralTestLabels(newOralTestLabels.filter(l => l !== label));
+                            } else {
+                              setNewOralTestLabels([...newOralTestLabels, label]);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-full text-sm transition ${
+                            newOralTestLabels.includes(label)
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowEditOralTestModal(false);
+                    setEditingOralTest(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={handleUpdateOralTest}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                >
+                  {t('common.save')}
                 </button>
               </div>
             </div>

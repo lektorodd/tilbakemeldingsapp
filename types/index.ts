@@ -117,6 +117,7 @@ export interface OralTest {
   description?: string;
   date: string; // Assessment date
   topics?: string[]; // Topics covered (e.g., ["derivatives", "integrals"])
+  labels?: string[]; // Course labels applied to this oral assessment
   studentAssessments: OralFeedbackData[]; // Assessments for each student
   generalNotes?: string; // General notes about this oral assessment
   createdDate: string;
