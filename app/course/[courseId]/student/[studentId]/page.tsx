@@ -7,6 +7,7 @@ import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, Message
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RadarChart from '@/components/RadarChart';
+import ScoringGuide from '@/components/ScoringGuide';
 import type { CourseStudent } from '@/types';
 
 export default function StudentDashboardPage() {
@@ -490,6 +491,11 @@ export default function StudentDashboardPage() {
             <li>• {t('dashboard.helpPart')}</li>
             <li>• {t('dashboard.helpColors')}</li>
           </ul>
+        </div>
+
+        {/* Scoring Guide */}
+        <div className="mt-6">
+          <ScoringGuide variant="inline" />
         </div>
       </div>
     </main>

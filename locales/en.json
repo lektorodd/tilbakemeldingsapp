@@ -314,7 +314,15 @@
     "category3Name": "Category 3",
     "category1Description": "Tasks that require you to demonstrate understanding of concepts and skills.",
     "category2Description": "Tasks that require you to make connections, apply concepts and use skills in varied ways and different situations.",
-    "category3Description": "Tasks that require some form of exploration or problem-solving. The tasks require you to systematize information, find connections, use varied strategies and demonstrate problem-solving competence."
+    "category3Description": "Tasks that require some form of exploration or problem-solving. The tasks require you to systematize information, find connections, use varied strategies and demonstrate problem-solving competence.",
+    "scoringGuide": "Scoring System (0-6)",
+    "score0": "No relevant mathematical approach / no attempt.",
+    "score1": "Little attempt, but without correct elements or relevant strategies.",
+    "score2": "Relevant start or some correct operations. Understanding is fragmented.",
+    "score3": "Choice of reasonable strategy/method, but major errors in understanding / execution.",
+    "score4": "Mostly correct with good understanding, but lacks critical assessment / model evaluation or central parts are not quite right.",
+    "score5": "The task is largely solved correctly with proper reasoning and method. Minor errors in communication or representations do not disturb competence.",
+    "score6": "The task is correctly solved with precise use of concepts, method and representations. The student also evaluates the result / model and whether it is valid in context."
   },
   "analytics": {
     "title": "Course Analytics",

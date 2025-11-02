@@ -314,7 +314,15 @@
     "category3Name": "Kategori 3",
     "category1Description": "Oppgaver som krever at du viser forståelse av begreper og ferdigheter.",
     "category2Description": "Oppgaver som krever at du ser sammenhenger, kan anvende begreper og kan bruke ferdigheter på varierte måter og i ulike situasjoner.",
-    "category3Description": "Oppgaver som krever en form for utforsking eller problemløsing. Oppgavene krever at du systematiserer opplysninger, finner sammenhenger, bruker varierte strategier og viser problemløsingskompetanse."
+    "category3Description": "Oppgaver som krever en form for utforsking eller problemløsing. Oppgavene krever at du systematiserer opplysninger, finner sammenhenger, bruker varierte strategier og viser problemløsingskompetanse.",
+    "scoringGuide": "Poengsystem (0-6)",
+    "score0": "Ingen relevant matematisk tilnærming / ikke forsøk.",
+    "score1": "Lite forsøk, men uten riktige elementer eller relevante strategier.",
+    "score2": "Relevant start eller noen riktige operasjoner. Forståelse er fragmentert.",
+    "score3": "Valg av fornuftig strategi/metode, men store feil i forståelse / gjennomføring.",
+    "score4": "Mye riktig og god forståelse, men mangler kritisk vurdering / modellvurdering eller sentrale deler er ikke helt riktig.",
+    "score5": "Saken er i stor grad riktig løst med korrekt resonnement og metode. Mindre feil i kommunikasjon eller representasjoner forstyrrer ikke kompetansen.",
+    "score6": "Oppgaven er riktig løst med presis bruk av begreper, metode og representasjoner. Eleven vurderer også resultatet / modellen og om det er gyldig i kontekst."
   },
   "analytics": {
     "title": "Faganalyse",

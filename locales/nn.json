@@ -314,7 +314,15 @@
     "category3Name": "Kategori 3",
     "category1Description": "Oppgåver som krev at du viser forståing av omgrep og ferdigheiter.",
     "category2Description": "Oppgåver som krev at du ser samanhengar, kan anvende omgrep og kan bruke ferdigheiter på varierte måtar og i ulike situasjonar.",
-    "category3Description": "Oppgåver som krev ei form for utforsking eller problemløysing. Oppgåvene krev at du systematiserer opplysningar, finn samanhengar, brukar varierte strategiar og viser problemløysingskompetanse."
+    "category3Description": "Oppgåver som krev ei form for utforsking eller problemløysing. Oppgåvene krev at du systematiserer opplysningar, finn samanhengar, brukar varierte strategiar og viser problemløysingskompetanse.",
+    "scoringGuide": "Poengsystem (0-6)",
+    "score0": "Ingen relevant matematisk tilnærming / ikkje forsøk.",
+    "score1": "Lite forsøk, men utan rette element eller relevante strategiar.",
+    "score2": "Relevant start eller nokre rette operasjonar. Forståing er fragmentert.",
+    "score3": "Val av fornuftig strategi/metode, men store feil i forståing / gjennomføring.",
+    "score4": "Mye riktig og god forståing, men manglar kritisk vurdering / modellvurdering eller sentrale delar er ikkje heilt rett.",
+    "score5": "Saka er i stor grad rett løyst med riktig resonnement og metode. Mindre feil i kommunikasjon eller representasjonar forstyrrar ikkje kompetansen.",
+    "score6": "Oppgåva er rett løyst med presis bruk av begrep, metode og representasjonar. Eleven vurderer også resultatet / modellen og om det er gyldig i kontekst."
   },
   "analytics": {
     "title": "Faganalyse",

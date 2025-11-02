@@ -7,6 +7,7 @@ import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calc
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
+import ScoringGuide from '@/components/ScoringGuide';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -591,7 +592,9 @@ export default function TestFeedbackPage() {
                     )}
                     <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
+                    <ScoringGuide />
+                    <div className="flex gap-2">
                     {currentFeedback.completedDate ? (
                       <button
                         onClick={handleUnmarkComplete}
@@ -626,6 +629,7 @@ export default function TestFeedbackPage() {
                       <FileText size={18} />
                       .typ
                     </button>
+                    </div>
                   </div>
                 </div>
 
