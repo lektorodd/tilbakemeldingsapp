@@ -389,7 +389,9 @@
     "analyticsHelp1": "Temaer hjelper deg å spore prestasjoner på tvers av emner (f.eks. \"logaritmer\", \"brøker\")",
     "analyticsHelp2": "Kategorier hjelper deg å gruppere oppgaver etter vanskelighetsgrad eller type (1, 2, 3)",
     "analyticsHelp3": "Klikk på et tema for å se individuelle elevprestasjoner for det emnet",
-    "analyticsHelp4": "Grønn (5-6), Gul (3.5-4.9), Rød (<3.5) indikerer prestasjonsnivåer"
+    "analyticsHelp4": "Grønn (5-6), Gul (3.5-4.9), Rød (<3.5) indikerer prestasjonsnivåer",
+    "testAnalyticsDesc": "Se detaljert oppgaveprestasjon for hver prøve",
+    "studentDashboardsDesc": "Se individuelle elevprestasjonsdashboard"
   },
   "help": {
     "title": "Hjelp og Veiledning",

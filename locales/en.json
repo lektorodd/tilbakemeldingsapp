@@ -389,7 +389,9 @@
     "analyticsHelp1": "Labels help you track performance across themes (e.g., \"logarithms\", \"fractions\")",
     "analyticsHelp2": "Categories help you group tasks by difficulty or type (1, 2, 3)",
     "analyticsHelp3": "Click on a label to see individual student performance for that theme",
-    "analyticsHelp4": "Green (5-6), Yellow (3.5-4.9), Red (<3.5) indicate performance levels"
+    "analyticsHelp4": "Green (5-6), Yellow (3.5-4.9), Red (<3.5) indicate performance levels",
+    "testAnalyticsDesc": "View detailed task performance for each test",
+    "studentDashboardsDesc": "View individual student performance dashboards"
   },
   "help": {
     "title": "Help & Guide",

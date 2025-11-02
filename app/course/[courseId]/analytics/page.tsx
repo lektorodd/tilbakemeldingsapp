@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, LabelPerformance, CategoryPerformance } from '@/types';
 import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils/courseStorage';
-import { ArrowLeft, Tag, BarChart3, TrendingUp, Users } from 'lucide-react';
+import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -71,7 +71,7 @@ export default function CourseAnalyticsPage() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-surface rounded-lg shadow-sm p-4">
             <div className="flex items-center gap-2 mb-2">
               <Users size={20} className="text-brand" />
@@ -95,6 +95,97 @@ export default function CourseAnalyticsPage() {
             </div>
             <p className="text-3xl font-display font-bold text-brand">{course.availableLabels.length}</p>
           </div>
+
+          {course.oralTests && course.oralTests.length > 0 && (
+            <div className="bg-surface rounded-lg shadow-sm p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <UserCircle size={20} className="text-violet-600" />
+                <h3 className="font-semibold text-text-primary">{t('course.oralTests')}</h3>
+              </div>
+              <p className="text-3xl font-display font-bold text-violet-600">{course.oralTests.length}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Quick Access Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Test Analytics Links */}
+          {course.tests.length > 0 && (
+            <div className="bg-surface rounded-lg shadow-sm p-6 border-2 border-violet-200">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText size={24} className="text-brand" />
+                <h2 className="text-xl font-display font-bold text-text-primary">{t('test.taskAnalyticsTitle')}</h2>
+              </div>
+              <p className="text-sm text-text-secondary mb-4">{t('analytics.testAnalyticsDesc')}</p>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {course.tests
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                  .map(test => {
+                    const completedCount = test.studentFeedbacks.filter(f => f.completedDate).length;
+                    return (
+                      <Link
+                        key={test.id}
+                        href={`/course/${courseId}/test/${test.id}/analytics`}
+                        className="block p-3 border border-border rounded-lg hover:border-brand hover:bg-violet-50 transition-all group"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-text-primary group-hover:text-brand transition">
+                              {test.name}
+                            </h3>
+                            <p className="text-xs text-text-disabled">
+                              {new Date(test.date).toLocaleDateString()} • {completedCount} {t('course.completedFeedback')}
+                            </p>
+                          </div>
+                          <BarChart3 size={20} className="text-text-disabled group-hover:text-brand transition" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
+          {/* Student Dashboard Links */}
+          {course.students.length > 0 && (
+            <div className="bg-surface rounded-lg shadow-sm p-6 border-2 border-emerald-200">
+              <div className="flex items-center gap-2 mb-4">
+                <Users size={24} className="text-success" />
+                <h2 className="text-xl font-display font-bold text-text-primary">{t('dashboard.title')}</h2>
+              </div>
+              <p className="text-sm text-text-secondary mb-4">{t('analytics.studentDashboardsDesc')}</p>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {course.students
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map(student => {
+                    // Calculate completed tests for this student
+                    const completedTests = course.tests.filter(test =>
+                      test.studentFeedbacks.some(f => f.studentId === student.id && f.completedDate)
+                    ).length;
+
+                    return (
+                      <Link
+                        key={student.id}
+                        href={`/course/${courseId}/student/${student.id}`}
+                        className="block p-3 border border-border rounded-lg hover:border-success hover:bg-emerald-50 transition-all group"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-text-primary group-hover:text-success transition">
+                              {student.name}
+                            </h3>
+                            <p className="text-xs text-text-disabled">
+                              {completedTests} / {course.tests.length} {t('course.tests')}
+                            </p>
+                          </div>
+                          <UserCircle size={20} className="text-text-disabled group-hover:text-success transition" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Label Performance */}
