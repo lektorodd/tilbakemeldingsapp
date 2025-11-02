@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, LabelPerformance, CategoryPerformance } from '@/types';
 import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils/courseStorage';
-import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle } from 'lucide-react';
+import { exportCourseToExcel } from '@/utils/excelExport';
+import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -48,6 +49,17 @@ export default function CourseAnalyticsPage() {
     return 'bg-red-100';
   };
 
+  const handleExportToExcel = async () => {
+    if (!course) return;
+
+    try {
+      await exportCourseToExcel(course);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export course data. Please try again.');
+    }
+  };
+
   if (!course) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -66,8 +78,19 @@ export default function CourseAnalyticsPage() {
             <ArrowLeft size={20} />
             {t('analytics.backToCourse')}
           </Link>
-          <h1 className="text-3xl font-display font-bold text-text-primary">{t('analytics.courseAnalyticsTitle').replace('{courseName}', course.name)}</h1>
-          <p className="text-text-secondary">{t('analytics.performanceAnalysisDesc')}</p>
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h1 className="text-3xl font-display font-bold text-text-primary">{t('analytics.courseAnalyticsTitle').replace('{courseName}', course.name)}</h1>
+              <p className="text-text-secondary">{t('analytics.performanceAnalysisDesc')}</p>
+            </div>
+            <button
+              onClick={handleExportToExcel}
+              className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm"
+            >
+              <Download size={20} />
+              Export to Excel
+            </button>
+          </div>
         </div>
 
         {/* Summary Cards */}
