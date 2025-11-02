@@ -218,12 +218,12 @@ export default function CourseAnalyticsPage() {
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('analytics.performanceByCategory')}</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {categoryPerformance.map(cp => (
                 <div key={cp.category} className="p-4 border-2 border-border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h3 className="text-lg font-semibold text-text-primary">{cp.description}</h3>
+                      <h3 className="text-lg font-semibold text-text-primary">{t(`dashboard.category${cp.category}Name`)}</h3>
                       <p className="text-xs text-text-disabled">{t('analytics.tasksCount').replace('{count}', cp.taskCount.toString())}</p>
                     </div>
                     <div className="text-right">
@@ -235,7 +235,7 @@ export default function CourseAnalyticsPage() {
                   </div>
 
                   {/* Progress bar */}
-                  <div className="mt-3 h-3 bg-stone-200 rounded-full overflow-hidden">
+                  <div className="mt-3 h-3 bg-stone-200 rounded-full overflow-hidden mb-2">
                     <div
                       className={`h-full ${
                         cp.averageScore >= 5 ? 'bg-success' :
@@ -244,14 +244,29 @@ export default function CourseAnalyticsPage() {
                       style={{ width: `${(cp.averageScore / 6) * 100}%` }}
                     />
                   </div>
+
+                  {/* Category description from national exam guidelines */}
+                  <p className="text-xs text-text-disabled italic mt-2">
+                    {t(`dashboard.category${cp.category}Description`)}
+                  </p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 p-3 bg-amber-100 border border-amber-300 rounded-lg">
-              <p className="text-sm text-text-primary">
-                <strong>{t('analytics.categoryGuide')}</strong>
-              </p>
+            {/* Category explanation from national exam guidelines */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+              <p className="font-semibold text-blue-900 mb-2">{t('dashboard.helpCategory')}</p>
+              <div className="space-y-2 text-blue-800">
+                <div>
+                  <strong>{t('dashboard.category1Name')}:</strong> {t('dashboard.category1Description')}
+                </div>
+                <div>
+                  <strong>{t('dashboard.category2Name')}:</strong> {t('dashboard.category2Description')}
+                </div>
+                <div>
+                  <strong>{t('dashboard.category3Name')}:</strong> {t('dashboard.category3Description')}
+                </div>
+              </div>
             </div>
           </div>
         ) : (

@@ -305,10 +305,16 @@
     "helpTitle": "Understanding the Dashboard:",
     "helpAttemptRate": "Attempt Rate shows how many tasks the student tries (more than 0 points)",
     "helpTheme": "Theme Performance shows average scores for different skill areas",
-    "helpCategory": "Category Performance shows average scores by difficulty/type",
+    "helpCategory": "Category Performance shows average scores by difficulty/type (from national exam guidelines)",
     "helpPart": "Test Part Performance compares no aids vs all aids performance",
     "helpColors": "Color coding: Green (≥5/6), Yellow (≥3.5/6), Red (<3.5/6)",
-    "tasks": "tasks"
+    "tasks": "tasks",
+    "category1Name": "Category 1",
+    "category2Name": "Category 2",
+    "category3Name": "Category 3",
+    "category1Description": "Tasks that require you to demonstrate understanding of concepts and skills.",
+    "category2Description": "Tasks that require you to make connections, apply concepts and use skills in varied ways and different situations.",
+    "category3Description": "Tasks that require some form of exploration or problem-solving. The tasks require you to systematize information, find connections, use varied strategies and demonstrate problem-solving competence."
   },
   "analytics": {
     "title": "Course Analytics",

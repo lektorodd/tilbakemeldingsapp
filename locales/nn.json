@@ -305,10 +305,16 @@
     "helpTitle": "Forstå dashboard:",
     "helpAttemptRate": "Forsøksrate viser kor mange oppgåver eleven prøver på (meir enn 0 poeng)",
     "helpTheme": "Temaprestasjonar viser gjennomsnittlege poeng for ulike kompetanseområde",
-    "helpCategory": "Kategoriprestasjonar viser gjennomsnittlege poeng etter vanskegrad/type",
+    "helpCategory": "Kategoriprestasjonar viser gjennomsnittlege poeng etter vanskegrad/type (frå nasjonal eksamensveileding)",
     "helpPart": "Prøvedelprestasjonar samanliknar prestasjon utan hjelpemiddel vs. alle hjelpemiddel",
     "helpColors": "Fargekoding: Grøn (≥5/6), Gul (≥3.5/6), Raud (<3.5/6)",
-    "tasks": "oppgåver"
+    "tasks": "oppgåver",
+    "category1Name": "Kategori 1",
+    "category2Name": "Kategori 2",
+    "category3Name": "Kategori 3",
+    "category1Description": "Oppgåver som krev at du viser forståing av omgrep og ferdigheiter.",
+    "category2Description": "Oppgåver som krev at du ser samanhengar, kan anvende omgrep og kan bruke ferdigheiter på varierte måtar og i ulike situasjonar.",
+    "category3Description": "Oppgåver som krev ei form for utforsking eller problemløysing. Oppgåvene krev at du systematiserer opplysningar, finn samanhengar, brukar varierte strategiar og viser problemløysingskompetanse."
   },
   "analytics": {
     "title": "Faganalyse",

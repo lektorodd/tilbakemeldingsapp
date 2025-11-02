@@ -363,11 +363,11 @@ export default function StudentDashboardPage() {
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('dashboard.performanceByCategory')}</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {categoryPerformance.map(cat => (
                 <div key={cat.category} className="border border-border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-text-primary">{cat.description}</h3>
+                    <h3 className="text-lg font-semibold text-text-primary">{t(`dashboard.category${cat.category}Name`)}</h3>
                     <div className="text-right">
                       <p className={`text-2xl font-bold ${cat.averageScore >= 5 ? 'text-success' : cat.averageScore >= 3.5 ? 'text-warning' : 'text-danger'}`}>
                         {cat.averageScore.toFixed(1)}
@@ -378,7 +378,7 @@ export default function StudentDashboardPage() {
                   <p className="text-xs text-text-secondary mb-2">{cat.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
                     <div
                       className={`h-full ${
                         cat.averageScore >= 5 ? 'bg-success' :
@@ -387,8 +387,29 @@ export default function StudentDashboardPage() {
                       style={{ width: `${(cat.averageScore / 6) * 100}%` }}
                     />
                   </div>
+
+                  {/* Category description from national exam guidelines */}
+                  <p className="text-xs text-text-disabled italic">
+                    {t(`dashboard.category${cat.category}Description`)}
+                  </p>
                 </div>
               ))}
+            </div>
+
+            {/* Category explanation from national exam guidelines */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+              <p className="font-semibold text-blue-900 mb-2">{t('dashboard.helpCategory')}</p>
+              <div className="space-y-2 text-blue-800">
+                <div>
+                  <strong>{t('dashboard.category1Name')}:</strong> {t('dashboard.category1Description')}
+                </div>
+                <div>
+                  <strong>{t('dashboard.category2Name')}:</strong> {t('dashboard.category2Description')}
+                </div>
+                <div>
+                  <strong>{t('dashboard.category3Name')}:</strong> {t('dashboard.category3Description')}
+                </div>
+              </div>
             </div>
           </div>
         )}

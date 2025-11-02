@@ -305,10 +305,16 @@
     "helpTitle": "Forstå dashboard:",
     "helpAttemptRate": "Forsøksrate viser hvor mange oppgaver eleven prøver på (mer enn 0 poeng)",
     "helpTheme": "Temaprestasjoner viser gjennomsnittlige poeng for ulike kompetanseområder",
-    "helpCategory": "Kategoriprestasjoner viser gjennomsnittlige poeng etter vanskelighetsgrad/type",
+    "helpCategory": "Kategoriprestasjoner viser gjennomsnittlige poeng etter vanskelighetsgrad/type (fra nasjonal eksamensveiledning)",
     "helpPart": "Prøvedelprestasjoner sammenligner prestasjon uten hjelpemidler vs. alle hjelpemidler",
     "helpColors": "Fargekoding: Grønn (≥5/6), Gul (≥3.5/6), Rød (<3.5/6)",
-    "tasks": "oppgaver"
+    "tasks": "oppgaver",
+    "category1Name": "Kategori 1",
+    "category2Name": "Kategori 2",
+    "category3Name": "Kategori 3",
+    "category1Description": "Oppgaver som krever at du viser forståelse av begreper og ferdigheter.",
+    "category2Description": "Oppgaver som krever at du ser sammenhenger, kan anvende begreper og kan bruke ferdigheter på varierte måter og i ulike situasjoner.",
+    "category3Description": "Oppgaver som krever en form for utforsking eller problemløsing. Oppgavene krever at du systematiserer opplysninger, finner sammenhenger, bruker varierte strategier og viser problemløsingskompetanse."
   },
   "analytics": {
     "title": "Faganalyse",
