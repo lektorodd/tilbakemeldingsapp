@@ -214,7 +214,19 @@
     "snippetsDesc": "Click a snippet to insert it at your cursor position.",
     "snippetsClickTextarea": "Click on a task comment field to activate snippet insertion.",
     "writtenFeedback": "Written Feedback",
-    "oralFeedback": "Oral Assessment"
+    "oralFeedback": "Oral Assessment",
+    "taskLabel": "Task:",
+    "categoryLabel": "Category:",
+    "subtasksCheckbox": "Subtasks",
+    "themesLabel": "Themes:",
+    "subtaskLabel": "Label:",
+    "removeTask": "Remove task",
+    "removeSubtask": "Remove subtask",
+    "addSubtaskButton": "Add Subtask",
+    "addTaskButton": "Add Task",
+    "category1Short": "Skills & concepts",
+    "category2Short": "Application & connections",
+    "category3Short": "Exploration & problem-solving"
   },
   "oral": {
     "title": "Oral Assessment",

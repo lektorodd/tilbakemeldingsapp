@@ -214,7 +214,19 @@
     "snippetsDesc": "Klikk på en hurtigtekst for å sette den inn ved markøren.",
     "snippetsClickTextarea": "Klikk på et kommentarfelt for å aktivere hurtigtekst-innsetting.",
     "writtenFeedback": "Skriftlig tilbakemelding",
-    "oralFeedback": "Muntlig vurdering"
+    "oralFeedback": "Muntlig vurdering",
+    "taskLabel": "Oppgave:",
+    "categoryLabel": "Kategori:",
+    "subtasksCheckbox": "Deloppgaver",
+    "themesLabel": "Temaer:",
+    "subtaskLabel": "Merke:",
+    "removeTask": "Fjern oppgave",
+    "removeSubtask": "Fjern deloppgave",
+    "addSubtaskButton": "Legg til deloppgave",
+    "addTaskButton": "Legg til oppgave",
+    "category1Short": "Ferdigheter & begreper",
+    "category2Short": "Anvendelse & sammenhenger",
+    "category3Short": "Utforsking & problemløsing"
   },
   "oral": {
     "title": "Muntlig vurdering",

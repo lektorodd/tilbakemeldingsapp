@@ -214,7 +214,19 @@
     "snippetsDesc": "Klikk på ein snøggtekst for å setje han inn ved markøren.",
     "snippetsClickTextarea": "Klikk på eit kommentarfelt for å aktivere snøggtekst-innsetjing.",
     "writtenFeedback": "Skriftleg tilbakemelding",
-    "oralFeedback": "Munnleg vurdering"
+    "oralFeedback": "Munnleg vurdering",
+    "taskLabel": "Oppgåve:",
+    "categoryLabel": "Kategori:",
+    "subtasksCheckbox": "Deloppgåver",
+    "themesLabel": "Tema:",
+    "subtaskLabel": "Merke:",
+    "removeTask": "Fjern oppgåve",
+    "removeSubtask": "Fjern deloppgåve",
+    "addSubtaskButton": "Legg til deloppgåve",
+    "addTaskButton": "Legg til oppgåve",
+    "category1Short": "Ferdigheiter & omgrep",
+    "category2Short": "Anvendelse & samanhengar",
+    "category3Short": "Utforsking & problemløysing"
   },
   "oral": {
     "title": "Munnleg vurdering",

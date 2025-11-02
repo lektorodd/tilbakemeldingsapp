@@ -389,9 +389,9 @@ export default function StudentDashboardPage() {
                     />
                   </div>
 
-                  {/* Category description from national exam guidelines */}
+                  {/* Category short title */}
                   <p className="text-xs text-text-disabled italic">
-                    {t(`dashboard.category${cat.category}Description`)}
+                    {t(`test.category${cat.category}Short`)}
                   </p>
                 </div>
               ))}

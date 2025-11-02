@@ -245,9 +245,9 @@ export default function CourseAnalyticsPage() {
                     />
                   </div>
 
-                  {/* Category description from national exam guidelines */}
+                  {/* Category short title */}
                   <p className="text-xs text-text-disabled italic mt-2">
-                    {t(`dashboard.category${cp.category}Description`)}
+                    {t(`test.category${cp.category}Short`)}
                   </p>
                 </div>
               ))}
