@@ -14,7 +14,7 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
 
   // Sort dimensions in a consistent order for the radar chart
   const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
-  const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+  const emojis = ['🎯', '💭', '📊', '⚙️', '💬', '📚'];
 
   const sortedDimensions = dimensionOrder.map(dimType => {
     const dimension = dimensions.find(d => d.dimension === dimType);
@@ -45,11 +45,11 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
   // Generate axis lines and labels
   const axes = sortedDimensions.map((dim, index) => {
     const endPoint = getPoint(index, maxValue);
-    const labelPoint = getPoint(index, maxValue + 0.6); // Closer to chart with letter labels
+    const labelPoint = getPoint(index, maxValue + 0.6); // Closer to chart with emoji labels
 
     return {
       line: { x1: centerX, y1: centerY, x2: endPoint.x, y2: endPoint.y },
-      label: { x: labelPoint.x, y: labelPoint.y, text: letters[index] },
+      label: { x: labelPoint.x, y: labelPoint.y, text: emojis[index] },
       value: dim.points,
     };
   });
@@ -114,22 +114,12 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
 
         return (
           <g key={`label-${index}`}>
-            {/* Letter label with circle background */}
-            <circle
-              cx={axis.label.x}
-              cy={axis.label.y}
-              r="14"
-              fill="white"
-              stroke="#7c3aed"
-              strokeWidth="2"
-            />
+            {/* Emoji label */}
             <text
               x={axis.label.x}
               y={axis.label.y}
               textAnchor="middle"
-              fontSize="14"
-              fontWeight="bold"
-              fill="#7c3aed"
+              fontSize="20"
               dominantBaseline="middle"
             >
               {axis.label.text}

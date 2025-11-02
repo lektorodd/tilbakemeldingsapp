@@ -264,12 +264,12 @@ export default function StudentDashboardPage() {
                       {/* Legend for radar chart */}
                       {oral.dimensions && oral.dimensions.length > 0 && (
                         <div className="text-xs text-text-secondary space-y-0.5">
-                          <div><span className="font-semibold text-purple-600">A</span> - {t('oral.dimension.strategy.label')}</div>
-                          <div><span className="font-semibold text-purple-600">B</span> - {t('oral.dimension.reasoning.label')}</div>
-                          <div><span className="font-semibold text-purple-600">C</span> - {t('oral.dimension.representations.label')}</div>
-                          <div><span className="font-semibold text-purple-600">D</span> - {t('oral.dimension.modeling.label')}</div>
-                          <div><span className="font-semibold text-purple-600">E</span> - {t('oral.dimension.communication.label')}</div>
-                          <div><span className="font-semibold text-purple-600">F</span> - {t('oral.dimension.subject_knowledge.label')}</div>
+                          <div><span className="text-base">🎯</span> {t('oral.dimension.strategy.label')}</div>
+                          <div><span className="text-base">💭</span> {t('oral.dimension.reasoning.label')}</div>
+                          <div><span className="text-base">📊</span> {t('oral.dimension.representations.label')}</div>
+                          <div><span className="text-base">⚙️</span> {t('oral.dimension.modeling.label')}</div>
+                          <div><span className="text-base">💬</span> {t('oral.dimension.communication.label')}</div>
+                          <div><span className="text-base">📚</span> {t('oral.dimension.subject_knowledge.label')}</div>
                         </div>
                       )}
                     </Link>
