@@ -215,14 +215,13 @@ export default function StudentDashboardPage() {
         </div>
 
         {/* Oral Assessments Performance */}
-        {oralPerformance && oralPerformance.length > 0 && (
-          <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <MessageSquare size={24} className="text-purple-600" />
-              <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
-            </div>
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <MessageSquare size={24} className="text-purple-600" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
+          </div>
 
-            {oralPerformance.filter(o => o.score > 0).length === 0 ? (
+          {!oralPerformance || oralPerformance.length === 0 ? (
               <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
             ) : (
               <div className="space-y-3">
@@ -264,17 +263,20 @@ export default function StudentDashboardPage() {
                     </Link>
 
                     {/* Radar chart box - 30% width */}
-                    {oral.dimensions && oral.dimensions.length > 0 && (
-                      <div className="flex-[0.30] border border-border rounded-lg p-2 bg-background flex items-center justify-center">
+                    <div className="flex-[0.30] border border-border rounded-lg p-2 bg-background flex items-center justify-center">
+                      {oral.dimensions && oral.dimensions.length > 0 ? (
                         <RadarChart dimensions={oral.dimensions} size={140} />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="text-center text-xs text-text-disabled p-4">
+                          {t('test.notCompleted')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-          </div>
-        )}
+        </div>
 
         {/* Performance by Theme Labels */}
         {labelPerformance.length > 0 && (
