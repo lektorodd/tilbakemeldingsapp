@@ -266,7 +266,7 @@ export default function StudentDashboardPage() {
                     <div className="flex-[0.50] border border-border rounded-lg p-4 bg-background flex flex-col items-center justify-center">
                       {oral.dimensions && oral.dimensions.length > 0 ? (
                         <>
-                          <RadarChart dimensions={oral.dimensions} size={200} />
+                          <RadarChart dimensions={oral.dimensions} />
                         </>
                       ) : (
                         <div className="text-center text-xs text-text-disabled p-4">

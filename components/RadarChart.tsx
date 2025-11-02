@@ -4,11 +4,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RadarChartProps {
   dimensions: OralFeedbackDimension[];
-  size?: number;
+  width?: number;
+  height?: number;
   maxValue?: number;
 }
 
-export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: RadarChartProps) {
+export default function RadarChart({ dimensions, width = 280, height = 200, maxValue = 6 }: RadarChartProps) {
   const { t } = useLanguage();
 
   // Sort dimensions in a consistent order for the radar chart
@@ -20,9 +21,9 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
   });
 
   const numDimensions = sortedDimensions.length;
-  const centerX = size / 2;
-  const centerY = size / 2;
-  const radius = (size / 2) - 50; // Leave more margin for labels
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) / 2 - 60; // Leave margin for labels
 
   // Calculate points for each dimension
   const getPoint = (index: number, value: number) => {
@@ -62,7 +63,7 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
   });
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="mx-auto">
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="mx-auto">
       {/* Grid circles */}
       {gridLevels.map(level => (
         <circle
