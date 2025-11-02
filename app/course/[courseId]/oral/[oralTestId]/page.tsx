@@ -206,7 +206,22 @@ export default function OralAssessmentPage() {
             <div className="flex items-center gap-3">
               <MessageSquare size={28} className="text-purple-600" />
               <div>
-                <h1 className="text-3xl font-display font-bold text-text-primary">{oralTest.name}</h1>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-3xl font-display font-bold text-text-primary">{oralTest.name}</h1>
+                  {course.oralTests && course.oralTests.length > 1 && (
+                    <select
+                      value={oralTestId}
+                      onChange={(e) => router.push(`/course/${courseId}/oral/${e.target.value}`)}
+                      className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all cursor-pointer"
+                    >
+                      {course.oralTests.map(ot => (
+                        <option key={ot.id} value={ot.id}>
+                          {ot.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
                 {oralTest.description && <p className="text-text-secondary">{oralTest.description}</p>}
                 {oralTest.topics && oralTest.topics.length > 0 && (
                   <p className="text-sm text-purple-600 mt-1">

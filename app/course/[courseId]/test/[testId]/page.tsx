@@ -422,7 +422,22 @@ export default function TestFeedbackPage() {
               <ArrowLeft size={20} />
               {t('test.backToCourse')}
             </Link>
-            <h1 className="text-3xl font-display font-bold text-text-primary">{test.name}</h1>
+            <div className="flex items-center gap-4 mb-2">
+              <h1 className="text-3xl font-display font-bold text-text-primary">{test.name}</h1>
+              {course.tests.length > 1 && (
+                <select
+                  value={testId}
+                  onChange={(e) => router.push(`/course/${courseId}/test/${e.target.value}`)}
+                  className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-brand focus:outline-none focus:ring-2 focus:ring-brand transition-all cursor-pointer"
+                >
+                  {course.tests.map(t => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
             <p className="text-text-secondary">{course.name}</p>
             {test.description && <p className="text-text-secondary text-sm">{test.description}</p>}
           </div>
