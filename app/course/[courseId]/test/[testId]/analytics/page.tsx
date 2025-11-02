@@ -60,8 +60,8 @@ export default function TestAnalyticsPage() {
   // Apply filters
   const filteredAnalytics = taskAnalytics.filter(ta => {
     if (selectedPart !== 'all' && ta.part !== selectedPart) return false;
-    if (selectedCategory !== 'all' && ta.category !== selectedCategory) return false;
-    if (selectedLabels.length > 0 && !selectedLabels.some(label => ta.labels.includes(label))) return false;
+    if (selectedCategory !== 'all' && ta.category !== Number(selectedCategory)) return false;
+    if (selectedLabels.length > 0 && !selectedLabels.every(label => ta.labels.includes(label))) return false;
     return true;
   });
 
