@@ -446,10 +446,10 @@ export default function TestFeedbackPage() {
             <Link
               href={`/course/${courseId}/test/${testId}/analytics`}
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
-              title="View task analytics"
+              title={t('test.taskAnalyticsTitle')}
             >
               <BarChart3 size={18} />
-              Task Analytics
+              {t('test.taskAnalyticsTitle')}
             </Link>
             <button
               onClick={handleExportAllPDFs}

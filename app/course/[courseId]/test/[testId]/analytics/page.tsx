@@ -99,10 +99,10 @@ export default function TestAnalyticsPage() {
 
   const getCategoryLabel = (category?: number) => {
     switch (category) {
-      case 1: return t('category.cat1Short') || 'Cat 1';
-      case 2: return t('category.cat2Short') || 'Cat 2';
-      case 3: return t('category.cat3Short') || 'Cat 3';
-      default: return 'N/A';
+      case 1: return t('test.category1Short');
+      case 2: return t('test.category2Short');
+      case 3: return t('test.category3Short');
+      default: return '-';
     }
   };
 
@@ -133,12 +133,12 @@ export default function TestAnalyticsPage() {
             className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
           >
             <ArrowLeft size={20} />
-            Back to Test Feedback
+            {t('test.backToTest')}
           </Link>
           <div className="flex items-center gap-3 mb-2">
             <BarChart3 size={32} className="text-brand" />
             <h1 className="text-3xl font-display font-bold text-text-primary">
-              Test Task Analysis
+              {t('test.taskAnalyticsTitle')}
             </h1>
           </div>
           <h2 className="text-xl font-semibold text-text-secondary">{test.name}</h2>
@@ -148,23 +148,23 @@ export default function TestAnalyticsPage() {
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-surface rounded-lg shadow-sm p-4 border border-border">
-            <p className="text-sm text-text-secondary">Total Tasks</p>
+            <p className="text-sm text-text-secondary">{t('test.totalTasks')}</p>
             <p className="text-2xl font-bold text-text-primary">{taskAnalytics.length}</p>
           </div>
           <div className="bg-surface rounded-lg shadow-sm p-4 border border-border">
-            <p className="text-sm text-text-secondary">Average Score</p>
+            <p className="text-sm text-text-secondary">{t('test.averageScore')}</p>
             <p className="text-2xl font-bold text-brand">
               {(filteredAnalytics.reduce((sum, ta) => sum + ta.averageScore, 0) / filteredAnalytics.length || 0).toFixed(2)} / 6
             </p>
           </div>
           <div className="bg-surface rounded-lg shadow-sm p-4 border border-border">
-            <p className="text-sm text-text-secondary">Avg Attempt Rate</p>
+            <p className="text-sm text-text-secondary">{t('test.avgAttemptRate')}</p>
             <p className="text-2xl font-bold text-emerald-600">
               {(filteredAnalytics.reduce((sum, ta) => sum + ta.attemptPercentage, 0) / filteredAnalytics.length || 0).toFixed(0)}%
             </p>
           </div>
           <div className="bg-surface rounded-lg shadow-sm p-4 border border-border">
-            <p className="text-sm text-text-secondary">Students</p>
+            <p className="text-sm text-text-secondary">{t('test.students')}</p>
             <p className="text-2xl font-bold text-text-primary">
               {taskAnalytics.length > 0 ? taskAnalytics[0].totalStudents : 0}
             </p>
@@ -175,7 +175,7 @@ export default function TestAnalyticsPage() {
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-6 border border-border">
           <div className="flex items-center gap-2 mb-4">
             <Filter size={20} className="text-brand" />
-            <h3 className="text-lg font-semibold text-text-primary">Filters</h3>
+            <h3 className="text-lg font-semibold text-text-primary">{t('test.filters')}</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -183,17 +183,17 @@ export default function TestAnalyticsPage() {
             {availableParts.size > 0 && (
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Part
+                  {t('test.part')}
                 </label>
                 <select
                   value={selectedPart}
                   onChange={(e) => setSelectedPart(e.target.value as 'all' | 1 | 2)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
                 >
-                  <option value="all">All Parts</option>
+                  <option value="all">{t('test.allParts')}</option>
                   {Array.from(availableParts).sort().map(part => (
                     <option key={part} value={part}>
-                      Part {part} {part === 1 ? '(No aids)' : '(All aids)'}
+                      {part === 1 ? t('test.part1NoAids') : t('test.part2AllAids')}
                     </option>
                   ))}
                 </select>
@@ -204,17 +204,17 @@ export default function TestAnalyticsPage() {
             {availableCategories.size > 0 && (
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Category
+                  {t('test.category')}
                 </label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value as 'all' | 1 | 2 | 3)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
                 >
-                  <option value="all">All Categories</option>
+                  <option value="all">{t('test.allCategories')}</option>
                   {Array.from(availableCategories).sort().map(cat => (
                     <option key={cat} value={cat}>
-                      Category {cat}
+                      {t(`test.category${cat}Short` as any)}
                     </option>
                   ))}
                 </select>
@@ -224,7 +224,7 @@ export default function TestAnalyticsPage() {
             {/* Sort Options */}
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-2">
-                Sort By
+                {t('test.sortBy')}
               </label>
               <div className="flex gap-2">
                 <select
@@ -232,14 +232,14 @@ export default function TestAnalyticsPage() {
                   onChange={(e) => setSortBy(e.target.value as 'label' | 'avgScore' | 'attemptPct')}
                   className="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-text-primary"
                 >
-                  <option value="label">Task Label</option>
-                  <option value="avgScore">Avg Score</option>
-                  <option value="attemptPct">Attempt %</option>
+                  <option value="label">{t('test.taskLabel')}</option>
+                  <option value="avgScore">{t('test.avgScore')}</option>
+                  <option value="attemptPct">{t('test.attemptPct')}</option>
                 </select>
                 <button
                   onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
                   className="px-3 py-2 border border-border rounded-lg hover:bg-surface-alt transition"
-                  title={sortOrder === 'asc' ? 'Sort descending' : 'Sort ascending'}
+                  title={sortOrder === 'asc' ? t('test.sortDescending') : t('test.sortAscending')}
                 >
                   {sortOrder === 'asc' ? '↑' : '↓'}
                 </button>
@@ -251,7 +251,7 @@ export default function TestAnalyticsPage() {
           {availableLabels.size > 0 && (
             <div className="mt-4">
               <label className="block text-sm font-medium text-text-secondary mb-2">
-                Theme Labels (click to filter)
+                {t('test.themeLabels')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {Array.from(availableLabels).sort().map(label => (
@@ -273,7 +273,7 @@ export default function TestAnalyticsPage() {
                   onClick={() => setSelectedLabels([])}
                   className="mt-2 text-sm text-brand hover:underline"
                 >
-                  Clear label filters
+                  {t('test.clearLabelFilters')}
                 </button>
               )}
             </div>
@@ -286,31 +286,31 @@ export default function TestAnalyticsPage() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-border">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">Task</th>
-                  {test.hasTwoParts && <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">Part</th>}
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">Theme Labels</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">Avg Score</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">Attempted</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">Attempt %</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.task')}</th>
+                  {test.hasTwoParts && <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.part')}</th>}
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.category')}</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.themeLabelsCol')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.avgScore')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.attempted')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.attemptPct')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {sortedAnalytics.length === 0 ? (
                   <tr>
                     <td colSpan={test.hasTwoParts ? 7 : 6} className="px-4 py-8 text-center text-text-disabled">
-                      No tasks match the selected filters
+                      {t('test.noTasksMatch')}
                     </td>
                   </tr>
                 ) : (
                   sortedAnalytics.map((ta) => (
                     <tr key={`${ta.taskId}-${ta.subtaskId || 'main'}`} className="hover:bg-surface-alt transition">
                       <td className="px-4 py-3 text-sm font-medium text-text-primary">
-                        Task {ta.label}
+                        {t('test.task')} {ta.label}
                       </td>
                       {test.hasTwoParts && (
                         <td className="px-4 py-3 text-sm text-text-secondary">
-                          {ta.part ? `Part ${ta.part}` : '-'}
+                          {ta.part ? `${t('test.part')} ${ta.part}` : '-'}
                         </td>
                       )}
                       <td className="px-4 py-3">
@@ -362,10 +362,7 @@ export default function TestAnalyticsPage() {
 
         {/* Summary Note */}
         <div className="mt-4 text-sm text-text-secondary">
-          <p>
-            <strong>Avg Score:</strong> Average points earned across all students who attempted the task.
-            <strong className="ml-3">Attempt %:</strong> Percentage of students who scored 1 or more points.
-          </p>
+          <p>{t('test.analyticsNote')}</p>
         </div>
       </div>
     </main>
