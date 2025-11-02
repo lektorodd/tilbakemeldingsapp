@@ -9,11 +9,12 @@ interface RadarChartProps {
   maxValue?: number;
 }
 
-export default function RadarChart({ dimensions, width = 280, height = 200, maxValue = 6 }: RadarChartProps) {
+export default function RadarChart({ dimensions, width = 300, height = 250, maxValue = 6 }: RadarChartProps) {
   const { t } = useLanguage();
 
   // Sort dimensions in a consistent order for the radar chart
   const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
+  const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
   const sortedDimensions = dimensionOrder.map(dimType => {
     const dimension = dimensions.find(d => d.dimension === dimType);
@@ -23,7 +24,7 @@ export default function RadarChart({ dimensions, width = 280, height = 200, maxV
   const numDimensions = sortedDimensions.length;
   const centerX = width / 2;
   const centerY = height / 2;
-  const radius = Math.min(width, height) / 2 - 60; // Leave margin for labels
+  const radius = Math.min(width, height) / 2 - 35; // Less margin needed for letter labels
 
   // Calculate points for each dimension
   const getPoint = (index: number, value: number) => {
@@ -44,20 +45,11 @@ export default function RadarChart({ dimensions, width = 280, height = 200, maxV
   // Generate axis lines and labels
   const axes = sortedDimensions.map((dim, index) => {
     const endPoint = getPoint(index, maxValue);
-    const labelPoint = getPoint(index, maxValue + 1.2); // Extend further for label
-
-    // Get dimension label
-    const getDimensionLabel = () => {
-      const key = `oral.dimension.${dim.dimension}.label`;
-      return t(key);
-    };
-
-    // Full label - no truncation
-    const fullLabel = getDimensionLabel();
+    const labelPoint = getPoint(index, maxValue + 0.6); // Closer to chart with letter labels
 
     return {
       line: { x1: centerX, y1: centerY, x2: endPoint.x, y2: endPoint.y },
-      label: { x: labelPoint.x, y: labelPoint.y, text: fullLabel },
+      label: { x: labelPoint.x, y: labelPoint.y, text: letters[index] },
       value: dim.points,
     };
   });
@@ -122,21 +114,32 @@ export default function RadarChart({ dimensions, width = 280, height = 200, maxV
 
         return (
           <g key={`label-${index}`}>
+            {/* Letter label with circle background */}
+            <circle
+              cx={axis.label.x}
+              cy={axis.label.y}
+              r="14"
+              fill="white"
+              stroke="#7c3aed"
+              strokeWidth="2"
+            />
             <text
               x={axis.label.x}
               y={axis.label.y}
-              textAnchor={textAnchor}
-              fontSize="11"
-              fill="#6b7280"
+              textAnchor="middle"
+              fontSize="14"
+              fontWeight="bold"
+              fill="#7c3aed"
               dominantBaseline="middle"
             >
               {axis.label.text}
             </text>
+            {/* Point value below */}
             <text
               x={axis.label.x}
-              y={axis.label.y + 14}
-              textAnchor={textAnchor}
-              fontSize="12"
+              y={axis.label.y + 22}
+              textAnchor="middle"
+              fontSize="11"
               fontWeight="bold"
               fill="#7c3aed"
               dominantBaseline="middle"
