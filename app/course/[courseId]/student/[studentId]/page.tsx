@@ -225,7 +225,10 @@ export default function StudentDashboardPage() {
               <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
             ) : (
               <div className="space-y-3">
-                {oralPerformance.map(oral => (
+                {oralPerformance.map(oral => {
+                  console.log('Oral assessment data:', oral);
+                  console.log('Dimensions:', oral.dimensions);
+                  return (
                   <div key={oral.oralTestId} className="flex gap-3">
                     {/* Oral test card - 70% width */}
                     <Link
@@ -263,17 +266,26 @@ export default function StudentDashboardPage() {
                     </Link>
 
                     {/* Radar chart box - 30% width */}
-                    <div className="flex-[0.30] border border-border rounded-lg p-2 bg-background flex items-center justify-center">
+                    <div className="flex-[0.30] border border-border rounded-lg p-2 bg-background flex flex-col items-center justify-center">
                       {oral.dimensions && oral.dimensions.length > 0 ? (
-                        <RadarChart dimensions={oral.dimensions} size={140} />
+                        <>
+                          <RadarChart dimensions={oral.dimensions} size={140} />
+                          <div className="text-xs text-purple-600 mt-1">
+                            {oral.dimensions.length} dimensions
+                          </div>
+                        </>
                       ) : (
                         <div className="text-center text-xs text-text-disabled p-4">
                           {t('test.notCompleted')}
+                          <div className="text-xs mt-1">
+                            (No dimension data)
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
         </div>
