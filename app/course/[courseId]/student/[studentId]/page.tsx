@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getStudentDetailedAnalytics } from '@/utils/courseStorage';
+import { getStudentDetailedAnalytics, loadCourse } from '@/utils/courseStorage';
 import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RadarChart from '@/components/RadarChart';
+import type { CourseStudent } from '@/types';
 
 export default function StudentDashboardPage() {
   const params = useParams();
@@ -16,6 +17,7 @@ export default function StudentDashboardPage() {
   const { t } = useLanguage();
 
   const [analytics, setAnalytics] = useState<ReturnType<typeof getStudentDetailedAnalytics>>(null);
+  const [allStudents, setAllStudents] = useState<CourseStudent[]>([]);
 
   useEffect(() => {
     const data = getStudentDetailedAnalytics(courseId, studentId);
@@ -25,6 +27,12 @@ export default function StudentDashboardPage() {
       return;
     }
     setAnalytics(data);
+
+    // Load all students for the dropdown
+    const course = loadCourse(courseId);
+    if (course) {
+      setAllStudents(course.students);
+    }
   }, [courseId, studentId]);
 
   if (!analytics) {
@@ -59,7 +67,22 @@ export default function StudentDashboardPage() {
             <ArrowLeft size={20} />
             {t('common.back')}
           </Link>
-          <h1 className="text-3xl font-display font-bold text-text-primary">{student.name}</h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-3xl font-display font-bold text-text-primary">{student.name}</h1>
+            {allStudents.length > 1 && (
+              <select
+                value={studentId}
+                onChange={(e) => router.push(`/course/${courseId}/student/${e.target.value}`)}
+                className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-brand focus:outline-none focus:ring-2 focus:ring-brand transition-all cursor-pointer"
+              >
+                {allStudents.map(s => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} {s.studentNumber ? `(${s.studentNumber})` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <p className="text-text-secondary">{course.name}</p>
           {student.studentNumber && (
             <p className="text-sm text-text-disabled">{t('course.studentNumber')}: {student.studentNumber}</p>
