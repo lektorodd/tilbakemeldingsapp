@@ -1,4 +1,4 @@
-import { Task, TaskFeedback } from '@/types';
+import { Task, TaskFeedback, OralFeedbackData, OralFeedbackDimensionType } from '@/types';
 
 interface ExportData {
   studentName: string;
@@ -10,6 +10,15 @@ interface ExportData {
   individualComment: string;
   totalPoints: number;
   maxPoints: number;
+  language?: 'en' | 'nb' | 'nn';
+}
+
+interface OralExportData {
+  studentName: string;
+  studentNumber?: string;
+  oralTestName: string;
+  oralTestDate: string;
+  oralFeedback: OralFeedbackData;
   language?: 'en' | 'nb' | 'nn';
 }
 
@@ -178,6 +187,180 @@ ${taskTable}
 == ${t.individualFeedback}
 
 ${escapeTypst(individualComment)}
+
+#v(2em)
+
+#align(center)[
+  #text(size: 9pt, fill: gray)[
+    ${t.generatedWith}
+  ]
+]
+`;
+
+  return typstContent;
+}
+
+// Translations for oral assessments
+const oralTranslations = {
+  en: {
+    oralAssessment: 'Oral Assessment',
+    student: 'Student',
+    score: 'Score',
+    studentNumber: 'Student Number',
+    date: 'Date',
+    assessmentDate: 'Assessment Date',
+    dimensions: 'Assessment Dimensions (LK20)',
+    dimension: 'Dimension',
+    points: 'Points',
+    comment: 'Comment',
+    generalObservations: 'General Observations',
+    taskReferences: 'Task References',
+    generatedWith: 'Generated with Math Test Feedback App',
+    lang: 'en',
+    strategy: 'Strategy and Method',
+    reasoning: 'Reasoning and Argumentation',
+    representations: 'Representations',
+    modeling: 'Modeling/Application',
+    communication: 'Communication',
+    subject_knowledge: 'Subject Knowledge',
+  },
+  nb: {
+    oralAssessment: 'Muntlig vurdering',
+    student: 'Student',
+    score: 'Poengsum',
+    studentNumber: 'Studentnummer',
+    date: 'Dato',
+    assessmentDate: 'Vurderingsdato',
+    dimensions: 'Vurderingsdimensjoner (LK20)',
+    dimension: 'Dimensjon',
+    points: 'Poeng',
+    comment: 'Kommentar',
+    generalObservations: 'Generelle observasjoner',
+    taskReferences: 'Oppgavereferanser',
+    generatedWith: 'Generert med Math Test Feedback App',
+    lang: 'nb',
+    strategy: 'Strategivalg og metode',
+    reasoning: 'Resonnering og argumentasjon',
+    representations: 'Representasjoner',
+    modeling: 'Modellering/anvendelse',
+    communication: 'Kommunikasjon',
+    subject_knowledge: 'Faglig forståelse',
+  },
+  nn: {
+    oralAssessment: 'Munnleg vurdering',
+    student: 'Elev',
+    score: 'Poengsum',
+    studentNumber: 'Elevnummer',
+    date: 'Dato',
+    assessmentDate: 'Vurderingsdato',
+    dimensions: 'Vurderingsdimensjonar (LK20)',
+    dimension: 'Dimensjon',
+    points: 'Poeng',
+    comment: 'Kommentar',
+    generalObservations: 'Generelle observasjonar',
+    taskReferences: 'Oppgåvereferansar',
+    generatedWith: 'Generert med Math Test Feedback App',
+    lang: 'nn',
+    strategy: 'Strategival og metode',
+    reasoning: 'Resonnering og argumentasjon',
+    representations: 'Representasjonar',
+    modeling: 'Modellering/anvending',
+    communication: 'Kommunikasjon',
+    subject_knowledge: 'Fagleg forståing',
+  },
+};
+
+export function generateOralTypstDocument(data: OralExportData): string {
+  const {
+    studentName,
+    studentNumber,
+    oralTestName,
+    oralTestDate,
+    oralFeedback,
+    language = 'nb',
+  } = data;
+
+  const t = oralTranslations[language];
+
+  // Helper function to get dimension label
+  const getDimensionLabel = (dimension: OralFeedbackDimensionType): string => {
+    return t[dimension] || dimension;
+  };
+
+  // Helper function to escape special Typst characters
+  const escapeTypst = (text: string): string => {
+    return text;
+  };
+
+  // Calculate total score
+  const totalScore = oralFeedback.score || 0;
+
+  // Generate dimension rows for table
+  const dimensionRows = oralFeedback.dimensions.map(dim => {
+    const label = getDimensionLabel(dim.dimension);
+    const points = `${dim.points}/6`;
+    const comment = dim.comment ? escapeTypst(dim.comment) : '';
+    return `  [${label}], [${points}], [${comment}],`;
+  }).join('\n');
+
+  const typstContent = `#set document(title: "${oralTestName} - ${t.oralAssessment}")
+#set page(
+  paper: "a4",
+  margin: (x: 2.5cm, y: 2.5cm),
+)
+#set text(
+  size: 11pt,
+  lang: "${t.lang}",
+)
+#set par(justify: true)
+
+// Show links with underline
+#show link: underline
+
+#align(center)[
+  #text(size: 18pt, weight: "bold")[${oralTestName}]
+
+  #text(size: 14pt)[${t.oralAssessment}]
+]
+
+#v(1em)
+
+#grid(
+  columns: 2,
+  gutter: 1em,
+  [*${t.student}:* ${studentName}],
+  [*${t.score}:* ${totalScore}/60],
+  ${studentNumber ? `[*${t.studentNumber}:* ${studentNumber}],` : ''}
+  [*${t.date}:* #datetime.today().display()],
+)
+
+#line(length: 100%, stroke: 0.5pt)
+
+#v(1em)
+
+== ${t.dimensions}
+
+#table(
+  columns: (2fr, auto, 3fr),
+  stroke: 0.5pt,
+  align: (left, center, left),
+  [*${t.dimension}*], [*${t.points}*], [*${t.comment}*],
+${dimensionRows}
+)
+
+#v(1em)
+
+== ${t.generalObservations}
+
+${escapeTypst(oralFeedback.generalObservations || '')}
+
+${oralFeedback.taskReferences && oralFeedback.taskReferences.length > 0 ? `
+#v(1em)
+
+== ${t.taskReferences}
+
+${oralFeedback.taskReferences.join(', ')}
+` : ''}
 
 #v(2em)
 

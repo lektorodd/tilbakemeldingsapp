@@ -7,6 +7,7 @@ import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calc
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
+import ScoringGuide from '@/components/ScoringGuide';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -422,7 +423,22 @@ export default function TestFeedbackPage() {
               <ArrowLeft size={20} />
               {t('test.backToCourse')}
             </Link>
-            <h1 className="text-3xl font-display font-bold text-text-primary">{test.name}</h1>
+            <div className="flex items-center gap-4 mb-2">
+              <h1 className="text-3xl font-display font-bold text-text-primary">{test.name}</h1>
+              {course.tests.length > 1 && (
+                <select
+                  value={testId}
+                  onChange={(e) => router.push(`/course/${courseId}/test/${e.target.value}`)}
+                  className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-brand focus:outline-none focus:ring-2 focus:ring-brand transition-all cursor-pointer"
+                >
+                  {course.tests.map(t => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
             <p className="text-text-secondary">{course.name}</p>
             {test.description && <p className="text-text-secondary text-sm">{test.description}</p>}
           </div>
@@ -576,7 +592,9 @@ export default function TestFeedbackPage() {
                     )}
                     <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
+                    <ScoringGuide />
+                    <div className="flex gap-2">
                     {currentFeedback.completedDate ? (
                       <button
                         onClick={handleUnmarkComplete}
@@ -611,6 +629,7 @@ export default function TestFeedbackPage() {
                       <FileText size={18} />
                       .typ
                     </button>
+                    </div>
                   </div>
                 </div>
 

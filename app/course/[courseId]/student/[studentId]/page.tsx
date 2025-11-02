@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getStudentDetailedAnalytics } from '@/utils/courseStorage';
-import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen } from 'lucide-react';
+import { getStudentDetailedAnalytics, loadCourse } from '@/utils/courseStorage';
+import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import RadarChart from '@/components/RadarChart';
+import ScoringGuide from '@/components/ScoringGuide';
+import type { CourseStudent } from '@/types';
 
 export default function StudentDashboardPage() {
   const params = useParams();
@@ -15,6 +18,7 @@ export default function StudentDashboardPage() {
   const { t } = useLanguage();
 
   const [analytics, setAnalytics] = useState<ReturnType<typeof getStudentDetailedAnalytics>>(null);
+  const [allStudents, setAllStudents] = useState<CourseStudent[]>([]);
 
   useEffect(() => {
     const data = getStudentDetailedAnalytics(courseId, studentId);
@@ -24,13 +28,19 @@ export default function StudentDashboardPage() {
       return;
     }
     setAnalytics(data);
+
+    // Load all students for the dropdown
+    const course = loadCourse(courseId);
+    if (course) {
+      setAllStudents(course.students);
+    }
   }, [courseId, studentId]);
 
   if (!analytics) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
   }
 
-  const { student, course, testPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
+  const { student, course, testPerformance, oralPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
 
   const getScoreColor = (score: number): string => {
     const percentage = (score / 60) * 100;
@@ -58,7 +68,22 @@ export default function StudentDashboardPage() {
             <ArrowLeft size={20} />
             {t('common.back')}
           </Link>
-          <h1 className="text-3xl font-display font-bold text-text-primary">{student.name}</h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-3xl font-display font-bold text-text-primary">{student.name}</h1>
+            {allStudents.length > 1 && (
+              <select
+                value={studentId}
+                onChange={(e) => router.push(`/course/${courseId}/student/${e.target.value}`)}
+                className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-brand focus:outline-none focus:ring-2 focus:ring-brand transition-all cursor-pointer"
+              >
+                {allStudents.map(s => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} {s.studentNumber ? `(${s.studentNumber})` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
           <p className="text-text-secondary">{course.name}</p>
           {student.studentNumber && (
             <p className="text-sm text-text-disabled">{t('course.studentNumber')}: {student.studentNumber}</p>
@@ -213,6 +238,84 @@ export default function StudentDashboardPage() {
           )}
         </div>
 
+        {/* Oral Assessments Performance */}
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <MessageSquare size={24} className="text-purple-600" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
+          </div>
+
+          {!oralPerformance || oralPerformance.length === 0 ? (
+              <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
+            ) : (
+              <div className="space-y-3">
+                {oralPerformance.map(oral => (
+                  <div key={oral.oralTestId} className="flex gap-3">
+                    {/* Oral test card - 50% width */}
+                    <Link
+                      href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
+                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold text-text-primary hover:text-purple-600 transition-colors">{oral.oralTestName}</h4>
+                          <p className="text-xs text-text-disabled">
+                            {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-2xl font-bold ${getScoreColor(oral.score)}`}>
+                            {oral.score} / {oral.maxScore}
+                          </p>
+                          {oral.completed ? (
+                            <p className="text-xs text-success">{t('test.completed')}</p>
+                          ) : (
+                            <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="mb-3">
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${oral.score >= 50 ? 'bg-purple-600' : oral.score >= 35 ? 'bg-purple-400' : 'bg-purple-300'}`}
+                            style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Legend for radar chart */}
+                      {oral.dimensions && oral.dimensions.length > 0 && (
+                        <div className="text-xs text-text-secondary space-y-0.5">
+                          <div><span className="text-base">🎯</span> {t('oral.dimension.strategy.label')}</div>
+                          <div><span className="text-base">💭</span> {t('oral.dimension.reasoning.label')}</div>
+                          <div><span className="text-base">📊</span> {t('oral.dimension.representations.label')}</div>
+                          <div><span className="text-base">⚙️</span> {t('oral.dimension.modeling.label')}</div>
+                          <div><span className="text-base">💬</span> {t('oral.dimension.communication.label')}</div>
+                          <div><span className="text-base">📚</span> {t('oral.dimension.subject_knowledge.label')}</div>
+                        </div>
+                      )}
+                    </Link>
+
+                    {/* Radar chart box - 50% width */}
+                    <div className="flex-[0.50] border border-border rounded-lg p-4 bg-background flex flex-col items-center justify-center">
+                      {oral.dimensions && oral.dimensions.length > 0 ? (
+                        <>
+                          <RadarChart dimensions={oral.dimensions} />
+                        </>
+                      ) : (
+                        <div className="text-center text-xs text-text-disabled p-4">
+                          {t('test.notCompleted')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+        </div>
+
         {/* Performance by Theme Labels */}
         {labelPerformance.length > 0 && (
           <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
@@ -261,11 +364,11 @@ export default function StudentDashboardPage() {
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('dashboard.performanceByCategory')}</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {categoryPerformance.map(cat => (
                 <div key={cat.category} className="border border-border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-text-primary">{cat.description}</h3>
+                    <h3 className="text-lg font-semibold text-text-primary">{t(`dashboard.category${cat.category}Name`)}</h3>
                     <div className="text-right">
                       <p className={`text-2xl font-bold ${cat.averageScore >= 5 ? 'text-success' : cat.averageScore >= 3.5 ? 'text-warning' : 'text-danger'}`}>
                         {cat.averageScore.toFixed(1)}
@@ -276,7 +379,7 @@ export default function StudentDashboardPage() {
                   <p className="text-xs text-text-secondary mb-2">{cat.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
                     <div
                       className={`h-full ${
                         cat.averageScore >= 5 ? 'bg-success' :
@@ -285,8 +388,29 @@ export default function StudentDashboardPage() {
                       style={{ width: `${(cat.averageScore / 6) * 100}%` }}
                     />
                   </div>
+
+                  {/* Category short title */}
+                  <p className="text-xs text-text-disabled italic">
+                    {t(`test.category${cat.category}Short`)}
+                  </p>
                 </div>
               ))}
+            </div>
+
+            {/* Category explanation from national exam guidelines */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+              <p className="font-semibold text-blue-900 mb-2">{t('dashboard.helpCategory')}</p>
+              <div className="space-y-2 text-blue-800">
+                <div>
+                  <strong>{t('dashboard.category1Name')}:</strong> {t('dashboard.category1Description')}
+                </div>
+                <div>
+                  <strong>{t('dashboard.category2Name')}:</strong> {t('dashboard.category2Description')}
+                </div>
+                <div>
+                  <strong>{t('dashboard.category3Name')}:</strong> {t('dashboard.category3Description')}
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -367,6 +491,11 @@ export default function StudentDashboardPage() {
             <li>• {t('dashboard.helpPart')}</li>
             <li>• {t('dashboard.helpColors')}</li>
           </ul>
+        </div>
+
+        {/* Scoring Guide */}
+        <div className="mt-6">
+          <ScoringGuide variant="inline" />
         </div>
       </div>
     </main>

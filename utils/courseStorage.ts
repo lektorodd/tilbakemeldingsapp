@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData } from '@/types';
 
 const COURSES_KEY = 'math-feedback-courses';
 let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
@@ -44,6 +44,18 @@ export function deleteCourse(courseId: string): void {
   if (typeof window !== 'undefined') {
     localStorage.setItem(COURSES_KEY, JSON.stringify(filtered));
   }
+}
+
+export function updateCourse(courseId: string, updates: Partial<Course>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  const updatedCourse = {
+    ...course,
+    ...updates,
+  };
+
+  saveCourse(updatedCourse);
 }
 
 export function getCourseSummaries(): CourseSummary[] {
@@ -187,6 +199,116 @@ export function getStudentFeedback(courseId: string, testId: string, studentId: 
   if (!test) return null;
 
   return test.studentFeedbacks.find(f => f.studentId === studentId) || null;
+}
+
+// Oral Test CRUD operations
+export function addOralTest(courseId: string, oralTest: OralTest): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) {
+    course.oralTests = [];
+  }
+
+  course.oralTests.push(oralTest);
+  saveCourse(course);
+}
+
+export function updateOralTest(courseId: string, oralTestId: string, updates: Partial<OralTest>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) {
+    throw new Error('No oral tests in course');
+  }
+
+  const oralTestIndex = course.oralTests.findIndex(t => t.id === oralTestId);
+  if (oralTestIndex === -1) throw new Error('Oral test not found');
+
+  course.oralTests[oralTestIndex] = {
+    ...course.oralTests[oralTestIndex],
+    ...updates,
+    lastModified: new Date().toISOString(),
+  };
+
+  saveCourse(course);
+}
+
+export function deleteOralTest(courseId: string, oralTestId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) return;
+
+  course.oralTests = course.oralTests.filter(t => t.id !== oralTestId);
+  saveCourse(course);
+}
+
+// Oral Assessment operations
+export function updateOralAssessment(
+  courseId: string,
+  oralTestId: string,
+  studentId: string,
+  updates: Partial<OralFeedbackData>
+): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) {
+    throw new Error('No oral tests in course');
+  }
+
+  const oralTest = course.oralTests.find(t => t.id === oralTestId);
+  if (!oralTest) throw new Error('Oral test not found');
+
+  const assessmentIndex = oralTest.studentAssessments.findIndex(a => a.studentId === studentId);
+
+  if (assessmentIndex >= 0) {
+    oralTest.studentAssessments[assessmentIndex] = {
+      ...oralTest.studentAssessments[assessmentIndex],
+      ...updates,
+    };
+  } else {
+    oralTest.studentAssessments.push({
+      studentId,
+      dimensions: [],
+      generalObservations: '',
+      ...updates,
+    });
+  }
+
+  saveCourse(course);
+}
+
+export function getOralAssessment(courseId: string, oralTestId: string, studentId: string): OralFeedbackData | null {
+  const course = loadCourse(courseId);
+  if (!course || !course.oralTests) return null;
+
+  const oralTest = course.oralTests.find(t => t.id === oralTestId);
+  if (!oralTest) return null;
+
+  return oralTest.studentAssessments.find(a => a.studentId === studentId) || null;
+}
+
+export function deleteOralAssessment(courseId: string, oralTestId: string, studentId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.oralTests) return;
+
+  const oralTest = course.oralTests.find(t => t.id === oralTestId);
+  if (!oralTest) return;
+
+  oralTest.studentAssessments = oralTest.studentAssessments.filter(a => a.studentId !== studentId);
+  saveCourse(course);
+}
+
+export function calculateOralScore(oralFeedback: OralFeedbackData): number {
+  if (oralFeedback.dimensions.length === 0) return 0;
+
+  const totalPoints = oralFeedback.dimensions.reduce((sum, dim) => sum + dim.points, 0);
+  const averagePoints = totalPoints / oralFeedback.dimensions.length;
+  return Math.round(averagePoints * 10);
 }
 
 // Scoring calculations
@@ -609,11 +731,46 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     .filter(p => p.taskCount > 0)
     .sort((a, b) => a.part - b.part);
 
-  // Overall stats
+  // Performance across oral assessments
+  const oralPerformance = (course.oralTests || []).map(oralTest => {
+    const assessment = oralTest.studentAssessments.find(a => a.studentId === studentId);
+    if (!assessment) {
+      return {
+        oralTestId: oralTest.id,
+        oralTestName: oralTest.name,
+        oralTestDate: oralTest.date,
+        score: 0,
+        maxScore: 60,
+        completed: false,
+        dimensions: [],
+      };
+    }
+
+    return {
+      oralTestId: oralTest.id,
+      oralTestName: oralTest.name,
+      oralTestDate: oralTest.date,
+      score: assessment.score || calculateOralScore(assessment),
+      maxScore: 60,
+      completed: !!assessment.completedDate,
+      dimensions: assessment.dimensions,
+    };
+  }).sort((a, b) => new Date(a.oralTestDate).getTime() - new Date(b.oralTestDate).getTime());
+
+  // Overall stats (including oral assessments)
   const completedTests = testPerformance.filter(t => t.completed);
-  const averageScore = completedTests.length > 0
-    ? completedTests.reduce((sum, t) => sum + t.score, 0) / completedTests.length
+  const completedOralTests = oralPerformance.filter(o => o.completed);
+
+  const totalCompletedAssessments = completedTests.length + completedOralTests.length;
+  const allScores = [
+    ...completedTests.map(t => t.score),
+    ...completedOralTests.map(o => o.score),
+  ];
+
+  const averageScore = totalCompletedAssessments > 0
+    ? allScores.reduce((sum, score) => sum + score, 0) / totalCompletedAssessments
     : 0;
+
   const averageAttemptRate = testPerformance.length > 0
     ? testPerformance.reduce((sum, t) => sum + t.attemptPercentage, 0) / testPerformance.length
     : 0;
@@ -622,12 +779,15 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     student,
     course,
     testPerformance,
+    oralPerformance,
     labelPerformance: labelStats,
     categoryPerformance: categoryStats,
     partPerformance: partStats,
     overallStats: {
       completedTests: completedTests.length,
       totalTests: course.tests.length,
+      completedOralTests: completedOralTests.length,
+      totalOralTests: (course.oralTests || []).length,
       averageScore,
       averageAttemptRate,
     },

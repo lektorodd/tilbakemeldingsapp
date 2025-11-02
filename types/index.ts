@@ -110,12 +110,27 @@ export interface CourseTest {
   lastModified: string;
 }
 
+// Oral Assessment - separate from written tests
+export interface OralTest {
+  id: string;
+  name: string; // e.g., "Oral Exam - Derivatives"
+  description?: string;
+  date: string; // Assessment date
+  topics?: string[]; // Topics covered (e.g., ["derivatives", "integrals"])
+  labels?: string[]; // Course labels applied to this oral assessment
+  studentAssessments: OralFeedbackData[]; // Assessments for each student
+  generalNotes?: string; // General notes about this oral assessment
+  createdDate: string;
+  lastModified: string;
+}
+
 export interface Course {
   id: string;
   name: string; // e.g., "Math 10A - Fall 2024"
   description?: string;
   students: CourseStudent[]; // All students in this course
-  tests: CourseTest[]; // All tests in this course
+  tests: CourseTest[]; // Written tests in this course
+  oralTests?: OralTest[]; // Oral assessments in this course
   availableLabels: string[]; // Course-specific labels (e.g., ["fractions", "logarithms", "equations"])
   createdDate: string;
   lastModified: string;
@@ -182,5 +197,31 @@ export interface CategoryPerformance {
   averageScore: number;
   taskCount: number;
   description: string; // e.g., "Category 1 (Easy)", "Category 2 (Medium)", "Category 3 (Hard)"
+}
+
+// Oral feedback types - LK20-based assessment dimensions
+export type OralFeedbackDimensionType =
+  | 'strategy' // Strategival og metode
+  | 'reasoning' // Resonnering og argumentasjon
+  | 'representations' // Representasjonar
+  | 'modeling' // Modellering / anvending
+  | 'communication' // Kommunikasjon
+  | 'subject_knowledge'; // Fagleg forståing (kunnskapsområde)
+
+export interface OralFeedbackDimension {
+  dimension: OralFeedbackDimensionType;
+  points: number; // 0-6
+  comment: string; // Additional notes on this dimension
+}
+
+export interface OralFeedbackData {
+  studentId: string;
+  dimensions: OralFeedbackDimension[]; // All 6 dimensions
+  generalObservations: string; // Overall notes from the oral assessment
+  taskReferences?: string[]; // Which tasks/topics were discussed
+  recordedDate?: string; // When the oral assessment took place
+  duration?: number; // Duration in minutes
+  completedDate?: string; // When the teacher finished the assessment
+  score?: number; // Calculated average across dimensions (0-60 scale)
 }
 

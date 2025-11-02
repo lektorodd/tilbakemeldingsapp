@@ -185,7 +185,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
               {/* Compact header with task number, category, subtasks toggle, and delete */}
               <div className="flex items-center gap-3 mb-3 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-medium text-text-secondary">Task:</label>
+                  <label className="text-xs font-medium text-text-secondary">{t('test.taskLabel')}</label>
                   <input
                     type="text"
                     value={task.label}
@@ -209,18 +209,24 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 {!task.hasSubtasks && (
                   <>
                     <div className="flex items-center gap-2">
-                      <label className="text-xs font-medium text-text-secondary">Category:</label>
+                      <label className="text-xs font-medium text-text-secondary">{t('test.categoryLabel')}</label>
                       <select
                         value={task.category || ''}
                         onChange={(e) => updateTaskCategory(task.id, e.target.value ? Number(e.target.value) : undefined)}
                         className="px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
                       >
                         <option value="">-</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
+                        <option value="1">1 - {t('test.category1Short')}</option>
+                        <option value="2">2 - {t('test.category2Short')}</option>
+                        <option value="3">3 - {t('test.category3Short')}</option>
                       </select>
                     </div>
+                    {/* Category tag */}
+                    {task.category && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                        {t(`test.category${task.category}Short`)}
+                      </span>
+                    )}
                   </>
                 )}
 
@@ -231,13 +237,13 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                     onChange={() => toggleSubtasks(task.id)}
                     className="w-4 h-4 text-brand rounded focus:ring-2 focus:ring-focus"
                   />
-                  <span className="text-xs text-text-secondary">Subtasks</span>
+                  <span className="text-xs text-text-secondary">{t('test.subtasksCheckbox')}</span>
                 </label>
 
                 <button
                   onClick={() => removeTask(task.id)}
                   className="ml-auto p-1.5 text-danger hover:bg-red-50 rounded transition"
-                  title="Remove task"
+                  title={t('test.removeTask')}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -246,7 +252,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
               {/* Task Theme Labels - only shown if NO subtasks */}
               {!task.hasSubtasks && availableLabels.length > 0 && (
                 <div className="flex items-start gap-2">
-                  <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">Themes:</label>
+                  <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
                   <div className="flex flex-wrap gap-1.5">
                     {availableLabels.map(label => (
                       <button
@@ -272,7 +278,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                       {/* Compact subtask header */}
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium text-text-secondary">Label:</label>
+                          <label className="text-xs font-medium text-text-secondary">{t('test.subtaskLabel')}</label>
                           <input
                             type="text"
                             value={subtask.label}
@@ -283,23 +289,30 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium text-text-secondary">Category:</label>
+                          <label className="text-xs font-medium text-text-secondary">{t('test.categoryLabel')}</label>
                           <select
                             value={subtask.category || ''}
                             onChange={(e) => updateSubtaskCategory(task.id, subtask.id, e.target.value ? Number(e.target.value) : undefined)}
                             className="px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
                           >
                             <option value="">-</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
+                            <option value="1">1 - {t('test.category1Short')}</option>
+                            <option value="2">2 - {t('test.category2Short')}</option>
+                            <option value="3">3 - {t('test.category3Short')}</option>
                           </select>
                         </div>
+
+                        {/* Category tag for subtask */}
+                        {subtask.category && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                            {t(`test.category${subtask.category}Short`)}
+                          </span>
+                        )}
 
                         <button
                           onClick={() => removeSubtask(task.id, subtask.id)}
                           className="ml-auto p-1 text-danger hover:bg-red-50 rounded transition"
-                          title="Remove subtask"
+                          title={t('test.removeSubtask')}
                         >
                           <X size={14} />
                         </button>
@@ -308,7 +321,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                       {/* Subtask Theme Labels */}
                       {availableLabels.length > 0 && (
                         <div className="flex items-start gap-2">
-                          <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">Themes:</label>
+                          <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
                           <div className="flex flex-wrap gap-1.5">
                             {availableLabels.map(label => (
                               <button
@@ -333,7 +346,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-brand hover:bg-violet-50 rounded-lg transition"
                   >
                     <Plus size={14} />
-                    Add Subtask
+                    {t('test.addSubtaskButton')}
                   </button>
                 </div>
               )}
@@ -345,7 +358,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
             className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition"
           >
             <Plus size={18} />
-            Add Task
+            {t('test.addTaskButton')}
           </button>
         </div>
       )}
