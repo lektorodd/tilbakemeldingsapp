@@ -14,7 +14,8 @@ import {
   BookmarkPlus,
   Download,
   Link2,
-  Lightbulb
+  Lightbulb,
+  MousePointerClick
 } from 'lucide-react';
 
 export default function HelpPage() {
@@ -42,10 +43,18 @@ export default function HelpPage() {
         {/* Quick Links */}
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <h2 className="text-xl font-bold text-text-primary mb-4">{t('help.quickLinks')}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <a href="#workflow" className="flex items-center gap-2 p-3 bg-violet-50 text-violet-700 rounded-lg hover:bg-violet-100 transition-colors">
               <GraduationCap size={18} />
               <span className="text-sm font-medium">{t('help.workflow')}</span>
+            </a>
+            <a href="#quick-grading" className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
+              <MousePointerClick size={18} />
+              <span className="text-sm font-medium">Rask poeng</span>
+            </a>
+            <a href="#export" className="flex items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+              <Download size={18} />
+              <span className="text-sm font-medium">Eksport</span>
             </a>
             <a href="#grading" className="flex items-center gap-2 p-3 bg-rose-50 text-brand-hover rounded-lg hover:bg-rose-100 transition-colors">
               <Calculator size={18} />
@@ -101,6 +110,175 @@ export default function HelpPage() {
             <div className="border-l-4 border-stone-600 pl-4">
               <h3 className="font-semibold text-text-primary mb-2">5. {t('help.step5Title')}</h3>
               <p className="text-sm text-text-secondary">{t('help.step5Desc')}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Point Selection */}
+        <div id="quick-grading" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <MousePointerClick size={24} className="text-blue-600" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">Rask poeng-valg</h2>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-text-secondary">
+              Når du gir tilbakemelding på prøver, kan du no raskt velje poeng med knapper i staden for dropdown-menyer.
+            </p>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-blue-900 mb-3">Slik bruker du det:</h3>
+              <ol className="space-y-2 text-sm text-blue-800">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">1.</span>
+                  <span>Gå til ein prøve og vel ein elev å gi tilbakemelding til</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">2.</span>
+                  <span>For kvar oppgåve ser du 7 knappar (0-6) under "Poeng:"</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">3.</span>
+                  <span>Klikk på talet som passar for å gi poeng - mykje raskare enn dropdown!</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">4.</span>
+                  <span>Den valde knappen blir lilla og litt større, så du ser kva som er valt</span>
+                </li>
+              </ol>
+            </div>
+
+            <div className="border border-border rounded-lg p-4">
+              <h3 className="font-semibold text-text-primary mb-2">Visualisering:</h3>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-text-secondary">Poeng:</span>
+                <div className="flex gap-1">
+                  {[0, 1, 2, 3, 4, 5, 6].map(p => (
+                    <button
+                      key={p}
+                      disabled
+                      className={`w-9 h-9 rounded-lg font-semibold transition-all ${
+                        p === 4
+                          ? 'bg-brand text-white shadow-md scale-110'
+                          : 'bg-surface border border-border text-text-secondary'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-sm text-text-secondary">/ 6</span>
+              </div>
+              <p className="text-xs text-text-secondary mt-2">
+                I dette eksempelet er 4 poeng valt (lilla knapp)
+              </p>
+            </div>
+
+            <div className="bg-background border border-border rounded-lg p-4">
+              <h3 className="font-semibold text-text-primary mb-2">Fordelar:</h3>
+              <ul className="text-sm text-text-secondary space-y-1">
+                <li>✅ Mykje raskare arbeidsflyt - eitt klikk i staden for to</li>
+                <li>✅ Visuell tilbakemelding på kva som er valt</li>
+                <li>✅ Ingen scrolling i dropdown-menyer</li>
+                <li>✅ Lettare å sjå alle alternativ samtidig</li>
+                <li>✅ Moderne og intuitiv brukaropplevelse</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* CSV/Excel Export */}
+        <div id="export" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Download size={24} className="text-success" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">CSV/Excel-eksport</h2>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-text-secondary">
+              Eksporter kursdata til CSV-format som kan opnast direkte i Excel, Google Sheets, eller andre reknearkprogram.
+            </p>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h3 className="font-semibold text-green-900 mb-3">Slik eksporterer du:</h3>
+              <ol className="space-y-2 text-sm text-green-800">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">1.</span>
+                  <span>Gå til kursssida (der du ser studentar og prøver)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">2.</span>
+                  <span>Klikk på den grøne knappen "Export to CSV/Excel" øvst til høgre</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">3.</span>
+                  <span>Fila blir lasta ned automatisk som <code className="bg-green-100 px-1 rounded">kursnavn.csv</code></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">4.</span>
+                  <span>Opne fila i Excel, Google Sheets eller liknande</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold">5.</span>
+                  <span>(Valfritt) Lagre som .xlsx frå Excel om du vil ha Excel-format</span>
+                </li>
+              </ol>
+            </div>
+
+            <div className="border border-border rounded-lg p-4">
+              <h3 className="font-semibold text-text-primary mb-3">Kva inneheld eksporten?</h3>
+
+              <div className="space-y-3 text-sm">
+                <div className="border-l-4 border-violet-600 pl-3">
+                  <h4 className="font-semibold text-text-primary mb-1">📊 Studentoversikt</h4>
+                  <p className="text-text-secondary">
+                    Alle studentar med poengsum på kvar prøve, gjennomsnitt og fullføringsgrad
+                  </p>
+                </div>
+
+                <div className="border-l-4 border-emerald-600 pl-3">
+                  <h4 className="font-semibold text-text-primary mb-1">📝 Detaljert prøvedata</h4>
+                  <p className="text-text-secondary">
+                    For kvar prøve: dato, skildring, generell kommentar, studentstatistikk
+                  </p>
+                </div>
+
+                <div className="border-l-4 border-amber-600 pl-3">
+                  <h4 className="font-semibold text-text-primary mb-1">📈 Oppgåveanalyse</h4>
+                  <p className="text-text-secondary">
+                    Gjennomsnittsscore per oppgåve, forsøksprosent, poengsfordeling (0-6)
+                  </p>
+                </div>
+
+                <div className="border-l-4 border-rose-600 pl-3">
+                  <h4 className="font-semibold text-text-primary mb-1">💬 Alle kommentarar</h4>
+                  <p className="text-text-secondary">
+                    Generelle kommentarar, oppgåvekommentarar og individuelle kommentarar for kvar elev
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-background border border-border rounded-lg p-4">
+              <h3 className="font-semibold text-text-primary mb-2">Bruksområde:</h3>
+              <ul className="text-sm text-text-secondary space-y-1">
+                <li>✅ Analysere klasseprestasjon i Excel med pivottabeller</li>
+                <li>✅ Dele data med kollegaer eller administrasjon</li>
+                <li>✅ Importere data til andre system</li>
+                <li>✅ Lage eigne diagram og rapportar</li>
+                <li>✅ Arkivere kursdata eksternt</li>
+                <li>✅ Førebu foreldremøter med utskriftsvennleg format</li>
+              </ul>
+            </div>
+
+            <div className="bg-violet-50 border border-violet-200 rounded-lg p-4">
+              <h3 className="font-semibold text-violet-900 mb-2">💡 Tips:</h3>
+              <ul className="text-sm text-violet-800 space-y-1">
+                <li>• CSV-fila bruker UTF-8 med BOM for korrekt norsk teiknstøtte i Excel</li>
+                <li>• Opne fila direkte i Excel - den formaterer seg automatisk</li>
+                <li>• Du kan enkelt lagre som .xlsx frå Excel om du treng Excel-format</li>
+                <li>• Eksporten inkluderer ALLE data - ingen funksjonar blir utelate</li>
+              </ul>
             </div>
           </div>
         </div>
