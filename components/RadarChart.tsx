@@ -22,7 +22,7 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
   const numDimensions = sortedDimensions.length;
   const centerX = size / 2;
   const centerY = size / 2;
-  const radius = (size / 2) - 30; // Leave margin for labels
+  const radius = (size / 2) - 50; // Leave more margin for labels
 
   // Calculate points for each dimension
   const getPoint = (index: number, value: number) => {
@@ -43,7 +43,7 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
   // Generate axis lines and labels
   const axes = sortedDimensions.map((dim, index) => {
     const endPoint = getPoint(index, maxValue);
-    const labelPoint = getPoint(index, maxValue + 0.8); // Extend beyond for label
+    const labelPoint = getPoint(index, maxValue + 1.2); // Extend further for label
 
     // Get dimension label
     const getDimensionLabel = () => {
@@ -51,13 +51,12 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
       return t(key);
     };
 
-    // Abbreviated label for space
+    // Full label - no truncation
     const fullLabel = getDimensionLabel();
-    const shortLabel = fullLabel.length > 15 ? fullLabel.substring(0, 15) + '...' : fullLabel;
 
     return {
       line: { x1: centerX, y1: centerY, x2: endPoint.x, y2: endPoint.y },
-      label: { x: labelPoint.x, y: labelPoint.y, text: shortLabel },
+      label: { x: labelPoint.x, y: labelPoint.y, text: fullLabel },
       value: dim.points,
     };
   });
@@ -126,7 +125,7 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
               x={axis.label.x}
               y={axis.label.y}
               textAnchor={textAnchor}
-              fontSize="10"
+              fontSize="11"
               fill="#6b7280"
               dominantBaseline="middle"
             >
@@ -134,9 +133,9 @@ export default function RadarChart({ dimensions, size = 200, maxValue = 6 }: Rad
             </text>
             <text
               x={axis.label.x}
-              y={axis.label.y + 12}
+              y={axis.label.y + 14}
               textAnchor={textAnchor}
-              fontSize="11"
+              fontSize="12"
               fontWeight="bold"
               fill="#7c3aed"
               dominantBaseline="middle"
