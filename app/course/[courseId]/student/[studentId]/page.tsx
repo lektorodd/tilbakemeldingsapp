@@ -225,15 +225,12 @@ export default function StudentDashboardPage() {
               <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
             ) : (
               <div className="space-y-3">
-                {oralPerformance.map(oral => {
-                  console.log('Oral assessment data:', oral);
-                  console.log('Dimensions:', oral.dimensions);
-                  return (
+                {oralPerformance.map(oral => (
                   <div key={oral.oralTestId} className="flex gap-3">
-                    {/* Oral test card - 70% width */}
+                    {/* Oral test card - 50% width */}
                     <Link
                       href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
-                      className="flex-[0.70] border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer"
+                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div>
@@ -265,27 +262,20 @@ export default function StudentDashboardPage() {
                       </div>
                     </Link>
 
-                    {/* Radar chart box - 30% width */}
-                    <div className="flex-[0.30] border border-border rounded-lg p-2 bg-background flex flex-col items-center justify-center">
+                    {/* Radar chart box - 50% width */}
+                    <div className="flex-[0.50] border border-border rounded-lg p-4 bg-background flex flex-col items-center justify-center">
                       {oral.dimensions && oral.dimensions.length > 0 ? (
                         <>
-                          <RadarChart dimensions={oral.dimensions} size={140} />
-                          <div className="text-xs text-purple-600 mt-1">
-                            {oral.dimensions.length} dimensions
-                          </div>
+                          <RadarChart dimensions={oral.dimensions} size={200} />
                         </>
                       ) : (
                         <div className="text-center text-xs text-text-disabled p-4">
                           {t('test.notCompleted')}
-                          <div className="text-xs mt-1">
-                            (No dimension data)
-                          </div>
                         </div>
                       )}
                     </div>
                   </div>
-                  );
-                })}
+                ))}
               </div>
             )}
         </div>
