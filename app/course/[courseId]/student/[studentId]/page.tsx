@@ -6,6 +6,7 @@ import { getStudentDetailedAnalytics } from '@/utils/courseStorage';
 import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import RadarChart from '@/components/RadarChart';
 
 export default function StudentDashboardPage() {
   const params = useParams();
@@ -226,55 +227,49 @@ export default function StudentDashboardPage() {
             ) : (
               <div className="space-y-3">
                 {oralPerformance.map(oral => (
-                  <Link
-                    key={oral.oralTestId}
-                    href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
-                    className="border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer block"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold text-text-primary hover:text-purple-600 transition-colors">{oral.oralTestName}</h4>
-                        <p className="text-xs text-text-disabled">
-                          {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
-                        </p>
+                  <div key={oral.oralTestId} className="flex gap-3">
+                    {/* Oral test card - 70% width */}
+                    <Link
+                      href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
+                      className="flex-[0.70] border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold text-text-primary hover:text-purple-600 transition-colors">{oral.oralTestName}</h4>
+                          <p className="text-xs text-text-disabled">
+                            {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-2xl font-bold ${getScoreColor(oral.score)}`}>
+                            {oral.score} / {oral.maxScore}
+                          </p>
+                          {oral.completed ? (
+                            <p className="text-xs text-success">{t('test.completed')}</p>
+                          ) : (
+                            <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className={`text-2xl font-bold ${getScoreColor(oral.score)}`}>
-                          {oral.score} / {oral.maxScore}
-                        </p>
-                        {oral.completed ? (
-                          <p className="text-xs text-success">{t('test.completed')}</p>
-                        ) : (
-                          <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Progress bar */}
-                    <div className="mb-2">
-                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${oral.score >= 50 ? 'bg-purple-600' : oral.score >= 35 ? 'bg-purple-400' : 'bg-purple-300'}`}
-                          style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Dimension breakdown */}
-                    {oral.dimensions && oral.dimensions.length > 0 && (
-                      <div className="flex gap-1 flex-wrap">
-                        {oral.dimensions.map((dim, idx) => (
+                      {/* Progress bar */}
+                      <div className="mb-2">
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            key={idx}
-                            className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-700"
-                            title={`${dim.dimension}: ${dim.points}/6`}
-                          >
-                            {dim.points}/6
-                          </div>
-                        ))}
+                            className={`h-full ${oral.score >= 50 ? 'bg-purple-600' : oral.score >= 35 ? 'bg-purple-400' : 'bg-purple-300'}`}
+                            style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Radar chart box - 30% width */}
+                    {oral.dimensions && oral.dimensions.length > 0 && (
+                      <div className="flex-[0.30] border border-border rounded-lg p-2 bg-background flex items-center justify-center">
+                        <RadarChart dimensions={oral.dimensions} size={140} />
                       </div>
                     )}
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
