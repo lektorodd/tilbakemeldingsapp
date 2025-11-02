@@ -443,6 +443,14 @@ export default function TestFeedbackPage() {
             {test.description && <p className="text-text-secondary text-sm">{test.description}</p>}
           </div>
           <div className="flex gap-3">
+            <Link
+              href={`/course/${courseId}/test/${testId}/analytics`}
+              className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
+              title="View task analytics"
+            >
+              <BarChart3 size={18} />
+              Task Analytics
+            </Link>
             <button
               onClick={handleExportAllPDFs}
               className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
