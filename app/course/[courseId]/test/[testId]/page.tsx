@@ -684,17 +684,22 @@ export default function TestFeedbackPage() {
                                   </label>
                                   <div className="flex items-center gap-2">
                                     <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
-                                    <select
-                                      value={feedback.points}
-                                      onChange={(e) =>
-                                        handleUpdateFeedback(task.id, subtask.id, { points: Number(e.target.value) })
-                                      }
-                                      className="px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
-                                    >
+                                    <div className="flex gap-1">
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
-                                        <option key={p} value={p}>{p}</option>
+                                        <button
+                                          key={p}
+                                          type="button"
+                                          onClick={() => handleUpdateFeedback(task.id, subtask.id, { points: p })}
+                                          className={`w-9 h-9 rounded-lg font-semibold transition-all ${
+                                            feedback.points === p
+                                              ? 'bg-brand text-white shadow-md scale-110'
+                                              : 'bg-surface border border-border text-text-secondary hover:bg-violet-50 hover:border-brand'
+                                          }`}
+                                        >
+                                          {p}
+                                        </button>
                                       ))}
-                                    </select>
+                                    </div>
                                     <span className="text-sm text-text-secondary">/ 6</span>
                                   </div>
                                 </div>
@@ -743,17 +748,22 @@ export default function TestFeedbackPage() {
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
-                                    <select
-                                      value={feedback.points}
-                                      onChange={(e) =>
-                                        handleUpdateFeedback(task.id, undefined, { points: Number(e.target.value) })
-                                      }
-                                      className="px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
-                                    >
+                                    <div className="flex gap-1">
                                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
-                                        <option key={p} value={p}>{p}</option>
+                                        <button
+                                          key={p}
+                                          type="button"
+                                          onClick={() => handleUpdateFeedback(task.id, undefined, { points: p })}
+                                          className={`w-9 h-9 rounded-lg font-semibold transition-all ${
+                                            feedback.points === p
+                                              ? 'bg-brand text-white shadow-md scale-110'
+                                              : 'bg-surface border border-border text-text-secondary hover:bg-violet-50 hover:border-brand'
+                                          }`}
+                                        >
+                                          {p}
+                                        </button>
                                       ))}
-                                    </select>
+                                    </div>
                                     <span className="text-sm text-text-secondary">/ 6</span>
                                   </div>
                                 </div>
