@@ -424,7 +424,7 @@ export default function CourseDetailPage() {
               className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
             >
               <Download size={18} />
-              Export to Excel
+              Export to CSV/Excel
             </button>
             <Link
               href={`/course/${courseId}/analytics`}
