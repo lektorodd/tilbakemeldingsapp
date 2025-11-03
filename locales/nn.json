@@ -14,6 +14,7 @@
     "import": "Importer",
     "confirm": "Stadfest",
     "help": "Hjelp",
+    "github": "GitHub",
     "yes": "Ja",
     "no": "Nei",
     "all": "Alle"
@@ -461,6 +462,8 @@
     "tip6Title": "Eksporter sikkerheitskopiar regelmessig",
     "tip6Desc": "Bruk 'Eksporter alle'-knappen regelmessig for å opprette JSON-sikkerheitskopiar av alle fagdataa dine.",
     "needMoreHelp": "Treng meir hjelp?",
-    "contactInfo": "For ytterlegare støtte eller for å rapportere problem, sjekk GitHub-repositoriet eller kontakt administratoren din."
+    "contactInfo": "For ytterlegare støtte eller for å rapportere problem, sjekk GitHub-repositoriet eller kontakt administratoren din.",
+    "author": "Torodd F. Ottestad - lektorodd.no",
+    "viewOnGithub": "Sjå på GitHub"
   }
 }
