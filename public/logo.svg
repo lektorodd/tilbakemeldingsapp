@@ -1,0 +1,20 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="white"/>
+
+  <!-- Bar Chart -->
+  <!-- Bar 1 (shortest) -->
+  <rect x="64" y="320" width="80" height="128" fill="black" rx="4"/>
+
+  <!-- Bar 2 (medium-short) -->
+  <rect x="160" y="240" width="80" height="208" fill="black" rx="4"/>
+
+  <!-- Bar 3 (tallest) -->
+  <rect x="256" y="160" width="80" height="288" fill="black" rx="4"/>
+
+  <!-- Bar 4 (medium) -->
+  <rect x="352" y="200" width="80" height="248" fill="black" rx="4"/>
+
+  <!-- Base line -->
+  <line x1="48" y1="456" x2="464" y2="456" stroke="black" stroke-width="4" stroke-linecap="round"/>
+</svg>
