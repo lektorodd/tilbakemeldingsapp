@@ -175,7 +175,7 @@
       "studentFeedbacks": [
         {
           "studentId": "student-demo-001",
-          "individualComment": "Veldig bra arbeid, Emma! Du viser god forståing av algebra og likningar. Hugs å sjekke svar med å sette inn i likninga.",
+          "individualComment": "Veldig bra arbeid, Emma! Du viser god forståing av algebra og likningar. Hugs å sjekke svar med å sette inn i likninga (f.eks. at $x=3$ gir $2x+1=7$).",
           "completedDate": "2024-09-20T10:30:00.000Z",
           "score": 52,
           "taskFeedbacks": [
@@ -201,7 +201,7 @@
               "taskId": "task-demo-001-2",
               "subtaskId": "subtask-demo-001-2b",
               "points": 5,
-              "comment": "Riktig svar, men små reknefeile i mellomrekninga."
+              "comment": "Riktig svar, men små regnefeil i mellomrekninga."
             },
             {
               "taskId": "task-demo-001-3",
@@ -260,12 +260,12 @@
               "taskId": "task-demo-001-2",
               "subtaskId": "subtask-demo-001-2b",
               "points": 4,
-              "comment": "Riktig framgangsmåte, men reknefeile i siste steg."
+              "comment": "Riktig framgangsmåte, men regnefeil i siste steg."
             },
             {
               "taskId": "task-demo-001-3",
               "points": 4,
-              "comment": "Brukte ABC-formelen riktig, men feil i utrekninga av diskriminanten."
+              "comment": "Brukte ABC-formelen riktig, men feil i utrekninga av diskriminanten $D = b^2 - 4a c$."
             },
             {
               "taskId": "task-demo-001-4",
@@ -372,7 +372,7 @@
               "taskId": "task-demo-001-2",
               "subtaskId": "subtask-demo-001-2a",
               "points": 4,
-              "comment": "Riktig framgangsmåte, små reknefeile."
+              "comment": "Riktig framgangsmåte, små regnefeil."
             },
             {
               "taskId": "task-demo-001-2",
@@ -496,7 +496,7 @@
               "taskId": "task-demo-001-2",
               "subtaskId": "subtask-demo-001-2b",
               "points": 4,
-              "comment": "Små reknefeile, men riktig metode."
+              "comment": "Små regnefeil, men riktig metode."
             },
             {
               "taskId": "task-demo-001-3",
@@ -726,7 +726,7 @@
               "taskId": "task-demo-001-2",
               "subtaskId": "subtask-demo-001-2a",
               "points": 4,
-              "comment": "Små reknefeile."
+              "comment": "Små regnefeil."
             },
             {
               "taskId": "task-demo-001-2",
@@ -920,7 +920,7 @@
               "taskId": "task-demo-002-3",
               "subtaskId": "subtask-demo-002-3a",
               "points": 6,
-              "comment": "Riktig bruk av logaritmereignskapane!"
+              "comment": "Riktig bruk av logaritmereignskapane! (t.d. $log(a b) = log(a) + log(b)$)"
             },
             {
               "taskId": "task-demo-002-3",
@@ -937,7 +937,7 @@
               "taskId": "task-demo-002-5",
               "subtaskId": "subtask-demo-002-5a",
               "points": 6,
-              "comment": "Glimrande modellering av vekst!"
+              "comment": "Glimrande modellering av vekst! Brukte $A(t) = A_0 dot a^t$ perfekt."
             },
             {
               "taskId": "task-demo-002-5",
@@ -1044,7 +1044,7 @@
               "taskId": "task-demo-002-3",
               "subtaskId": "subtask-demo-002-3b",
               "points": 6,
-              "comment": "Perfekt bruk av logaritmereignskapane!"
+              "comment": "Perfekt bruk av logaritmereignskapane! Brukte $log_a(x^n) = n log_a(x)$ korrekt."
             },
             {
               "taskId": "task-demo-002-4",
@@ -1502,6 +1502,191 @@
       "lastModified": "2024-10-25T15:00:00.000Z"
     }
   ],
+  "oralTests": [
+    {
+      "id": "oral-demo-001",
+      "name": "Munnleg eksamen - Derivasjon",
+      "description": "Munnleg vurdering i derivasjon og praktisk anvendelse av derivasjon.",
+      "date": "2024-11-15",
+      "topics": ["derivasjon", "praktisk anvendelse"],
+      "labels": ["derivasjon", "praktisk anvendelse"],
+      "generalNotes": "Studentane fekk ulike oppgåver knytt til derivasjon. Prøvde å vurdere både teknisk forståing og evne til å forklare konsept.",
+      "studentAssessments": [
+        {
+          "studentId": "student-demo-001",
+          "dimensions": [
+            {"dimension": "strategy", "points": 5, "comment": "God forståing av når ulike metod ar skal brukast."},
+            {"dimension": "reasoning", "points": 5, "comment": "Forklarte resonnementet sitt godt."},
+            {"dimension": "representations", "points": 5, "comment": "Brukte både algebraiske og grafiske representasjonar."},
+            {"dimension": "modeling", "points": 5, "comment": "Kunne modellere praktiske problem."},
+            {"dimension": "communication", "points": 5, "comment": "Tydeleg og strukturert kommunikasjon."},
+            {"dimension": "subject_knowledge", "points": 6, "comment": "Solid fagleg forståing av derivasjon."}
+          ],
+          "generalObservations": "Emma viste god forståing av derivasjon, både teknisk og konseptuelt. Kunne forklare samanhengen mellom $f'(x)$ og stigingstalet til grafen. Godt arbeid!",
+          "taskReferences": ["Deriver $f(x) = x^3 + 2x^2 - 5x + 1$", "Finn stigningstalet til $f(x) = e^x$ i punktet $x=0$"],
+          "recordedDate": "2024-11-15T09:00:00.000Z",
+          "duration": 20,
+          "completedDate": "2024-11-15T09:20:00.000Z",
+          "score": 51
+        },
+        {
+          "studentId": "student-demo-002",
+          "dimensions": [
+            {"dimension": "strategy", "points": 4, "comment": "Brukte riktige metod ar, men litt usikker."},
+            {"dimension": "reasoning", "points": 4, "comment": "Kunne forklare, men ikkje alltid like presist."},
+            {"dimension": "representations", "points": 4, "comment": "Brukte mest algebra, mindre grafikk."},
+            {"dimension": "modeling", "points": 4, "comment": "Greidde praktiske oppgåver med støtte."},
+            {"dimension": "communication", "points": 4, "comment": "Forklarte greitt, men kunne vore meir strukturert."},
+            {"dimension": "subject_knowledge", "points": 4, "comment": "God grunnforståing, men litt usikker på detaljar."}
+          ],
+          "generalObservations": "Lukas viste god grunnforståing, men treng meir trening på å forklare presist. Forstår kva derivasjon er, men slit litt med å formulere det tydeleg.",
+          "taskReferences": ["Deriver $f(x) = 3x^2 - 4x + 7$", "Forklar kva den deriverte fortel om funksjonen"],
+          "recordedDate": "2024-11-15T09:30:00.000Z",
+          "duration": 18,
+          "completedDate": "2024-11-15T09:48:00.000Z",
+          "score": 40
+        },
+        {
+          "studentId": "student-demo-003",
+          "dimensions": [
+            {"dimension": "strategy", "points": 6, "comment": "Utmerka val av strategi og metode."},
+            {"dimension": "reasoning", "points": 6, "comment": "Svært god evne til å resonnere og argumentere."},
+            {"dimension": "representations", "points": 6, "comment": "Brukte fleire representasjonar på ein god måte."},
+            {"dimension": "modeling", "points": 6, "comment": "Glimrande modellering av praktiske problem."},
+            {"dimension": "communication", "points": 6, "comment": "Tydeleg, presis og engasjerande kommunikasjon."},
+            {"dimension": "subject_knowledge", "points": 6, "comment": "Djup og nyansert fagleg forståing."}
+          ],
+          "generalObservations": "Sofia viste utmerka forståing på alle nivå. Kunne både rekne ut deriverte og forklare kva derivasjon betyr. Gjorde samanlikning mellom $f'(x) > 0$ og veksande funksjon på ein imponerande måte.",
+          "taskReferences": ["Deriver $f(x) = sin(x) dot e^x$", "Forklar samanhengen mellom $f'(x)$ og monotoniegenskapane til $f(x)$"],
+          "recordedDate": "2024-11-15T10:00:00.000Z",
+          "duration": 22,
+          "completedDate": "2024-11-15T10:22:00.000Z",
+          "score": 60
+        },
+        {
+          "studentId": "student-demo-004",
+          "dimensions": [
+            {"dimension": "strategy", "points": 3, "comment": "Valde riktig strategi, men trengte hjelp."},
+            {"dimension": "reasoning", "points": 3, "comment": "Slit med å forklare resonnementet."},
+            {"dimension": "representations", "points": 3, "comment": "Brukte algebra, men ikkje andre representasjonar."},
+            {"dimension": "modeling", "points": 3, "comment": "Trong mykje støtte for praktiske oppgåver."},
+            {"dimension": "communication", "points": 4, "comment": "Prøvde å forklare, men litt ustrukturert."},
+            {"dimension": "subject_knowledge", "points": 3, "comment": "Grunnleggjande forståing, men mange huller."}
+          ],
+          "generalObservations": "Noah slit litt med å forklare derivasjon munnleg. Forstår prosedyrane, men konseptuell forståing er svakare. Treng meir øving.",
+          "taskReferences": ["Deriver $f(x) = 2x^3 - x$", "Fortel kva den deriverte seier om grafen"],
+          "recordedDate": "2024-11-15T10:30:00.000Z",
+          "duration": 15,
+          "completedDate": "2024-11-15T10:45:00.000Z",
+          "score": 32
+        },
+        {
+          "studentId": "student-demo-005",
+          "dimensions": [
+            {"dimension": "strategy", "points": 5, "comment": "Valde gode strategiar."},
+            {"dimension": "reasoning", "points": 5, "comment": "God evne til å resonnere."},
+            {"dimension": "representations", "points": 5, "comment": "Brukte ulike representasjonar effektivt."},
+            {"dimension": "modeling", "points": 5, "comment": "Greidde praktiske problem godt."},
+            {"dimension": "communication", "points": 5, "comment": "Kommuniserte tydeleg og strukturert."},
+            {"dimension": "subject_knowledge", "points": 5, "comment": "Solid fagleg forståing."}
+          ],
+          "generalObservations": "Ella viste solid forståing av derivasjon. Kunne både rekne og forklare. God balanse mellom teknisk dugleik og konseptuell forståing.",
+          "taskReferences": ["Deriver $f(x) = (x^2 + 1)(x - 3)$", "Forklar produktregelen"],
+          "recordedDate": "2024-11-15T11:00:00.000Z",
+          "duration": 19,
+          "completedDate": "2024-11-15T11:19:00.000Z",
+          "score": 50
+        },
+        {
+          "studentId": "student-demo-006",
+          "dimensions": [
+            {"dimension": "strategy", "points": 4, "comment": "Brukte riktige metod ar, men litt usikker."},
+            {"dimension": "reasoning", "points": 4, "comment": "Forklarte greitt, men ikkje alltid presist."},
+            {"dimension": "representations", "points": 4, "comment": "God bruk av algebra, mindre grafikk."},
+            {"dimension": "modeling", "points": 3, "comment": "Trong litt støtte for praktiske problem."},
+            {"dimension": "communication", "points": 4, "comment": "Kommuniserte greitt."},
+            {"dimension": "subject_knowledge", "points": 4, "comment": "God grunnforståing."}
+          ],
+          "generalObservations": "William viste god grunnforståing av derivasjon. Treng meir trening på praktiske anvendingar.",
+          "taskReferences": ["Deriver $f(x) = 4x^2 - 3x + 2$", "Bruk derivasjon til å finne toppunkt"],
+          "recordedDate": "2024-11-15T11:30:00.000Z",
+          "duration": 17,
+          "completedDate": "2024-11-15T11:47:00.000Z",
+          "score": 38
+        },
+        {
+          "studentId": "student-demo-007",
+          "dimensions": [
+            {"dimension": "strategy", "points": 4, "comment": "Valde gode strategiar."},
+            {"dimension": "reasoning", "points": 5, "comment": "God evne til å resonnere og forklare."},
+            {"dimension": "representations", "points": 4, "comment": "Brukte algebra og litt grafikk."},
+            {"dimension": "modeling", "points": 4, "comment": "Greidde praktiske oppgåver."},
+            {"dimension": "communication", "points": 5, "comment": "Tydeleg kommunikasjon."},
+            {"dimension": "subject_knowledge", "points": 5, "comment": "God fagleg forståing."}
+          ],
+          "generalObservations": "Olivia viste god forståing av derivasjon og kunne forklare konsept tydeleg. Bra arbeid!",
+          "taskReferences": ["Deriver $f(x) = x^3 - 2x^2 + x$", "Forklar kva eit vendepunkt er"],
+          "recordedDate": "2024-11-15T12:00:00.000Z",
+          "duration": 18,
+          "completedDate": "2024-11-15T12:18:00.000Z",
+          "score": 45
+        },
+        {
+          "studentId": "student-demo-008",
+          "dimensions": [
+            {"dimension": "strategy", "points": 2, "comment": "Slit med å velje riktig strategi."},
+            {"dimension": "reasoning", "points": 2, "comment": "Vanskeleg å forklare resonnementet."},
+            {"dimension": "representations", "points": 3, "comment": "Brukte mest algebra, med støtte."},
+            {"dimension": "modeling", "points": 2, "comment": "Trong mykje hjelp for praktiske problem."},
+            {"dimension": "communication", "points": 3, "comment": "Prøvde å forklare, men vanskeleg."},
+            {"dimension": "subject_knowledge", "points": 3, "comment": "Grunnleggjande forståing, mange huller."}
+          ],
+          "generalObservations": "Oscar slit med derivasjon, både teknisk og konseptuelt. Treng grundig oppfølging og rettleiing. Kom gjerne på konsultasjon!",
+          "taskReferences": ["Deriver $f(x) = x^2 + 3x$", "Forklar kva derivasjon er"],
+          "recordedDate": "2024-11-15T12:30:00.000Z",
+          "duration": 15,
+          "completedDate": "2024-11-15T12:45:00.000Z",
+          "score": 25
+        },
+        {
+          "studentId": "student-demo-009",
+          "dimensions": [
+            {"dimension": "strategy", "points": 6, "comment": "Utmerka val av strategi."},
+            {"dimension": "reasoning", "points": 6, "comment": "Imponerande evne til å resonnere."},
+            {"dimension": "representations", "points": 6, "comment": "Brukte alle typar representasjonar effektivt."},
+            {"dimension": "modeling", "points": 6, "comment": "Svært god modellering av praktiske problem."},
+            {"dimension": "communication", "points": 6, "comment": "Krystallklår kommunikasjon."},
+            {"dimension": "subject_knowledge", "points": 6, "comment": "Djup og omfattande fagleg forståing."}
+          ],
+          "generalObservations": "Nora viste fantastisk forståing av derivasjon. Kunne både teknisk derivere komplekse funksjonar og forklare konsept på ein glimrande måte. Gjorde samanlikning med fysikk ($v(t) = s'(t)$) som var imponerande!",
+          "taskReferences": ["Deriver $f(x) = ln(x^2 + 1)$", "Forklar derivasjon som momentan endringsrate"],
+          "recordedDate": "2024-11-15T13:00:00.000Z",
+          "duration": 23,
+          "completedDate": "2024-11-15T13:23:00.000Z",
+          "score": 60
+        },
+        {
+          "studentId": "student-demo-010",
+          "dimensions": [
+            {"dimension": "strategy", "points": 3, "comment": "Valde strategi med litt støtte."},
+            {"dimension": "reasoning", "points": 3, "comment": "Kunne forklare, men ikkje alltid presist."},
+            {"dimension": "representations", "points": 3, "comment": "Brukte algebra, men trong hjelp."},
+            {"dimension": "modeling", "points": 3, "comment": "Trong støtte for praktiske problem."},
+            {"dimension": "communication", "points": 4, "comment": "Prøvde å kommunisere tydeleg."},
+            {"dimension": "subject_knowledge", "points": 3, "comment": "Grunnleggjande forståing, men usikker."}
+          ],
+          "generalObservations": "Filip viste grunnleggjande forståing, men treng meir trening. Fortsett å øve!",
+          "taskReferences": ["Deriver $f(x) = 5x^2 - 2x$", "Kva seier den deriverte om funksjonen?"],
+          "recordedDate": "2024-11-15T13:30:00.000Z",
+          "duration": 16,
+          "completedDate": "2024-11-15T13:46:00.000Z",
+          "score": 32
+        }
+      ],
+      "createdDate": "2024-11-10T08:00:00.000Z",
+      "lastModified": "2024-11-15T13:46:00.000Z"
+    }
+  ],
   "createdDate": "2024-09-01T08:00:00.000Z",
-  "lastModified": "2024-10-25T15:00:00.000Z"
+  "lastModified": "2024-11-15T13:46:00.000Z"
 }

@@ -24,7 +24,7 @@ Each student has:
 - Realistic Norwegian name
 - Performance data across both tests
 
-### Tests (2 written tests)
+### Tests (2 written tests + 1 oral test)
 
 #### Test 1: Algebra og Likningar (September 15, 2024)
 - **Focus:** Basic algebra and equations
@@ -48,6 +48,22 @@ Each student has:
   - Growth models
   - Practical applications
 - **Scores range:** 33-58 points (out of 60)
+
+#### Oral Test: Munnleg eksamen - Derivasjon (November 15, 2024)
+- **Focus:** Derivation and practical applications
+- **Structure:** Individual oral assessment with 6 LK20-based dimensions
+- **Dimensions:**
+  - Strategy and method (Strategival og metode)
+  - Reasoning and argumentation (Resonnering og argumentasjon)
+  - Representations (Representasjonar)
+  - Modeling/application (Modellering / anvending)
+  - Communication (Kommunikasjon)
+  - Subject knowledge (Fagleg forståing)
+- **Assessment:** Each dimension scored 0-6 points, calculated to 0-60 scale
+- **Topics:** Derivasjon, praktisk anvendelse
+- **Duration:** 15-23 minutes per student
+- **Scores range:** 25-60 points (out of 60)
+- **Features:** Includes Typst math notation in feedback (e.g., $f'(x)$, $v(t) = s'(t)$)
 
 ### Labels (Topic Tags)
 The demo course uses 10 thematic labels to categorize tasks:
@@ -75,6 +91,7 @@ Every student has comprehensive feedback including:
 - General feedback comment
 - Completion dates
 - Calculated scores (0-60 scale)
+- **Typst math notation** in several comments (e.g., $x=3$, $D = b^2 - 4ac$, $f'(x)$)
 
 Feedback demonstrates:
 - Realistic Norwegian language (Nynorsk)
@@ -102,24 +119,30 @@ After loading the demo course, you can:
 1. **View Student Progress**
    - Navigate to individual students to see their performance across tests
    - Explore analytics showing strengths and weaknesses
+   - View both written and oral test results
 
 2. **Analyze Test Results**
    - View test analytics with score distributions
    - Examine task-by-task performance
-   - Compare student results
+   - Compare student results across written and oral assessments
 
-3. **Explore Label Analytics**
+3. **Explore Oral Assessment**
+   - Review LK20-based dimensional feedback
+   - See how oral assessments integrate with written tests
+   - Explore individual dimension performance
+
+4. **Explore Label Analytics**
    - See which topics students struggle with most
    - Identify patterns in mathematical understanding
 
-4. **Export Data**
+5. **Export Data**
    - Test Excel export functionality
-   - Try Typst document generation
+   - Try Typst document generation with math notation
    - Export individual student feedback
 
-5. **Modify Feedback**
+6. **Modify Feedback**
    - Edit existing feedback to see live updates
-   - Add new feedback snippets
+   - Add new feedback snippets with Typst math notation
    - Experiment with scoring
 
 ## Data Structure
@@ -132,9 +155,10 @@ The demo course is stored in `demoCourse.json` with the following structure:
   "name": "Demo Klasse - Matematikk 1T",
   "students": [...],  // 10 students
   "tests": [...],      // 2 written tests
+  "oralTests": [...],  // 1 oral test
   "availableLabels": [...],  // 10 topic labels
   "createdDate": "2024-09-01T08:00:00.000Z",
-  "lastModified": "2024-10-25T15:00:00.000Z"
+  "lastModified": "2024-11-15T13:46:00.000Z"
 }
 ```
 
