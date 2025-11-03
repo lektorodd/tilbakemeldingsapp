@@ -14,6 +14,7 @@
     "import": "Import",
     "confirm": "Confirm",
     "help": "Help",
+    "github": "GitHub",
     "yes": "Yes",
     "no": "No",
     "all": "All"
@@ -461,6 +462,8 @@
     "tip6Title": "Export Backups Regularly",
     "tip6Desc": "Use the 'Export All' button regularly to create JSON backups of all your course data.",
     "needMoreHelp": "Need More Help?",
-    "contactInfo": "For additional support or to report issues, check the GitHub repository or contact your administrator."
+    "contactInfo": "For additional support or to report issues, check the GitHub repository or contact your administrator.",
+    "author": "Torodd F. Ottestad - lektorodd.no",
+    "viewOnGithub": "View on GitHub"
   }
 }

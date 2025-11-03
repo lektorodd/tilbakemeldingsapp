@@ -15,7 +15,9 @@ import {
   Download,
   Link2,
   Lightbulb,
-  MousePointerClick
+  MousePointerClick,
+  Github,
+  User
 } from 'lucide-react';
 
 export default function HelpPage() {
@@ -535,7 +537,23 @@ export default function HelpPage() {
         {/* Footer */}
         <div className="bg-violet-50 border border-violet-200 rounded-lg p-6 text-center">
           <h3 className="font-semibold text-violet-900 mb-2">{t('help.needMoreHelp')}</h3>
-          <p className="text-sm text-violet-800">{t('help.contactInfo')}</p>
+          <p className="text-sm text-violet-800 mb-4">{t('help.contactInfo')}</p>
+
+          <div className="flex items-center justify-center gap-4 pt-4 border-t border-violet-300">
+            <div className="flex items-center gap-2 text-violet-700">
+              <User size={16} />
+              <span className="text-sm">{t('help.author')}</span>
+            </div>
+            <a
+              href="https://github.com/lektorodd/tilbakemeldingsapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-violet-700 hover:text-violet-900 transition-colors"
+            >
+              <Github size={16} />
+              <span className="text-sm">{t('help.viewOnGithub')}</span>
+            </a>
+          </div>
         </div>
       </div>
     </main>
