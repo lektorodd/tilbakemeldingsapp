@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Course } from '@/types';
 import { loadAllCourses, deleteCourse, setupAutoSaveDirectory, isAutoSaveEnabled, disableAutoSave, exportAllCourses } from '@/utils/courseStorage';
-import { Plus, Trash2, Users, FileText, Settings, Download, FolderOpen } from 'lucide-react';
+import { loadDemoCourse, isDemoCourseLoaded } from '@/utils/demoData';
+import { Plus, Trash2, Users, FileText, Settings, Download, FolderOpen, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -89,6 +90,17 @@ export default function CoursesPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleLoadDemoCourse = () => {
+    if (isDemoCourseLoaded()) {
+      alert(t('course.demoCourseExists'));
+      return;
+    }
+
+    loadDemoCourse();
+    loadData();
+    alert(t('course.demoCourseLoaded'));
+  };
+
   return (
     <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -148,7 +160,7 @@ export default function CoursesPage() {
         </div>
 
         {/* Create new course button */}
-        <div className="mb-6">
+        <div className="mb-6 flex gap-3">
           <button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
@@ -156,6 +168,15 @@ export default function CoursesPage() {
             <Plus size={20} />
             {t('home.createCourse')}
           </button>
+          {!isDemoCourseLoaded() && (
+            <button
+              onClick={handleLoadDemoCourse}
+              className="flex items-center gap-2 px-6 py-3 bg-warning text-white rounded-lg hover:bg-amber-600 transition-colors font-medium shadow-sm"
+            >
+              <Lightbulb size={20} />
+              {t('course.loadDemoCourse')}
+            </button>
+          )}
         </div>
 
         {/* Courses grid */}
@@ -165,13 +186,22 @@ export default function CoursesPage() {
             <p className="text-text-secondary mb-6">
               {t('home.subtitle')}
             </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
-            >
-              <Plus size={20} />
-              {t('home.createCourse')}
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
+              >
+                <Plus size={20} />
+                {t('home.createCourse')}
+              </button>
+              <button
+                onClick={handleLoadDemoCourse}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-warning text-white rounded-lg hover:bg-amber-600 transition-colors font-medium shadow-sm"
+              >
+                <Lightbulb size={20} />
+                {t('course.loadDemoCourse')}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

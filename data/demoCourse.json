@@ -1,0 +1,1507 @@
+{
+  "id": "course-demo-2024",
+  "name": "Demo Klasse - Matematikk 1T",
+  "description": "Demonstrasjonskurs for å vise funksjonalitet i tilbakemeldingsappen. Inneholder fiktive studentar og realistiske tilbakemeldingar.",
+  "students": [
+    {
+      "id": "student-demo-001",
+      "name": "Emma Larsen",
+      "studentNumber": "2024001"
+    },
+    {
+      "id": "student-demo-002",
+      "name": "Lukas Hansen",
+      "studentNumber": "2024002"
+    },
+    {
+      "id": "student-demo-003",
+      "name": "Sofia Olsen",
+      "studentNumber": "2024003"
+    },
+    {
+      "id": "student-demo-004",
+      "name": "Noah Pedersen",
+      "studentNumber": "2024004"
+    },
+    {
+      "id": "student-demo-005",
+      "name": "Ella Andersen",
+      "studentNumber": "2024005"
+    },
+    {
+      "id": "student-demo-006",
+      "name": "William Johansen",
+      "studentNumber": "2024006"
+    },
+    {
+      "id": "student-demo-007",
+      "name": "Olivia Nielsen",
+      "studentNumber": "2024007"
+    },
+    {
+      "id": "student-demo-008",
+      "name": "Oscar Berg",
+      "studentNumber": "2024008"
+    },
+    {
+      "id": "student-demo-009",
+      "name": "Nora Kristiansen",
+      "studentNumber": "2024009"
+    },
+    {
+      "id": "student-demo-010",
+      "name": "Filip Sørensen",
+      "studentNumber": "2024010"
+    }
+  ],
+  "availableLabels": [
+    "algebra",
+    "likningar",
+    "funksjonar",
+    "logaritmar",
+    "eksponentfunksjonar",
+    "derivasjon",
+    "ABC-formelen",
+    "faktorisering",
+    "grafteikning",
+    "praktisk anvendelse"
+  ],
+  "tests": [
+    {
+      "id": "test-demo-001",
+      "name": "Prøve 1 - Algebra og Likningar",
+      "description": "Første prøve i emnet algebra og likningar. Dekkjer grunnleggjande algebraiske operasjonar, likningar og ABC-formelen.",
+      "date": "2024-09-15",
+      "generalComment": "Prøva testa grunnleggjande forståing av algebra og likningar. Hugs å vise mellomrekning og forklare framgangsmåten din.",
+      "hasTwoParts": true,
+      "part1TaskCount": 3,
+      "part2TaskCount": 3,
+      "restartNumberingInPart2": false,
+      "tasks": [
+        {
+          "id": "task-demo-001-1",
+          "label": "1",
+          "hasSubtasks": true,
+          "labels": ["algebra", "faktorisering"],
+          "category": 1,
+          "part": 1,
+          "subtasks": [
+            {
+              "id": "subtask-demo-001-1a",
+              "label": "a",
+              "labels": ["algebra", "faktorisering"],
+              "category": 1
+            },
+            {
+              "id": "subtask-demo-001-1b",
+              "label": "b",
+              "labels": ["algebra", "faktorisering"],
+              "category": 1
+            }
+          ]
+        },
+        {
+          "id": "task-demo-001-2",
+          "label": "2",
+          "hasSubtasks": true,
+          "labels": ["likningar", "algebra"],
+          "category": 2,
+          "part": 1,
+          "subtasks": [
+            {
+              "id": "subtask-demo-001-2a",
+              "label": "a",
+              "labels": ["likningar"],
+              "category": 2
+            },
+            {
+              "id": "subtask-demo-001-2b",
+              "label": "b",
+              "labels": ["likningar"],
+              "category": 2
+            }
+          ]
+        },
+        {
+          "id": "task-demo-001-3",
+          "label": "3",
+          "hasSubtasks": false,
+          "labels": ["ABC-formelen", "likningar"],
+          "category": 2,
+          "part": 1,
+          "subtasks": []
+        },
+        {
+          "id": "task-demo-001-4",
+          "label": "4",
+          "hasSubtasks": true,
+          "labels": ["ABC-formelen", "likningar"],
+          "category": 2,
+          "part": 2,
+          "subtasks": [
+            {
+              "id": "subtask-demo-001-4a",
+              "label": "a",
+              "labels": ["ABC-formelen"],
+              "category": 2
+            },
+            {
+              "id": "subtask-demo-001-4b",
+              "label": "b",
+              "labels": ["ABC-formelen"],
+              "category": 3
+            }
+          ]
+        },
+        {
+          "id": "task-demo-001-5",
+          "label": "5",
+          "hasSubtasks": false,
+          "labels": ["praktisk anvendelse", "likningar"],
+          "category": 3,
+          "part": 2,
+          "subtasks": []
+        },
+        {
+          "id": "task-demo-001-6",
+          "label": "6",
+          "hasSubtasks": false,
+          "labels": ["algebra", "faktorisering"],
+          "category": 3,
+          "part": 2,
+          "subtasks": []
+        }
+      ],
+      "studentFeedbacks": [
+        {
+          "studentId": "student-demo-001",
+          "individualComment": "Veldig bra arbeid, Emma! Du viser god forståing av algebra og likningar. Hugs å sjekke svar med å sette inn i likninga.",
+          "completedDate": "2024-09-20T10:30:00.000Z",
+          "score": 52,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Perfekt faktorisering!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 6,
+              "comment": "Godt jobba!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 6,
+              "comment": "Riktig framgangsmåte og korrekt svar."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 5,
+              "comment": "Riktig svar, men små reknefeile i mellomrekninga."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 5,
+              "comment": "Godt arbeid med ABC-formelen. Hugs å forenkle svaret til to desimalar."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 6,
+              "comment": "Veldig bra!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 5,
+              "comment": "Korrekt svar, men kunne vist meir utrekning."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 5,
+              "comment": "Bra modellering av problemet. Godt forklart!"
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 4,
+              "comment": "Riktig ide, men gløymde eitt ledd i faktoriseringa."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-002",
+          "individualComment": "Bra innsats, Lukas! Du har god forståing av grunnleggjande algebra. Arbeida meir med ABC-formelen og praktiske oppgåver.",
+          "completedDate": "2024-09-20T11:00:00.000Z",
+          "score": 42,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 5,
+              "comment": "Riktig svar, små skrivefeil."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 4,
+              "comment": "Riktig framgangsmåte, men reknefeile i siste steg."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 4,
+              "comment": "Brukte ABC-formelen riktig, men feil i utrekninga av diskriminanten."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 3,
+              "comment": "Manglar utrekning. Sjå løysingsforslaget."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 3,
+              "comment": "Riktig oppsett av likning, men ikkje fullført utrekninga."
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 3,
+              "comment": "Delvis riktig faktorisering."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-003",
+          "individualComment": "Utmerka arbeid, Sofia! Du viser djup forståing av emnet og god problemløysingsevne.",
+          "completedDate": "2024-09-20T11:30:00.000Z",
+          "score": 57,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 6,
+              "comment": "Veldig bra!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 6,
+              "comment": "Godt forklart og riktig svar."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 6,
+              "comment": "Perfekt framgangsmåte!"
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 6,
+              "comment": "Utmerka bruk av ABC-formelen."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 6,
+              "comment": "Veldig godt forklart!"
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 6,
+              "comment": "Glimrande modellering og løysing!"
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 5,
+              "comment": "Riktig svar, men kunne forenkla meir."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-004",
+          "individualComment": "Greitt arbeid, Noah. Du viser god forståing av dei enklare oppgåvene. Øv meir på ABC-formelen og dei meir krevjande oppgåvene.",
+          "completedDate": "2024-09-20T12:00:00.000Z",
+          "score": 37,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 5,
+              "comment": "Riktig svar!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 4,
+              "comment": "Riktig framgangsmåte, små reknefeile."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 3,
+              "comment": "Feil i siste steg. Sjå løysingsforslaget."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 3,
+              "comment": "Brukte riktig formel, men feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 4,
+              "comment": "Godt forsøk, små feile."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 2,
+              "comment": "Manglar store delar av utrekninga."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 2,
+              "comment": "Riktig oppsett, men ikkje fullført."
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Prøv igjen med meir øving."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-005",
+          "individualComment": "Veldig godt arbeid, Ella! Du viser solid forståing av emnet. Fortsett slik!",
+          "completedDate": "2024-09-20T12:30:00.000Z",
+          "score": 50,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 6,
+              "comment": "Godt forklart!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 5,
+              "comment": "Riktig svar, små skrivefeil."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 6,
+              "comment": "Veldig bra bruk av ABC-formelen!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 4,
+              "comment": "Riktig ide, men manglar noko utrekning."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 5,
+              "comment": "Bra modellering!"
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 4,
+              "comment": "Godt forsøk på ei vanskeleg oppgåve."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-006",
+          "individualComment": "Godt arbeid, William! Du har god forståing av grunnleggjande algebra. Arbeida meir med dei meir krevjande oppgåvene.",
+          "completedDate": "2024-09-20T13:00:00.000Z",
+          "score": 40,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 5,
+              "comment": "Riktig svar!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 4,
+              "comment": "Små reknefeile, men riktig metode."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 4,
+              "comment": "Brukte riktig formel, men feil ved forenkling."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 4,
+              "comment": "Godt forsøk!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 3,
+              "comment": "Delvis riktig, men manglar utrekning."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 3,
+              "comment": "Riktig oppsett, men feil i løysinga."
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Sjå løysingsforslaget."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-007",
+          "individualComment": "Bra innsats, Olivia! Du har potensiale til å gjere det endå betre. Øv meir på ABC-formelen.",
+          "completedDate": "2024-09-20T13:30:00.000Z",
+          "score": 44,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 5,
+              "comment": "Riktig svar!"
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 4,
+              "comment": "Brukte riktig formel, men små feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 3,
+              "comment": "Delvis riktig løysing."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 4,
+              "comment": "Bra oppsett, små feil i løysinga."
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 3,
+              "comment": "Godt forsøk på ei vanskeleg oppgåve."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-008",
+          "individualComment": "Du slit litt med emnet, Oscar. Kom gjerne på rettleiing så kan me gå gjennom ABC-formelen og likninga saman.",
+          "completedDate": "2024-09-20T14:00:00.000Z",
+          "score": 28,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 5,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 4,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 3,
+              "comment": "Feil i framgangsmåten. Sjå løysingsforslaget."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 2,
+              "comment": "Feil svar. Kom på rettleiing."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Treng meir øving."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 3,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 2,
+              "comment": "Manglar store delar. Kom på rettleiing."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 2,
+              "comment": "Feil oppsett av likning."
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 1,
+              "comment": "Vanskeleg oppgåve. Me går gjennom dette saman."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-009",
+          "individualComment": "Fantastisk arbeid, Nora! Du har djup forståing av emnet og viser svært god problemløysingsevne.",
+          "completedDate": "2024-09-20T14:30:00.000Z",
+          "score": 55,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 6,
+              "comment": "Utmerka!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 6,
+              "comment": "Veldig godt forklart!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 6,
+              "comment": "Perfekt framgangsmåte!"
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 6,
+              "comment": "Utmerka bruk av ABC-formelen!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 6,
+              "comment": "Veldig bra!"
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 6,
+              "comment": "Glimrande modellering!"
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 5,
+              "comment": "Riktig svar på ei vanskeleg oppgåve. Godt arbeid!"
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-010",
+          "individualComment": "Greitt arbeid, Filip. Du har god forståing av grunnleggjande algebra, men treng meir øving på dei meir komplekse oppgåvene.",
+          "completedDate": "2024-09-20T15:00:00.000Z",
+          "score": 35,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1a",
+              "points": 6,
+              "comment": "Bra jobba!"
+            },
+            {
+              "taskId": "task-demo-001-1",
+              "subtaskId": "subtask-demo-001-1b",
+              "points": 5,
+              "comment": "Riktig svar!"
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2a",
+              "points": 4,
+              "comment": "Små reknefeile."
+            },
+            {
+              "taskId": "task-demo-001-2",
+              "subtaskId": "subtask-demo-001-2b",
+              "points": 3,
+              "comment": "Feil i siste steg."
+            },
+            {
+              "taskId": "task-demo-001-3",
+              "points": 3,
+              "comment": "Brukte riktig formel, men feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4a",
+              "points": 4,
+              "comment": "Godt forsøk!"
+            },
+            {
+              "taskId": "task-demo-001-4",
+              "subtaskId": "subtask-demo-001-4b",
+              "points": 2,
+              "comment": "Manglar store delar av utrekninga."
+            },
+            {
+              "taskId": "task-demo-001-5",
+              "points": 3,
+              "comment": "Delvis riktig oppsett."
+            },
+            {
+              "taskId": "task-demo-001-6",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Sjå løysingsforslaget."
+            }
+          ]
+        }
+      ],
+      "snippets": [
+        {
+          "id": "snippet-demo-001",
+          "text": "Sjå løysingsforslaget",
+          "category": "standard",
+          "createdDate": "2024-09-01T10:00:00.000Z"
+        },
+        {
+          "id": "snippet-demo-002",
+          "text": "Bra jobba!",
+          "category": "encouragement",
+          "createdDate": "2024-09-01T10:00:00.000Z"
+        },
+        {
+          "id": "snippet-demo-003",
+          "text": "Hugs å vise mellomrekningar.",
+          "category": "error",
+          "createdDate": "2024-09-01T10:00:00.000Z"
+        }
+      ],
+      "createdDate": "2024-09-01T08:00:00.000Z",
+      "lastModified": "2024-09-20T15:00:00.000Z"
+    },
+    {
+      "id": "test-demo-002",
+      "name": "Prøve 2 - Funksjonar og Eksponentialfunksjonar",
+      "description": "Andre prøve i emnet funksjonar og eksponentialfunksjonar. Dekkjer funksjonsomgrep, grafteikning, logaritmar og vekstmodellar.",
+      "date": "2024-10-20",
+      "generalComment": "Prøva testa forståing av funksjonar og eksponentialfunksjonar. Godt arbeid med grafteikningane!",
+      "hasTwoParts": true,
+      "part1TaskCount": 3,
+      "part2TaskCount": 3,
+      "restartNumberingInPart2": false,
+      "tasks": [
+        {
+          "id": "task-demo-002-1",
+          "label": "1",
+          "hasSubtasks": true,
+          "labels": ["funksjonar", "grafteikning"],
+          "category": 1,
+          "part": 1,
+          "subtasks": [
+            {
+              "id": "subtask-demo-002-1a",
+              "label": "a",
+              "labels": ["funksjonar"],
+              "category": 1
+            },
+            {
+              "id": "subtask-demo-002-1b",
+              "label": "b",
+              "labels": ["grafteikning"],
+              "category": 1
+            }
+          ]
+        },
+        {
+          "id": "task-demo-002-2",
+          "label": "2",
+          "hasSubtasks": false,
+          "labels": ["eksponentfunksjonar"],
+          "category": 2,
+          "part": 1,
+          "subtasks": []
+        },
+        {
+          "id": "task-demo-002-3",
+          "label": "3",
+          "hasSubtasks": true,
+          "labels": ["logaritmar"],
+          "category": 2,
+          "part": 1,
+          "subtasks": [
+            {
+              "id": "subtask-demo-002-3a",
+              "label": "a",
+              "labels": ["logaritmar"],
+              "category": 2
+            },
+            {
+              "id": "subtask-demo-002-3b",
+              "label": "b",
+              "labels": ["logaritmar"],
+              "category": 2
+            }
+          ]
+        },
+        {
+          "id": "task-demo-002-4",
+          "label": "4",
+          "hasSubtasks": false,
+          "labels": ["eksponentfunksjonar", "grafteikning"],
+          "category": 2,
+          "part": 2,
+          "subtasks": []
+        },
+        {
+          "id": "task-demo-002-5",
+          "label": "5",
+          "hasSubtasks": true,
+          "labels": ["praktisk anvendelse", "eksponentfunksjonar"],
+          "category": 3,
+          "part": 2,
+          "subtasks": [
+            {
+              "id": "subtask-demo-002-5a",
+              "label": "a",
+              "labels": ["praktisk anvendelse"],
+              "category": 3
+            },
+            {
+              "id": "subtask-demo-002-5b",
+              "label": "b",
+              "labels": ["praktisk anvendelse"],
+              "category": 3
+            }
+          ]
+        },
+        {
+          "id": "task-demo-002-6",
+          "label": "6",
+          "hasSubtasks": false,
+          "labels": ["logaritmar", "algebra"],
+          "category": 3,
+          "part": 2,
+          "subtasks": []
+        }
+      ],
+      "studentFeedbacks": [
+        {
+          "studentId": "student-demo-001",
+          "individualComment": "Veldig godt arbeid, Emma! Du viser god framgang frå førre prøve. Framleis solid forståing av matematikk.",
+          "completedDate": "2024-10-25T10:30:00.000Z",
+          "score": 54,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Perfekt forklaring av funksjonsomgrepet!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 6,
+              "comment": "Fin og nøyaktig grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 6,
+              "comment": "Godt arbeid med eksponentialfunksjonen!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 6,
+              "comment": "Riktig bruk av logaritmereignskapane!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 5,
+              "comment": "Riktig svar, men kunne forenkla meir."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 6,
+              "comment": "Veldig bra grafteikning med alle punkt!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 6,
+              "comment": "Glimrande modellering av vekst!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 5,
+              "comment": "Riktig svar, små avrundingsfeile."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 5,
+              "comment": "Godt arbeid med logaritmelikningar!"
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-002",
+          "individualComment": "Flott framgang, Lukas! Du har jobba godt med emnet og det syner. Fortsett slik!",
+          "completedDate": "2024-10-25T11:00:00.000Z",
+          "score": 46,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Bra forklart!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 5,
+              "comment": "God grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 5,
+              "comment": "Riktig framgangsmåte!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 4,
+              "comment": "Små feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 5,
+              "comment": "Bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 5,
+              "comment": "Godt oppsett av modell!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 4,
+              "comment": "Riktig ide, men feil i utrekninga."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 3,
+              "comment": "Delvis riktig løysing. Sjå løysingsforslaget."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-003",
+          "individualComment": "Fantastisk arbeid som vanleg, Sofia! Du viser framleis utmerka forståing og problemløysingsevne.",
+          "completedDate": "2024-10-25T11:30:00.000Z",
+          "score": 58,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 6,
+              "comment": "Utmerka grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 6,
+              "comment": "Veldig bra!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 6,
+              "comment": "Perfekt bruk av logaritmereignskapane!"
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 6,
+              "comment": "Glimrande grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 6,
+              "comment": "Perfekt modellering!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 6,
+              "comment": "Veldig godt forklart!"
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 6,
+              "comment": "Utmerka arbeid med logaritmelikningar!"
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-004",
+          "individualComment": "God framgang frå førre prøve, Noah! Du viser at du har jobba med emnet. Fortsett å øve!",
+          "completedDate": "2024-10-25T12:00:00.000Z",
+          "score": 40,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Bra forklart!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 5,
+              "comment": "God grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 4,
+              "comment": "Riktig ide, små feile."
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 4,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 3,
+              "comment": "Feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 5,
+              "comment": "Bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 4,
+              "comment": "Godt forsøk!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 3,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Sjå løysingsforslaget."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-005",
+          "individualComment": "Veldig bra arbeid, Ella! Du viser framleis solid forståing av matematikk.",
+          "completedDate": "2024-10-25T12:30:00.000Z",
+          "score": 52,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 6,
+              "comment": "Veldig bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 6,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 6,
+              "comment": "Riktig bruk av logaritmar!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 5,
+              "comment": "Riktig svar, små skrivefeil."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 6,
+              "comment": "Bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 6,
+              "comment": "Glimrande modellering!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 4,
+              "comment": "Riktig ide, men feil i svaret."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 4,
+              "comment": "Godt forsøk på vanskeleg oppgåve."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-006",
+          "individualComment": "Bra arbeid, William! Du viser god framgang. Fortsett å øve på logaritmar.",
+          "completedDate": "2024-10-25T13:00:00.000Z",
+          "score": 43,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Bra forklart!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 5,
+              "comment": "God grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 4,
+              "comment": "Riktig framgangsmåte, små feile."
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 4,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 5,
+              "comment": "Bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 5,
+              "comment": "Godt oppsett!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 3,
+              "comment": "Feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 3,
+              "comment": "Delvis riktig. Sjå løysingsforslaget."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-007",
+          "individualComment": "Bra arbeid, Olivia! Du viser god forståing av emnet.",
+          "completedDate": "2024-10-25T13:30:00.000Z",
+          "score": 47,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 6,
+              "comment": "Bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 5,
+              "comment": "Riktig framgangsmåte!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 5,
+              "comment": "Godt arbeid!"
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 5,
+              "comment": "Bra grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 5,
+              "comment": "Godt oppsett!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 4,
+              "comment": "Riktig ide, små feile."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 3,
+              "comment": "Delvis riktig."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-008",
+          "individualComment": "Bra framgang frå førre prøve, Oscar! Du viser at innsatsen lønner seg. Fortsett å jobbe hardt!",
+          "completedDate": "2024-10-25T14:00:00.000Z",
+          "score": 33,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 5,
+              "comment": "Bra forklart!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 4,
+              "comment": "Delvis riktig grafteikning."
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 4,
+              "comment": "Godt forsøk!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 3,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 3,
+              "comment": "Feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 4,
+              "comment": "Delvis riktig grafteikning."
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 3,
+              "comment": "Delvis riktig oppsett."
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 2,
+              "comment": "Feil i løysinga."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Kom på rettleiing."
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-009",
+          "individualComment": "Fantastisk arbeid som vanleg, Nora! Du viser djup forståing og utmerka problemløysingsevne.",
+          "completedDate": "2024-10-25T14:30:00.000Z",
+          "score": 57,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 6,
+              "comment": "Utmerka grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 6,
+              "comment": "Perfekt!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 6,
+              "comment": "Veldig bra!"
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 6,
+              "comment": "Perfekt bruk av logaritmar!"
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 6,
+              "comment": "Glimrande grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 6,
+              "comment": "Perfekt modellering!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 6,
+              "comment": "Veldig godt forklart!"
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 6,
+              "comment": "Utmerka arbeid!"
+            }
+          ]
+        },
+        {
+          "studentId": "student-demo-010",
+          "individualComment": "God framgang, Filip! Du viser at du har jobba med emnet. Fortsett slik!",
+          "completedDate": "2024-10-25T15:00:00.000Z",
+          "score": 38,
+          "taskFeedbacks": [
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1a",
+              "points": 6,
+              "comment": "Bra forklart!"
+            },
+            {
+              "taskId": "task-demo-002-1",
+              "subtaskId": "subtask-demo-002-1b",
+              "points": 5,
+              "comment": "God grafteikning!"
+            },
+            {
+              "taskId": "task-demo-002-2",
+              "points": 4,
+              "comment": "Godt forsøk, små feile."
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3a",
+              "points": 4,
+              "comment": "Delvis riktig."
+            },
+            {
+              "taskId": "task-demo-002-3",
+              "subtaskId": "subtask-demo-002-3b",
+              "points": 3,
+              "comment": "Feil i utreikninga."
+            },
+            {
+              "taskId": "task-demo-002-4",
+              "points": 4,
+              "comment": "Delvis riktig grafteikning."
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5a",
+              "points": 4,
+              "comment": "Godt oppsett!"
+            },
+            {
+              "taskId": "task-demo-002-5",
+              "subtaskId": "subtask-demo-002-5b",
+              "points": 3,
+              "comment": "Feil i løysinga."
+            },
+            {
+              "taskId": "task-demo-002-6",
+              "points": 2,
+              "comment": "Vanskeleg oppgåve. Sjå løysingsforslaget."
+            }
+          ]
+        }
+      ],
+      "snippets": [
+        {
+          "id": "snippet-demo-004",
+          "text": "Fin grafteikning!",
+          "category": "encouragement",
+          "createdDate": "2024-10-01T10:00:00.000Z"
+        },
+        {
+          "id": "snippet-demo-005",
+          "text": "Hugs å markere aksar og nullpunkt.",
+          "category": "error",
+          "createdDate": "2024-10-01T10:00:00.000Z"
+        }
+      ],
+      "createdDate": "2024-10-01T08:00:00.000Z",
+      "lastModified": "2024-10-25T15:00:00.000Z"
+    }
+  ],
+  "createdDate": "2024-09-01T08:00:00.000Z",
+  "lastModified": "2024-10-25T15:00:00.000Z"
+}
