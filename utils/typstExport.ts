@@ -270,6 +270,98 @@ const oralTranslations = {
   },
 };
 
+// Generate Typst code for radar chart
+function generateRadarChartTypst(dimensions: OralFeedbackData['dimensions'], language: 'en' | 'nb' | 'nn' = 'nb'): string {
+  const t = oralTranslations[language];
+  const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
+  const emojis = ['🎯', '💭', '📊', '⚙️', '💬', '📚'];
+
+  const sortedDimensions = dimensionOrder.map(dimType => {
+    const dimension = dimensions.find(d => d.dimension === dimType);
+    return dimension || { dimension: dimType as any, points: 0, comment: '' };
+  });
+
+  const numDimensions = sortedDimensions.length;
+  const maxValue = 6;
+  const size = 200; // Size in pt
+  const centerX = size / 2;
+  const centerY = size / 2;
+  const radius = size / 2 - 30;
+
+  // Helper to calculate point coordinates
+  const getPoint = (index: number, value: number): { x: number, y: number } => {
+    const angle = (2 * 3.14159 * index) / numDimensions - 3.14159 / 2; // Start from top
+    const distance = (value / maxValue) * radius;
+    const x = centerX + Math.cos(angle) * distance;
+    const y = centerY + Math.sin(angle) * distance;
+    return { x, y };
+  };
+
+  // Generate data points for polygon
+  const dataPoints = sortedDimensions.map((dim, index) => getPoint(index, dim.points));
+  const polygonPoints = dataPoints.map(p => `(${p.x}pt, ${p.y}pt)`).join(', ');
+
+  // Generate axis lines
+  const axisLines = sortedDimensions.map((dim, index) => {
+    const endPoint = getPoint(index, maxValue);
+    return `  line((${centerX}pt, ${centerY}pt), (${endPoint.x}pt, ${endPoint.y}pt), stroke: 0.5pt + gray)`;
+  }).join('\n');
+
+  // Generate labels with emojis and values
+  const labels = sortedDimensions.map((dim, index) => {
+    const labelPoint = getPoint(index, maxValue + 1.2);
+    const valuePoint = getPoint(index, maxValue + 2.2);
+    const emoji = emojis[index];
+    const value = dim.points;
+
+    return `  content((${labelPoint.x}pt, ${labelPoint.y}pt), text(size: 14pt)[${emoji}], anchor: "center")
+  content((${valuePoint.x}pt, ${valuePoint.y}pt), text(size: 9pt, weight: "bold", fill: purple)[${value}/6], anchor: "center")`;
+  }).join('\n');
+
+  // Generate grid circles
+  const gridCircles = [2, 4, 6].map(level => {
+    const r = (level / maxValue) * radius;
+    return `  circle((${centerX}pt, ${centerY}pt), radius: ${r}pt, stroke: 0.5pt + luma(230), fill: none)`;
+  }).join('\n');
+
+  // Generate grid labels
+  const gridLabels = [2, 4, 6].map(level => {
+    const y = centerY - (level / maxValue) * radius - 3;
+    return `  content((${centerX}pt, ${y}pt), text(size: 7pt, fill: gray)[${level}], anchor: "south")`;
+  }).join('\n');
+
+  return `
+#box(width: ${size + 10}pt, height: ${size + 10}pt)[
+  #align(center)[
+    #canvas(length: 1pt, {
+      import draw: *
+
+      // Grid circles
+${gridCircles}
+
+      // Axis lines
+${axisLines}
+
+      // Data polygon
+      polygon(${polygonPoints}, fill: purple.transparentize(75%), stroke: 2pt + purple)
+
+      // Data points
+${dataPoints.map(p => `      circle((${p.x}pt, ${p.y}pt), radius: 3pt, fill: purple)`).join('\n')}
+
+      // Center point
+      circle((${centerX}pt, ${centerY}pt), radius: 1.5pt, fill: gray)
+
+      // Grid level labels
+${gridLabels}
+
+      // Dimension labels with values
+${labels}
+    })
+  ]
+]
+`;
+}
+
 export function generateOralTypstDocument(data: OralExportData): string {
   const {
     studentName,
@@ -303,7 +395,12 @@ export function generateOralTypstDocument(data: OralExportData): string {
     return `  [${label}], [${points}], [${comment}],`;
   }).join('\n');
 
-  const typstContent = `#set document(title: "${oralTestName} - ${t.oralAssessment}")
+  // Generate radar chart
+  const radarChart = generateRadarChartTypst(oralFeedback.dimensions, language);
+
+  const typstContent = `#import "@preview/cetz:0.2.2": canvas, draw
+
+#set document(title: "${oralTestName} - ${t.oralAssessment}")
 #set page(
   paper: "a4",
   margin: (x: 2.5cm, y: 2.5cm),
@@ -340,12 +437,21 @@ export function generateOralTypstDocument(data: OralExportData): string {
 
 == ${t.dimensions}
 
-#table(
-  columns: (2fr, auto, 3fr),
-  stroke: 0.5pt,
-  align: (left, center, left),
-  [*${t.dimension}*], [*${t.points}*], [*${t.comment}*],
+#grid(
+  columns: (1fr, auto),
+  gutter: 1em,
+  [
+    #table(
+      columns: (2fr, auto, 3fr),
+      stroke: 0.5pt,
+      align: (left, center, left),
+      [*${t.dimension}*], [*${t.points}*], [*${t.comment}*],
 ${dimensionRows}
+    )
+  ],
+  [
+${radarChart}
+  ]
 )
 
 #v(1em)
