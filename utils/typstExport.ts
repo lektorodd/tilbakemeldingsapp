@@ -270,93 +270,15 @@ const oralTranslations = {
   },
 };
 
-// Generate Typst code for radar chart
-function generateRadarChartTypst(dimensions: OralFeedbackData['dimensions'], language: 'en' | 'nb' | 'nn' = 'nb'): string {
-  const t = oralTranslations[language];
-  const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
-  const emojis = ['🎯', '💭', '📊', '⚙️', '💬', '📚'];
-
-  const sortedDimensions = dimensionOrder.map(dimType => {
-    const dimension = dimensions.find(d => d.dimension === dimType);
-    return dimension || { dimension: dimType as any, points: 0, comment: '' };
-  });
-
-  const numDimensions = sortedDimensions.length;
-  const maxValue = 6;
-  const radius = 70; // Coordinate units (center is 0,0)
-
-  // Helper to calculate point coordinates (centered at origin)
-  const getPoint = (index: number, value: number): { x: number, y: number } => {
-    const angle = (2 * 3.14159 * index) / numDimensions - 3.14159 / 2; // Start from top
-    const distance = (value / maxValue) * radius;
-    const x = Math.cos(angle) * distance;
-    const y = Math.sin(angle) * distance;
-    return { x, y };
-  };
-
-  // Generate data points for polygon
-  const dataPoints = sortedDimensions.map((dim, index) => getPoint(index, dim.points));
-  const polygonPoints = dataPoints.map(p => `(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`).join(', ');
-
-  // Generate axis lines
-  const axisLines = sortedDimensions.map((dim, index) => {
-    const endPoint = getPoint(index, maxValue);
-    return `      line((0, 0), (${endPoint.x.toFixed(2)}, ${endPoint.y.toFixed(2)}), stroke: 0.5pt + gray)`;
-  }).join('\n');
-
-  // Generate labels with emojis and values
-  const labels = sortedDimensions.map((dim, index) => {
-    const labelPoint = getPoint(index, maxValue + 15);
-    const valuePoint = getPoint(index, maxValue + 25);
-    const emoji = emojis[index];
-    const value = dim.points;
-
-    return `      content((${labelPoint.x.toFixed(2)}, ${labelPoint.y.toFixed(2)}), text(size: 14pt)[${emoji}])
-      content((${valuePoint.x.toFixed(2)}, ${valuePoint.y.toFixed(2)}), text(size: 9pt, weight: "bold", fill: purple)[${value}/6])`;
-  }).join('\n');
-
-  // Generate grid circles
-  const gridCircles = [2, 4, 6].map(level => {
-    const r = (level / maxValue) * radius;
-    return `      circle((0, 0), radius: ${r.toFixed(2)}, stroke: 0.5pt + luma(230), fill: none)`;
-  }).join('\n');
-
-  // Generate grid labels
-  const gridLabels = [2, 4, 6].map(level => {
-    const y = -((level / maxValue) * radius) - 3;
-    return `      content((0, ${y.toFixed(2)}), text(size: 7pt, fill: gray)[${level}])`;
-  }).join('\n');
+// Generate Typst code for radar chart image
+function generateRadarChartTypst(hasImage: boolean): string {
+  if (!hasImage) {
+    return '';
+  }
 
   return `
-#box(width: 220pt, height: 220pt)[
-  #align(center + horizon)[
-    #canvas(length: 1, {
-      import draw: *
-
-      // Grid circles
-${gridCircles}
-
-      // Axis lines
-${axisLines}
-
-      // Data polygon
-      polygon(${polygonPoints}, fill: purple.transparentize(75%), stroke: 2pt + purple)
-
-      // Data points
-${dataPoints.map(p => `      circle((${p.x.toFixed(2)}, ${p.y.toFixed(2)}), radius: 3, fill: purple)`).join('\n')}
-
-      // Center point
-      circle((0, 0), radius: 1.5, fill: gray)
-
-      // Grid level labels
-${gridLabels}
-
-      // Dimension labels with values
-${labels}
-    })
-  ]
-]
-`;
+    #image("radar-chart.png", width: 200pt)
+  `;
 }
 
 export function generateOralTypstDocument(data: OralExportData): string {
@@ -392,12 +314,10 @@ export function generateOralTypstDocument(data: OralExportData): string {
     return `  [${label}], [${points}], [${comment}],`;
   }).join('\n');
 
-  // Generate radar chart
-  const radarChart = generateRadarChartTypst(oralFeedback.dimensions, language);
+  // Generate radar chart placeholder
+  const radarChart = generateRadarChartTypst(true);
 
-  const typstContent = `#import "@preview/cetz:0.2.2": canvas, draw
-
-#set document(title: "${oralTestName} - ${t.oralAssessment}")
+  const typstContent = `#set document(title: "${oralTestName} - ${t.oralAssessment}")
 #set page(
   paper: "a4",
   margin: (x: 2.5cm, y: 2.5cm),
@@ -489,7 +409,7 @@ export function downloadTypstFile(content: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export async function compileAndDownloadPDF(content: string, filename: string): Promise<boolean> {
+export async function compileAndDownloadPDF(content: string, filename: string, chartImage?: string): Promise<boolean> {
   try {
     const response = await fetch('/api/compile-typst', {
       method: 'POST',
@@ -499,6 +419,7 @@ export async function compileAndDownloadPDF(content: string, filename: string): 
       body: JSON.stringify({
         content,
         filename,
+        chartImage,
       }),
     });
 

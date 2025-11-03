@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, OralTest, CourseStudent, OralFeedbackData, OralFeedbackDimension, OralFeedbackDimensionType } from '@/types';
 import { loadCourse, updateOralAssessment, getOralAssessment, calculateOralScore } from '@/utils/courseStorage';
 import { generateOralTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import OralFeedbackForm from '@/components/OralFeedbackForm';
+import RadarChart, { RadarChartRef } from '@/components/RadarChart';
 import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,6 +24,7 @@ export default function OralAssessmentPage() {
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<OralFeedbackData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const radarChartRef = useRef<RadarChartRef>(null);
 
   useEffect(() => {
     loadData();
@@ -169,20 +171,31 @@ export default function OralAssessmentPage() {
   const handleGeneratePDF = async () => {
     if (!selectedStudent || !currentFeedback || !oralTest) return;
 
-    const typstContent = generateOralTypstDocument({
-      studentName: selectedStudent.name,
-      studentNumber: selectedStudent.studentNumber,
-      oralTestName: oralTest.name,
-      oralTestDate: oralTest.date,
-      oralFeedback: currentFeedback,
-      language,
-    });
+    try {
+      // Export radar chart as PNG
+      let chartImage: string | undefined;
+      if (radarChartRef.current && currentFeedback.dimensions.length > 0) {
+        chartImage = await radarChartRef.current.exportToPNG();
+      }
 
-    const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
-    const success = await compileAndDownloadPDF(typstContent, filename);
+      const typstContent = generateOralTypstDocument({
+        studentName: selectedStudent.name,
+        studentNumber: selectedStudent.studentNumber,
+        oralTestName: oralTest.name,
+        oralTestDate: oralTest.date,
+        oralFeedback: currentFeedback,
+        language,
+      });
 
-    if (success) {
-      alert(t('test.pdfCompiledSuccess'));
+      const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
+      const success = await compileAndDownloadPDF(typstContent, filename, chartImage);
+
+      if (success) {
+        alert(t('test.pdfCompiledSuccess'));
+      }
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
     }
   };
 
@@ -357,11 +370,17 @@ export default function OralAssessmentPage() {
                 </div>
 
                 {currentFeedback && (
-                  <OralFeedbackForm
-                    oralFeedback={currentFeedback}
-                    onOralFeedbackChange={handleOralFeedbackChange}
-                    studentName={selectedStudent.name}
-                  />
+                  <>
+                    <OralFeedbackForm
+                      oralFeedback={currentFeedback}
+                      onOralFeedbackChange={handleOralFeedbackChange}
+                      studentName={selectedStudent.name}
+                    />
+                    {/* Hidden radar chart for PDF export */}
+                    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+                      <RadarChart ref={radarChartRef} dimensions={currentFeedback.dimensions} />
+                    </div>
+                  </>
                 )}
               </div>
             )}
