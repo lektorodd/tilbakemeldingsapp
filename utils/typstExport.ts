@@ -299,12 +299,12 @@ function generateRadarChartTypst(dimensions: OralFeedbackData['dimensions'], lan
 
   // Generate data points for polygon
   const dataPoints = sortedDimensions.map((dim, index) => getPoint(index, dim.points));
-  const polygonPoints = dataPoints.map(p => `(${p.x}pt, ${p.y}pt)`).join(', ');
+  const polygonPoints = dataPoints.map(p => `(${p.x}, ${p.y})`).join(', ');
 
   // Generate axis lines
   const axisLines = sortedDimensions.map((dim, index) => {
     const endPoint = getPoint(index, maxValue);
-    return `  line((${centerX}pt, ${centerY}pt), (${endPoint.x}pt, ${endPoint.y}pt), stroke: 0.5pt + gray)`;
+    return `  line((${centerX}, ${centerY}), (${endPoint.x}, ${endPoint.y}), stroke: 0.5pt + gray)`;
   }).join('\n');
 
   // Generate labels with emojis and values
@@ -314,20 +314,20 @@ function generateRadarChartTypst(dimensions: OralFeedbackData['dimensions'], lan
     const emoji = emojis[index];
     const value = dim.points;
 
-    return `  content((${labelPoint.x}pt, ${labelPoint.y}pt), text(size: 14pt)[${emoji}], anchor: "center")
-  content((${valuePoint.x}pt, ${valuePoint.y}pt), text(size: 9pt, weight: "bold", fill: purple)[${value}/6], anchor: "center")`;
+    return `  content((${labelPoint.x}, ${labelPoint.y}), text(size: 14pt)[${emoji}], anchor: "center")
+  content((${valuePoint.x}, ${valuePoint.y}), text(size: 9pt, weight: "bold", fill: purple)[${value}/6], anchor: "center")`;
   }).join('\n');
 
   // Generate grid circles
   const gridCircles = [2, 4, 6].map(level => {
     const r = (level / maxValue) * radius;
-    return `  circle((${centerX}pt, ${centerY}pt), radius: ${r}pt, stroke: 0.5pt + luma(230), fill: none)`;
+    return `  circle((${centerX}, ${centerY}), radius: ${r}, stroke: 0.5pt + luma(230), fill: none)`;
   }).join('\n');
 
   // Generate grid labels
   const gridLabels = [2, 4, 6].map(level => {
     const y = centerY - (level / maxValue) * radius - 3;
-    return `  content((${centerX}pt, ${y}pt), text(size: 7pt, fill: gray)[${level}], anchor: "south")`;
+    return `  content((${centerX}, ${y}), text(size: 7pt, fill: gray)[${level}], anchor: "south")`;
   }).join('\n');
 
   return `
@@ -346,10 +346,10 @@ ${axisLines}
       polygon(${polygonPoints}, fill: purple.transparentize(75%), stroke: 2pt + purple)
 
       // Data points
-${dataPoints.map(p => `      circle((${p.x}pt, ${p.y}pt), radius: 3pt, fill: purple)`).join('\n')}
+${dataPoints.map(p => `      circle((${p.x}, ${p.y}), radius: 3, fill: purple)`).join('\n')}
 
       // Center point
-      circle((${centerX}pt, ${centerY}pt), radius: 1.5pt, fill: gray)
+      circle((${centerX}, ${centerY}), radius: 1.5, fill: gray)
 
       // Grid level labels
 ${gridLabels}
