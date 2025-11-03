@@ -259,7 +259,7 @@ export default function OralAssessmentPage() {
                     return (
                       <button
                         key={student.id}
-                        onClick={() => setSelectedStudent(student)}
+                        onClick={() => router.push(`/course/${courseId}/oral/${oralTestId}?student=${student.id}`)}
                         className={`w-full text-left p-3 rounded-lg border transition-all ${
                           isSelected
                             ? 'bg-purple-100 border-purple-500 shadow-md'
