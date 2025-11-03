@@ -283,57 +283,54 @@ function generateRadarChartTypst(dimensions: OralFeedbackData['dimensions'], lan
 
   const numDimensions = sortedDimensions.length;
   const maxValue = 6;
-  const size = 200; // Size in pt
-  const centerX = size / 2;
-  const centerY = size / 2;
-  const radius = size / 2 - 30;
+  const radius = 70; // Coordinate units (center is 0,0)
 
-  // Helper to calculate point coordinates
+  // Helper to calculate point coordinates (centered at origin)
   const getPoint = (index: number, value: number): { x: number, y: number } => {
     const angle = (2 * 3.14159 * index) / numDimensions - 3.14159 / 2; // Start from top
     const distance = (value / maxValue) * radius;
-    const x = centerX + Math.cos(angle) * distance;
-    const y = centerY + Math.sin(angle) * distance;
+    const x = Math.cos(angle) * distance;
+    const y = Math.sin(angle) * distance;
     return { x, y };
   };
 
   // Generate data points for polygon
   const dataPoints = sortedDimensions.map((dim, index) => getPoint(index, dim.points));
-  const polygonPoints = dataPoints.map(p => `(${p.x}pt, ${p.y}pt)`).join(', ');
+  const polygonPoints = dataPoints.map(p => `(${p.x.toFixed(2)}, ${p.y.toFixed(2)})`).join(', ');
 
   // Generate axis lines
   const axisLines = sortedDimensions.map((dim, index) => {
     const endPoint = getPoint(index, maxValue);
-    return `  line((${centerX}pt, ${centerY}pt), (${endPoint.x}pt, ${endPoint.y}pt), stroke: 0.5pt + gray)`;
+    return `      line((0, 0), (${endPoint.x.toFixed(2)}, ${endPoint.y.toFixed(2)}), stroke: 0.5pt + gray)`;
   }).join('\n');
 
   // Generate labels with emojis and values
   const labels = sortedDimensions.map((dim, index) => {
-    const labelPoint = getPoint(index, maxValue + 1.2);
-    const valuePoint = getPoint(index, maxValue + 2.2);
+    const labelPoint = getPoint(index, maxValue + 15);
+    const valuePoint = getPoint(index, maxValue + 25);
     const emoji = emojis[index];
     const value = dim.points;
 
-    return `  content((${labelPoint.x}pt, ${labelPoint.y}pt), text(size: 14pt)[${emoji}])
-  content((${valuePoint.x}pt, ${valuePoint.y}pt), text(size: 9pt, weight: "bold", fill: purple)[${value}/6])`;
+    return `      content((${labelPoint.x.toFixed(2)}, ${labelPoint.y.toFixed(2)}), text(size: 14pt)[${emoji}])
+      content((${valuePoint.x.toFixed(2)}, ${valuePoint.y.toFixed(2)}), text(size: 9pt, weight: "bold", fill: purple)[${value}/6])`;
   }).join('\n');
 
   // Generate grid circles
   const gridCircles = [2, 4, 6].map(level => {
     const r = (level / maxValue) * radius;
-    return `  circle((${centerX}pt, ${centerY}pt), radius: ${r}pt, stroke: 0.5pt + luma(230), fill: none)`;
+    return `      circle((0, 0), radius: ${r.toFixed(2)}, stroke: 0.5pt + luma(230), fill: none)`;
   }).join('\n');
 
   // Generate grid labels
   const gridLabels = [2, 4, 6].map(level => {
-    const y = centerY - (level / maxValue) * radius - 3;
-    return `  content((${centerX}pt, ${y}pt), text(size: 7pt, fill: gray)[${level}])`;
+    const y = -((level / maxValue) * radius) - 3;
+    return `      content((0, ${y.toFixed(2)}), text(size: 7pt, fill: gray)[${level}])`;
   }).join('\n');
 
   return `
-#box(width: ${size + 10}pt, height: ${size + 10}pt)[
-  #align(center)[
-    #canvas({
+#box(width: 220pt, height: 220pt)[
+  #align(center + horizon)[
+    #canvas(length: 1, {
       import draw: *
 
       // Grid circles
@@ -346,10 +343,10 @@ ${axisLines}
       polygon(${polygonPoints}, fill: purple.transparentize(75%), stroke: 2pt + purple)
 
       // Data points
-${dataPoints.map(p => `      circle((${p.x}pt, ${p.y}pt), radius: 3pt, fill: purple)`).join('\n')}
+${dataPoints.map(p => `      circle((${p.x.toFixed(2)}, ${p.y.toFixed(2)}), radius: 3, fill: purple)`).join('\n')}
 
       // Center point
-      circle((${centerX}pt, ${centerY}pt), radius: 1.5pt, fill: gray)
+      circle((0, 0), radius: 1.5, fill: gray)
 
       // Grid level labels
 ${gridLabels}
