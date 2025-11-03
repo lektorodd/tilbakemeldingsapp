@@ -34,8 +34,13 @@ const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, wid
           return;
         }
 
-        canvas.width = width;
-        canvas.height = height;
+        // Use 3x scale for high resolution export
+        const scale = 3;
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+
+        // Scale the context for high-DPI rendering
+        ctx.scale(scale, scale);
 
         const img = new Image();
         const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
