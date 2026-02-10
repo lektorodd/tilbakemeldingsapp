@@ -18,16 +18,10 @@ export default function Icon() {
           justifyContent: 'center',
           background: '#4F46E5',
           borderRadius: 6,
+          fontSize: 22,
         }}
       >
-        <div style={{
-          fontSize: 20,
-          fontWeight: 800,
-          color: 'white',
-          letterSpacing: '-0.05em',
-        }}>
-          M
-        </div>
+        🎓
       </div>
     ),
     {

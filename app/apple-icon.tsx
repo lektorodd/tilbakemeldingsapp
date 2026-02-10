@@ -18,16 +18,10 @@ export default function AppleIcon() {
           justifyContent: 'center',
           background: '#4F46E5',
           borderRadius: 36,
+          fontSize: 120,
         }}
       >
-        <div style={{
-          fontSize: 110,
-          fontWeight: 800,
-          color: 'white',
-          letterSpacing: '-0.05em',
-        }}>
-          M
-        </div>
+        🎓
       </div>
     ),
     {
