@@ -8,6 +8,9 @@ import { exportCourseToExcel } from '@/utils/excelExport';
 import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download } from 'lucide-react';
 import Link from 'next/link';
 import LabelManager from '@/components/LabelManager';
+import StudentRosterPanel from '@/components/StudentRosterPanel';
+import TestListPanel from '@/components/TestListPanel';
+import OralTestListPanel from '@/components/OralTestListPanel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -439,224 +442,31 @@ export default function CourseDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Students section */}
-          <div className="bg-surface rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Users size={24} className="text-brand" />
-                <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.students')}</h2>
-                <span className="text-text-secondary">({course.students.length})</span>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowAddStudentModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                >
-                  <Plus size={16} />
-                  {t('common.add')}
-                </button>
-                <button
-                  onClick={() => setShowBulkAddStudentModal(true)}
-                  className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                >
-                  <Users size={16} />
-                  {t('course.bulkAdd')}
-                </button>
-              </div>
-            </div>
+          <StudentRosterPanel
+            courseId={courseId}
+            students={course.students}
+            onAddStudent={() => setShowAddStudentModal(true)}
+            onBulkAdd={() => setShowBulkAddStudentModal(true)}
+            onDeleteStudent={handleDeleteStudent}
+          />
 
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {course.students.length === 0 ? (
-                <p className="text-sm text-text-disabled text-center py-8">{t('course.noStudentsYet')}</p>
-              ) : (
-                course.students.map(student => (
-                  <div
-                    key={student.id}
-                    className="border border-border rounded-lg p-3 hover:bg-background"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium text-text-primary">{student.name}</h4>
-                        {student.studentNumber && (
-                          <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => handleDeleteStudent(student.id)}
-                        className="p-1 text-danger hover:bg-red-50 rounded transition"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                    <Link
-                      href={`/course/${courseId}/student/${student.id}`}
-                      className="block text-center px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                    >
-                      <BarChart3 size={14} className="inline mr-1" />
-                      {t('test.viewDashboard')}
-                    </Link>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <TestListPanel
+            courseId={courseId}
+            tests={course.tests}
+            studentCount={course.students.length}
+            onAddTest={() => setShowAddTestModal(true)}
+            onEditTest={handleEditTest}
+            onDeleteTest={handleDeleteTest}
+          />
 
-          {/* Tests section */}
-          <div className="bg-surface rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <FileText size={24} className="text-success" />
-                <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.tests')}</h2>
-                <span className="text-text-secondary">({course.tests.length})</span>
-              </div>
-              <button
-                onClick={() => setShowAddTestModal(true)}
-                className="flex items-center gap-1 px-3 py-1 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition-colors text-sm"
-              >
-                <Plus size={16} />
-                {t('common.add')}
-              </button>
-            </div>
-
-            <div className="space-y-2">
-              {course.tests.length === 0 ? (
-                <p className="text-sm text-text-disabled text-center py-8">{t('course.noTestsYet')}</p>
-              ) : (
-                course.tests
-                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                  .map(test => {
-                    const completedCount = test.studentFeedbacks.filter(f => f.completedDate).length;
-                    return (
-                      <div
-                        key={test.id}
-                        className="border border-border rounded-lg p-3 hover:bg-background"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-text-primary">{test.name}</h4>
-                            {test.description && (
-                              <p className="text-xs text-text-secondary">{test.description}</p>
-                            )}
-                            <p className="text-xs text-text-disabled mt-1">
-                              {new Date(test.date).toLocaleDateString('nb-NO', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              })}
-                            </p>
-                            <p className="text-xs text-brand mt-1">
-                              {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
-                            </p>
-                          </div>
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => handleEditTest(test)}
-                              className="p-1 text-brand hover:bg-rose-50 rounded transition"
-                            >
-                              <Edit size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteTest(test.id)}
-                              className="p-1 text-danger hover:bg-red-50 rounded transition"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-                        <Link
-                          href={`/course/${courseId}/test/${test.id}`}
-                          className="block text-center px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                        >
-                          <Edit size={14} className="inline mr-1" />
-                          {t('test.giveFeedback')}
-                        </Link>
-                      </div>
-                    );
-                  })
-              )}
-            </div>
-          </div>
-
-          {/* Oral Assessments section */}
-          <div className="bg-surface rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <MessageSquare size={24} className="text-purple-600" />
-                <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
-                <span className="text-text-secondary">({course.oralTests?.length || 0})</span>
-              </div>
-              <button
-                onClick={() => setShowAddOralTestModal(true)}
-                className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
-              >
-                <Plus size={16} />
-                {t('common.add')}
-              </button>
-            </div>
-
-            <div className="space-y-2">
-              {!course.oralTests || course.oralTests.length === 0 ? (
-                <p className="text-sm text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
-              ) : (
-                course.oralTests
-                  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                  .map(oralTest => {
-                    const completedCount = oralTest.studentAssessments.filter(a => a.completedDate).length;
-                    return (
-                      <div
-                        key={oralTest.id}
-                        className="border border-border rounded-lg p-3 hover:bg-background"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-text-primary">{oralTest.name}</h4>
-                            {oralTest.description && (
-                              <p className="text-xs text-text-secondary">{oralTest.description}</p>
-                            )}
-                            {oralTest.topics && oralTest.topics.length > 0 && (
-                              <p className="text-xs text-purple-600 mt-1">
-                                {t('course.topics')}: {oralTest.topics.join(', ')}
-                              </p>
-                            )}
-                            <p className="text-xs text-text-disabled mt-1">
-                              {new Date(oralTest.date).toLocaleDateString('nb-NO', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              })}
-                            </p>
-                            <p className="text-xs text-brand mt-1">
-                              {t('course.completedOf').replace('{completed}', completedCount.toString()).replace('{total}', course.students.length.toString())}
-                            </p>
-                          </div>
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => handleEditOralTest(oralTest)}
-                              className="p-1 text-purple-600 hover:bg-purple-50 rounded transition"
-                            >
-                              <Edit size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteOralTest(oralTest.id)}
-                              className="p-1 text-danger hover:bg-red-50 rounded transition"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-                        <Link
-                          href={`/course/${courseId}/oral/${oralTest.id}`}
-                          className="block text-center px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
-                        >
-                          <MessageSquare size={14} className="inline mr-1" />
-                          {t('course.giveOralAssessment')}
-                        </Link>
-                      </div>
-                    );
-                  })
-              )}
-            </div>
-          </div>
+          <OralTestListPanel
+            courseId={courseId}
+            oralTests={course.oralTests || []}
+            studentCount={course.students.length}
+            onAddOralTest={() => setShowAddOralTestModal(true)}
+            onEditOralTest={handleEditOralTest}
+            onDeleteOralTest={handleDeleteOralTest}
+          />
         </div>
 
         {/* Label Manager */}

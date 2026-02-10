@@ -41,6 +41,9 @@ import {
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import CreateCourseModal from '@/components/CreateCourseModal';
+import BackupPanel from '@/components/BackupPanel';
+import ImportModal from '@/components/ImportModal';
 
 export default function CoursesPage() {
   const { t } = useLanguage();
@@ -333,32 +336,6 @@ export default function CoursesPage() {
     loadData();
   };
 
-  const formatBytes = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const getBackupLabelColor = (label?: string) => {
-    switch (label) {
-      case 'before-delete': return 'bg-red-100 text-red-700';
-      case 'before-import': return 'bg-yellow-100 text-yellow-700';
-      case 'before-restore': return 'bg-orange-100 text-orange-700';
-      case 'manual': return 'bg-blue-100 text-blue-700';
-      default: return 'bg-gray-100 text-gray-600';
-    }
-  };
-
-  const getBackupLabelText = (label?: string) => {
-    switch (label) {
-      case 'before-delete': return t('backup.labelBeforeDelete');
-      case 'before-import': return t('backup.labelBeforeImport');
-      case 'before-restore': return t('backup.labelBeforeRestore');
-      case 'manual': return t('backup.labelManual');
-      default: return t('backup.labelAuto');
-    }
-  };
-
   return (
     <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -514,50 +491,11 @@ export default function CoursesPage() {
 
           {/* Backup list panel */}
           {showBackupPanel && (
-            <div className="mt-4 border-t border-border pt-4">
-              <h4 className="text-sm font-semibold text-text-primary mb-3">
-                {t('backup.savedBackups')} ({backups.length})
-              </h4>
-              {backups.length === 0 ? (
-                <p className="text-sm text-text-secondary">{t('backup.noBackups')}</p>
-              ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {backups.map(backup => (
-                    <div key={backup.id} className="flex items-center justify-between bg-background rounded-lg p-3 border border-border">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Clock size={14} className="text-text-secondary flex-shrink-0" />
-                          <span className="text-sm font-medium text-text-primary">
-                            {new Date(backup.timestamp).toLocaleString('nb-NO')}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getBackupLabelColor(backup.label)}`}>
-                            {getBackupLabelText(backup.label)}
-                          </span>
-                        </div>
-                        <p className="text-xs text-text-secondary">
-                          {backup.courseCount} {t('backup.courses')} · {backup.totalFeedback} {t('backup.feedbackEntries')} · {formatBytes(backup.sizeBytes)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 ml-3">
-                        <button
-                          onClick={() => handleRestoreBackup(backup.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors text-xs font-medium"
-                        >
-                          <RotateCcw size={14} />
-                          {t('backup.restore')}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteBackup(backup.id)}
-                          className="p-1.5 text-danger hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <BackupPanel
+              backups={backups}
+              onRestore={handleRestoreBackup}
+              onDelete={handleDeleteBackup}
+            />
           )}
         </div>
 
@@ -649,181 +587,41 @@ export default function CoursesPage() {
 
         {/* Create course modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-md w-full border border-border">
-              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('course.createCourseTitle')}</h2>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1">
-                    {t('course.courseNameLabel')}
-                  </label>
-                  <input
-                    type="text"
-                    value={newCourseName}
-                    onChange={(e) => setNewCourseName(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary bg-surface"
-                    placeholder={t('home.courseNamePlaceholder')}
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1">
-                    {t('course.courseDescriptionLabel')}
-                  </label>
-                  <input
-                    type="text"
-                    value={newCourseDescription}
-                    onChange={(e) => setNewCourseDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary bg-surface"
-                    placeholder={t('course.courseDescriptionPlaceholder')}
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    setNewCourseName('');
-                    setNewCourseDescription('');
-                  }}
-                  className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={handleCreateCourse}
-                  className="flex-1 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
-                >
-                  {t('course.createCourseButton')}
-                </button>
-              </div>
-            </div>
-          </div>
+          <CreateCourseModal
+            onClose={() => { setShowCreateModal(false); setNewCourseName(''); setNewCourseDescription(''); }}
+            onCreate={(name, description) => {
+              if (!name.trim()) {
+                toast(t('course.courseNameRequired'), 'warning');
+                return;
+              }
+              const newCourse: Course = {
+                id: `course-${Date.now()}`,
+                name,
+                description,
+                students: [],
+                tests: [],
+                availableLabels: [],
+                createdDate: new Date().toISOString(),
+                lastModified: new Date().toISOString(),
+              };
+              saveCourse(newCourse);
+              setShowCreateModal(false);
+              loadData();
+            }}
+          />
         )}
 
         {/* Import modal (file import preview + results) */}
         {showImportModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-lg w-full border border-border max-h-[80vh] overflow-y-auto">
-              {importResult ? (
-                // Show results
-                <div>
-                  <h2 className="text-2xl font-display font-bold text-text-primary mb-4">{t('backup.importResults')}</h2>
-                  <div className="space-y-3 mb-6">
-                    {importResult.imported > 0 && (
-                      <div className="flex items-center gap-2 text-success">
-                        <Plus size={18} />
-                        <span>{t('backup.importedCount').replace('{count}', String(importResult.imported))}</span>
-                      </div>
-                    )}
-                    {importResult.merged > 0 && (
-                      <div className="flex items-center gap-2 text-blue-600">
-                        <RotateCcw size={18} />
-                        <span>{t('backup.mergedCount').replace('{count}', String(importResult.merged))}</span>
-                      </div>
-                    )}
-                    {importResult.skippedDuplicates > 0 && (
-                      <div className="flex items-center gap-2 text-text-secondary">
-                        <AlertTriangle size={18} />
-                        <span>{t('backup.skippedCount').replace('{count}', String(importResult.skippedDuplicates))}</span>
-                      </div>
-                    )}
-                    {importResult.errors.length > 0 && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                        <p className="text-sm font-medium text-red-700 mb-1">{t('backup.importErrors')}:</p>
-                        <ul className="text-xs text-red-600 list-disc list-inside">
-                          {importResult.errors.map((err, i) => (
-                            <li key={i}>{err}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => { setShowImportModal(false); setImportResult(null); setImportPreview(null); }}
-                    className="w-full px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium"
-                  >
-                    {t('common.close')}
-                  </button>
-                </div>
-              ) : importPreview ? (
-                // Show preview
-                <div>
-                  <h2 className="text-2xl font-display font-bold text-text-primary mb-2">{t('backup.importPreviewTitle')}</h2>
-                  <p className="text-sm text-text-secondary mb-4">{t('backup.importPreviewDesc')}</p>
-
-                  <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                    {importPreview.map((course, i) => {
-                      const feedbackCount = course.tests?.reduce((sum, test) =>
-                        sum + (test.studentFeedbacks?.filter(f => f.completedDate)?.length || 0), 0) || 0;
-                      const existing = courses.find(c =>
-                        c.id === course.id || c.name.toLowerCase() === course.name?.toLowerCase()
-                      );
-                      return (
-                        <div key={i} className={`p-3 rounded-lg border ${existing ? 'border-yellow-300 bg-yellow-50' : 'border-border bg-background'}`}>
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-text-primary">{course.name || `Course ${i + 1}`}</span>
-                            {existing && (
-                              <span className="text-xs px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full">{t('backup.duplicate')}</span>
-                            )}
-                          </div>
-                          <p className="text-xs text-text-secondary mt-1">
-                            {course.students?.length || 0} {t('course.students').toLowerCase()} · {course.tests?.length || 0} {t('course.tests').toLowerCase()} · {feedbackCount} {t('backup.feedbackEntries').toLowerCase()}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Duplicate handling mode */}
-                  {importPreview.some(c => courses.find(ec => ec.id === c.id || ec.name?.toLowerCase() === c.name?.toLowerCase())) && (
-                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm font-medium text-yellow-800 mb-2">{t('backup.duplicateHandling')}</p>
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="mergeMode" checked={importMergeMode === 'skip'} onChange={() => setImportMergeMode('skip')} />
-                          <span className="text-sm text-text-primary">{t('backup.modeSkip')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="mergeMode" checked={importMergeMode === 'merge'} onChange={() => setImportMergeMode('merge')} />
-                          <span className="text-sm text-text-primary">{t('backup.modeMerge')}</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input type="radio" name="mergeMode" checked={importMergeMode === 'duplicate'} onChange={() => setImportMergeMode('duplicate')} />
-                          <span className="text-sm text-text-primary">{t('backup.modeDuplicate')}</span>
-                        </label>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                    <p className="text-xs text-blue-700">
-                      <Shield size={14} className="inline mr-1" />
-                      {t('backup.safetyNote')}
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => { setShowImportModal(false); setImportPreview(null); }}
-                      className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                    >
-                      {t('common.cancel')}
-                    </button>
-                    <button
-                      onClick={handleConfirmImport}
-                      className="flex-1 px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
-                    >
-                      {t('backup.confirmImport')}
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
+          <ImportModal
+            importResult={importResult}
+            importPreview={importPreview}
+            existingCourses={courses}
+            importMergeMode={importMergeMode}
+            onMergeModeChange={setImportMergeMode}
+            onConfirmImport={handleConfirmImport}
+            onClose={() => { setShowImportModal(false); setImportResult(null); setImportPreview(null); }}
+          />
         )}
 
         {/* Folder import preview modal */}
