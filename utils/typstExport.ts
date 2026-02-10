@@ -209,6 +209,7 @@ export function generateTypstDocument(data: ExportData): string {
 
   const taskTable = taskRows.length > 0 ? `#table(
   columns: (auto, auto, 1fr),
+  inset: (x: 0.8em, y: 0.55em),
   stroke: 0.5pt + rgb("#E2E8F0"),
   align: (center, center, left),
   fill: (_, row) => if row == 0 { rgb("#2563EB") } else if calc.even(row) { rgb("#F8FAFC") } else { white },
@@ -240,7 +241,7 @@ ${taskRows.join('\n')}
   const typstContent = `#set document(title: "${escapeTypstString(testName)} - ${t.feedback}")
 #set page(
   paper: "a4",
-  margin: (x: 2.5cm, y: 2.5cm),
+  margin: (x: 2cm, top: 1.8cm, bottom: 2cm),
   header: context {
     if counter(page).get().first() > 1 [
       #text(size: 9pt, fill: rgb("#6B7280"))[${escapeTypst(testName)} #sym.dash.em ${escapeTypst(studentName)}]
@@ -260,9 +261,9 @@ ${taskRows.join('\n')}
   },
 )
 #set text(
-  font: "New Computer Modern",
   size: 11pt,
   lang: "${t.lang}",
+  font: "Libertinus Sans",
 )
 #set par(justify: true)
 #show heading: set text(fill: rgb("#1E40AF"))
@@ -271,36 +272,36 @@ ${taskRows.join('\n')}
 #rect(
   width: 100%,
   fill: rgb("#2563EB"),
-  inset: (x: 1.5em, y: 1.2em),
+  inset: (x: 1.5em, y: 1em),
   radius: 4pt,
 )[
   #align(center)[
-    #text(size: 18pt, weight: "bold", fill: white)[${escapeTypst(testName)}]
-    #v(0.3em)
-    #text(size: 13pt, fill: rgb("#DBEAFE"))[${t.feedback}]
+    #text(size: 16pt, weight: "bold", fill: white)[${escapeTypst(testName)}]
+    #v(0.2em)
+    #text(size: 12pt, fill: white)[${t.feedback}]
   ]
 ]
 
-#v(1em)
+#v(0.8em)
 
 #rect(
   width: 100%,
   fill: rgb("#F8FAFC"),
-  inset: 1em,
+  inset: (x: 1.2em, y: 0.8em),
   radius: 4pt,
   stroke: 0.5pt + rgb("#E2E8F0"),
 )[
   #grid(
-    columns: 2,
-    gutter: 0.8em,
+    columns: (1fr, 1fr),
+    row-gutter: 0.6em,
     [*${t.student}:* ${escapeTypst(studentName)}],
     [*${t.score}:* ${totalPoints}/${maxPoints}],
-    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
     [*${t.date}:* #datetime.today().display()],
+    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
   )
 ]
 
-#v(1em)
+#v(0.8em)
 
 ${contentBody}
 `;
@@ -336,6 +337,7 @@ export function generateOralTypstDocument(data: OralExportData): string {
 
   const dimensionTable = `#table(
   columns: (2fr, auto, 3fr),
+  inset: (x: 0.8em, y: 0.55em),
   stroke: 0.5pt + rgb("#E2E8F0"),
   align: (left, center, left),
   fill: (_, row) => if row == 0 { rgb("#2563EB") } else if calc.even(row) { rgb("#F8FAFC") } else { white },
@@ -367,7 +369,7 @@ ${dimensionRows}
   const typstContent = `#set document(title: "${escapeTypstString(oralTestName)} - ${t.oralAssessment}")
 #set page(
   paper: "a4",
-  margin: (x: 2.5cm, y: 2.5cm),
+  margin: (x: 2cm, top: 1.8cm, bottom: 2cm),
   header: context {
     if counter(page).get().first() > 1 [
       #text(size: 9pt, fill: rgb("#6B7280"))[${escapeTypst(oralTestName)} #sym.dash.em ${escapeTypst(studentName)}]
@@ -387,9 +389,9 @@ ${dimensionRows}
   },
 )
 #set text(
-  font: "New Computer Modern",
   size: 11pt,
   lang: "${t.lang}",
+  font: "Libertinus Sans",
 )
 #set par(justify: true)
 #show heading: set text(fill: rgb("#1E40AF"))
@@ -398,36 +400,36 @@ ${dimensionRows}
 #rect(
   width: 100%,
   fill: rgb("#2563EB"),
-  inset: (x: 1.5em, y: 1.2em),
+  inset: (x: 1.5em, y: 1em),
   radius: 4pt,
 )[
   #align(center)[
-    #text(size: 18pt, weight: "bold", fill: white)[${escapeTypst(oralTestName)}]
-    #v(0.3em)
-    #text(size: 13pt, fill: rgb("#DBEAFE"))[${t.oralAssessment}]
+    #text(size: 16pt, weight: "bold", fill: white)[${escapeTypst(oralTestName)}]
+    #v(0.2em)
+    #text(size: 12pt, fill: white)[${t.oralAssessment}]
   ]
 ]
 
-#v(1em)
+#v(0.8em)
 
 #rect(
   width: 100%,
   fill: rgb("#F8FAFC"),
-  inset: 1em,
+  inset: (x: 1.2em, y: 0.8em),
   radius: 4pt,
   stroke: 0.5pt + rgb("#E2E8F0"),
 )[
   #grid(
-    columns: 2,
-    gutter: 0.8em,
+    columns: (1fr, 1fr),
+    row-gutter: 0.6em,
     [*${t.student}:* ${escapeTypst(studentName)}],
     [*${t.score}:* ${totalScore}/60],
-    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
     [*${t.date}:* #datetime.today().display()],
+    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
   )
 ]
 
-#v(1em)
+#v(0.8em)
 
 ${contentBody}
 `;
