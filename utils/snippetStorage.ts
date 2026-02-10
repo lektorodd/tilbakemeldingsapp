@@ -1,4 +1,5 @@
 import { FeedbackSnippet } from '@/types';
+import { isFolderConnected, saveSnippetsToFolder } from './folderSync';
 
 const GLOBAL_SNIPPETS_KEY = 'math-feedback-global-snippets';
 
@@ -87,7 +88,7 @@ export function loadGlobalSnippets(): FeedbackSnippet[] {
 }
 
 /**
- * Save global snippets to localStorage
+ * Save global snippets to localStorage (and folder if connected)
  */
 export function saveGlobalSnippets(snippets: FeedbackSnippet[]): void {
   if (typeof window === 'undefined') return;
@@ -96,6 +97,36 @@ export function saveGlobalSnippets(snippets: FeedbackSnippet[]): void {
     localStorage.setItem(GLOBAL_SNIPPETS_KEY, JSON.stringify(snippets));
   } catch (error) {
     console.error('Failed to save global snippets:', error);
+  }
+
+  // Sync to connected folder
+  if (isFolderConnected()) {
+    saveSnippetsToFolder(snippets);
+  }
+}
+
+/**
+ * Sync snippets from connected folder into localStorage.
+ * Call on startup after folder sync is initialized.
+ */
+export async function syncSnippetsFromFolder(): Promise<boolean> {
+  const { loadSnippetsFromFolder } = await import('./folderSync');
+  const snippets = await loadSnippetsFromFolder();
+  if (snippets === null) return false;
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(GLOBAL_SNIPPETS_KEY, JSON.stringify(snippets));
+  }
+  return true;
+}
+
+/**
+ * Migrate existing snippets to connected folder.
+ */
+export async function migrateSnippetsToFolder(): Promise<void> {
+  const snippets = loadGlobalSnippets();
+  if (isFolderConnected()) {
+    await saveSnippetsToFolder(snippets);
   }
 }
 

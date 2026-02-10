@@ -1,4 +1,5 @@
 import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics } from '@/types';
+import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from './folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
 const BACKUP_KEY_PREFIX = 'math-feedback-backup-';
@@ -26,7 +27,12 @@ export function saveCourse(course: Course): void {
     localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
   }
 
-  // Auto-save completed feedback
+  // Sync to connected folder (OneDrive etc.)
+  if (isFolderConnected()) {
+    saveCourseToFolder(course);
+  }
+
+  // Legacy auto-save (only used if old auto-save was enabled separately)
   autoSaveCourse(course);
 }
 
@@ -45,10 +51,16 @@ export function loadCourse(courseId: string): Course | null {
 
 export function deleteCourse(courseId: string): void {
   const courses = loadAllCourses();
+  const courseToDelete = courses.find(c => c.id === courseId);
   const filtered = courses.filter(c => c.id !== courseId);
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(COURSES_KEY, JSON.stringify(filtered));
+  }
+
+  // Remove from connected folder
+  if (isFolderConnected() && courseToDelete) {
+    deleteCourseFromFolder(courseToDelete.name);
   }
 }
 
@@ -915,7 +927,39 @@ function calculateTaskAnalytics(
   };
 }
 
-// Auto-save functionality
+// ==========================================
+// FOLDER SYNC — Load from folder on startup, migrate to folder
+// ==========================================
+
+/**
+ * Load courses from the connected folder and populate localStorage.
+ * Call on app startup after initFolderSync() succeeds.
+ * Returns true if folder data was loaded.
+ */
+export async function syncFromFolder(): Promise<boolean> {
+  const { loadCoursesFromFolder } = await import('./folderSync');
+  const courses = await loadCoursesFromFolder();
+  if (courses === null) return false;
+
+  // Replace localStorage with folder data
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+  }
+  return true;
+}
+
+/**
+ * Migrate all existing localStorage data to the connected folder.
+ * Call after user first connects a folder, to push existing data there.
+ */
+export async function migrateToFolder(): Promise<void> {
+  const courses = loadAllCourses();
+  if (courses.length > 0) {
+    await saveAllCoursesToFolder(courses);
+  }
+}
+
+// Auto-save functionality (legacy — superseded by folder sync)
 export async function setupAutoSaveDirectory(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
@@ -968,6 +1012,7 @@ async function autoSaveCourse(course: Course): Promise<void> {
       students: course.students,
       createdDate: course.createdDate,
       lastModified: course.lastModified,
+      availableLabels: course.availableLabels,
     }, null, 2));
     await courseInfoWritable.close();
 
@@ -987,6 +1032,11 @@ async function autoSaveCourse(course: Course): Promise<void> {
         generalComment: test.generalComment,
         createdDate: test.createdDate,
         lastModified: test.lastModified,
+        ...(test.hasTwoParts !== undefined && { hasTwoParts: test.hasTwoParts }),
+        ...(test.part1TaskCount !== undefined && { part1TaskCount: test.part1TaskCount }),
+        ...(test.part2TaskCount !== undefined && { part2TaskCount: test.part2TaskCount }),
+        ...(test.restartNumberingInPart2 !== undefined && { restartNumberingInPart2: test.restartNumberingInPart2 }),
+        ...(test.snippets !== undefined && { snippets: test.snippets }),
       }, null, 2));
       await testConfigWritable.close();
 
@@ -1195,38 +1245,63 @@ export async function importFromFolder(): Promise<{
     const importedCourses: Course[] = [];
     const errors: string[] = [];
 
-    // Iterate through course folders
-    // @ts-ignore - for await on directory handle
-    for await (const entry of dirHandle.values()) {
-      if (entry.kind !== 'directory') {
-        // Check if it's a top-level JSON file (full export)
-        if (entry.kind === 'file' && entry.name.endsWith('.json')) {
-          try {
-            const content = await readFileFromHandle(entry as FileSystemFileHandle);
-            const parsed = JSON.parse(content);
-            if (Array.isArray(parsed)) {
-              // It's a full course export array
-              importedCourses.push(...parsed);
-            } else if (parsed.id && parsed.name && parsed.tests) {
-              // Single course
-              importedCourses.push(parsed);
-            }
-          } catch (e) {
-            errors.push(`Failed to read ${entry.name}: ${e}`);
-          }
-        }
-        continue;
-      }
+    // Check if the selected folder itself is a course folder (has course-info.json)
+    // This handles the case where the user selects the course folder directly
+    // instead of the parent directory containing course folders
+    let selectedFolderIsCourse = false;
+    try {
+      await dirHandle.getFileHandle('course-info.json');
+      selectedFolderIsCourse = true;
+    } catch {
+      // No course-info.json at top level, treat as parent directory
+    }
 
-      // This is a course folder from auto-save
-      const courseDirHandle = entry as FileSystemDirectoryHandle;
+    if (selectedFolderIsCourse) {
+      // The user selected a course folder directly — import it
       try {
-        const course = await importCourseFromFolder(courseDirHandle);
+        const course = await importCourseFromFolder(dirHandle);
         if (course) {
           importedCourses.push(course);
+        } else {
+          errors.push(`Could not import course from folder "${dirHandle.name}": no students or tests found`);
         }
       } catch (e) {
-        errors.push(`Failed to import course folder "${entry.name}": ${e}`);
+        errors.push(`Failed to import course folder "${dirHandle.name}": ${e}`);
+      }
+    } else {
+      // Iterate through course folders in the parent directory
+      // @ts-ignore - for await on directory handle
+      for await (const entry of dirHandle.values()) {
+        if (entry.kind !== 'directory') {
+          // Check if it's a top-level JSON file (full export)
+          if (entry.kind === 'file' && entry.name.endsWith('.json')) {
+            try {
+              const content = await readFileFromHandle(entry as FileSystemFileHandle);
+              const parsed = JSON.parse(content);
+              if (Array.isArray(parsed)) {
+                // It's a full course export array
+                importedCourses.push(...parsed);
+              } else if (parsed.id && parsed.name && parsed.tests) {
+                // Single course
+                importedCourses.push(parsed);
+              }
+            } catch (e) {
+              errors.push(`Failed to read ${entry.name}: ${e}`);
+            }
+          }
+          continue;
+        }
+
+        // This is a course folder from auto-save
+        const courseDirHandle = entry as FileSystemDirectoryHandle;
+        try {
+          const course = await importCourseFromFolder(courseDirHandle);
+          if (course) {
+            importedCourses.push(course);
+          }
+        } catch (e) {
+          errors.push(`Failed to import course folder "${entry.name}": ${e}`);
+        }
       }
     }
 
