@@ -35,9 +35,7 @@ const translations = {
     task: 'Task',
     points: 'Points',
     comment: 'Comment',
-    noTaskComments: 'No task comments.',
     individualFeedback: 'Individual Feedback',
-    generatedWith: 'Generated with Math Test Feedback App',
     lang: 'en',
   },
   nb: {
@@ -51,9 +49,7 @@ const translations = {
     task: 'Oppgave',
     points: 'Poeng',
     comment: 'Kommentar',
-    noTaskComments: 'Ingen oppgavekommentarer.',
     individualFeedback: 'Individuell tilbakemelding',
-    generatedWith: 'Generert med Math Test Feedback App',
     lang: 'nb',
   },
   nn: {
@@ -67,138 +63,10 @@ const translations = {
     task: 'Oppgåve',
     points: 'Poeng',
     comment: 'Kommentar',
-    noTaskComments: 'Ingen oppgåvekommentarar.',
     individualFeedback: 'Individuell tilbakemelding',
-    generatedWith: 'Generert med Math Test Feedback App',
     lang: 'nn',
   },
 };
-
-export function generateTypstDocument(data: ExportData): string {
-  const {
-    studentName,
-    studentNumber,
-    testName,
-    tasks,
-    feedbacks,
-    generalComment,
-    individualComment,
-    totalPoints,
-    maxPoints,
-    language = 'nb',
-  } = data;
-
-  // Get translations for selected language
-  const t = translations[language];
-
-  // Helper function to get feedback for a task/subtask
-  const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback | undefined => {
-    return feedbacks.find(f => f.taskId === taskId && f.subtaskId === subtaskId);
-  };
-
-  // Helper function to escape special Typst characters
-  const escapeTypst = (text: string): string => {
-    // Don't escape math expressions (content between $ symbols)
-    // This is a simple approach - in production you might need more sophisticated parsing
-    return text;
-  };
-
-  // Generate task feedback table rows
-  const taskRows: string[] = [];
-
-  tasks.forEach(task => {
-    if (task.hasSubtasks && task.subtasks.length > 0) {
-      task.subtasks.forEach(subtask => {
-        const feedback = getFeedback(task.id, subtask.id);
-        if (feedback) {
-          const taskLabel = `${task.label}${subtask.label}`;
-          const points = `${feedback.points}/6`;
-          const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
-          taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
-        }
-      });
-    } else {
-      const feedback = getFeedback(task.id, undefined);
-      if (feedback) {
-        const taskLabel = task.label;
-        const points = `${feedback.points}/6`;
-        const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
-        taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
-      }
-    }
-  });
-
-  const taskTable = taskRows.length > 0 ? `
-#table(
-  columns: (auto, auto, 1fr),
-  stroke: 0.5pt,
-  align: (center, center, left),
-  [*${t.task}*], [*${t.points}*], [*${t.comment}*],
-${taskRows.join('\n')}
-)` : t.noTaskComments;
-
-  const typstContent = `#set document(title: "${testName} - ${t.feedback}")
-#set page(
-  paper: "a4",
-  margin: (x: 2.5cm, y: 2.5cm),
-)
-#set text(
-  size: 11pt,
-  lang: "${t.lang}",
-)
-#set par(justify: true)
-
-// Show links with underline
-#show link: underline
-
-#align(center)[
-  #text(size: 18pt, weight: "bold")[${testName}]
-
-  #text(size: 14pt)[${t.feedback}]
-]
-
-#v(1em)
-
-#grid(
-  columns: 2,
-  gutter: 1em,
-  [*${t.student}:* ${studentName}],
-  [*${t.score}:* ${totalPoints}/${maxPoints}],
-  ${studentNumber ? `[*${t.studentNumber}:* ${studentNumber}],` : ''}
-  [*${t.date}:* #datetime.today().display()],
-)
-
-#line(length: 100%, stroke: 0.5pt)
-
-#v(1em)
-
-== ${t.generalFeedback}
-
-${escapeTypst(generalComment)}
-
-#v(1em)
-
-== ${t.taskComments}
-
-${taskTable}
-
-#v(1em)
-
-== ${t.individualFeedback}
-
-${escapeTypst(individualComment)}
-
-#v(2em)
-
-#align(center)[
-  #text(size: 9pt, fill: gray)[
-    ${t.generatedWith}
-  ]
-]
-`;
-
-  return typstContent;
-}
 
 // Translations for oral assessments
 const oralTranslations = {
@@ -215,7 +83,6 @@ const oralTranslations = {
     comment: 'Comment',
     generalObservations: 'General Observations',
     taskReferences: 'Task References',
-    generatedWith: 'Generated with Math Test Feedback App',
     lang: 'en',
     strategy: 'Strategy and Method',
     reasoning: 'Reasoning and Argumentation',
@@ -237,7 +104,6 @@ const oralTranslations = {
     comment: 'Kommentar',
     generalObservations: 'Generelle observasjoner',
     taskReferences: 'Oppgavereferanser',
-    generatedWith: 'Generert med Math Test Feedback App',
     lang: 'nb',
     strategy: 'Strategivalg og metode',
     reasoning: 'Resonnering og argumentasjon',
@@ -259,7 +125,6 @@ const oralTranslations = {
     comment: 'Kommentar',
     generalObservations: 'Generelle observasjonar',
     taskReferences: 'Oppgåvereferansar',
-    generatedWith: 'Generert med Math Test Feedback App',
     lang: 'nn',
     strategy: 'Strategival og metode',
     reasoning: 'Resonnering og argumentasjon',
@@ -269,6 +134,179 @@ const oralTranslations = {
     subject_knowledge: 'Fagleg forståing',
   },
 };
+
+// Escape special Typst characters in content, preserving $...$ math expressions
+function escapeTypst(text: string): string {
+  if (!text) return '';
+  const parts = text.split('$');
+  return parts.map((part, i) => {
+    if (i % 2 === 0) {
+      // Outside math — escape Typst content-mode special characters
+      return part
+        .replace(/\\/g, '\\\\')
+        .replace(/#/g, '\\#')
+        .replace(/\*/g, '\\*')
+        .replace(/_/g, '\\_')
+        .replace(/@/g, '\\@')
+        .replace(/</g, '\\<')
+        .replace(/>/g, '\\>');
+    }
+    // Inside math — preserve as-is with delimiters
+    return '$' + part + '$';
+  }).join('');
+}
+
+// Escape text for use inside Typst "..." strings (e.g. document title)
+function escapeTypstString(text: string): string {
+  if (!text) return '';
+  return text.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+export function generateTypstDocument(data: ExportData): string {
+  const {
+    studentName,
+    studentNumber,
+    testName,
+    tasks,
+    feedbacks,
+    generalComment,
+    individualComment,
+    totalPoints,
+    maxPoints,
+    language = 'nb',
+  } = data;
+
+  const t = translations[language];
+
+  const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback | undefined => {
+    return feedbacks.find(f => f.taskId === taskId && f.subtaskId === subtaskId);
+  };
+
+  // Generate task feedback table rows
+  const taskRows: string[] = [];
+
+  tasks.forEach(task => {
+    if (task.hasSubtasks && task.subtasks.length > 0) {
+      task.subtasks.forEach(subtask => {
+        const feedback = getFeedback(task.id, subtask.id);
+        if (feedback) {
+          const taskLabel = escapeTypst(`${task.label}${subtask.label}`);
+          const points = `${feedback.points}/6`;
+          const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
+          taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
+        }
+      });
+    } else {
+      const feedback = getFeedback(task.id, undefined);
+      if (feedback) {
+        const taskLabel = escapeTypst(task.label);
+        const points = `${feedback.points}/6`;
+        const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
+        taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
+      }
+    }
+  });
+
+  const taskTable = taskRows.length > 0 ? `#table(
+  columns: (auto, auto, 1fr),
+  stroke: 0.5pt + rgb("#E2E8F0"),
+  align: (center, center, left),
+  fill: (_, row) => if row == 0 { rgb("#2563EB") } else if calc.even(row) { rgb("#F8FAFC") } else { white },
+  table.header(
+    [#text(fill: white, weight: "bold")[${t.task}]],
+    [#text(fill: white, weight: "bold")[${t.points}]],
+    [#text(fill: white, weight: "bold")[${t.comment}]],
+  ),
+${taskRows.join('\n')}
+)` : '';
+
+  // Build content sections conditionally
+  const sections: string[] = [];
+
+  if (generalComment.trim()) {
+    sections.push(`== ${t.generalFeedback}\n\n${escapeTypst(generalComment)}`);
+  }
+
+  if (taskRows.length > 0) {
+    sections.push(`== ${t.taskComments}\n\n${taskTable}`);
+  }
+
+  if (individualComment.trim()) {
+    sections.push(`== ${t.individualFeedback}\n\n${escapeTypst(individualComment)}`);
+  }
+
+  const contentBody = sections.join('\n\n#v(1em)\n\n');
+
+  const typstContent = `#set document(title: "${escapeTypstString(testName)} - ${t.feedback}")
+#set page(
+  paper: "a4",
+  margin: (x: 2.5cm, y: 2.5cm),
+  header: context {
+    if counter(page).get().first() > 1 [
+      #text(size: 9pt, fill: rgb("#6B7280"))[${escapeTypst(testName)} #sym.dash.em ${escapeTypst(studentName)}]
+      #h(1fr)
+      #text(size: 9pt, fill: rgb("#6B7280"))[${t.feedback}]
+      #v(0.3em)
+      #line(length: 100%, stroke: 0.3pt + rgb("#D1D5DB"))
+    ]
+  },
+  footer: context {
+    let total = counter(page).final().first()
+    if total > 1 {
+      align(center, text(size: 9pt, fill: rgb("#9CA3AF"))[
+        #counter(page).display("1 / 1", both: true)
+      ])
+    }
+  },
+)
+#set text(
+  font: "New Computer Modern",
+  size: 11pt,
+  lang: "${t.lang}",
+)
+#set par(justify: true)
+#show heading: set text(fill: rgb("#1E40AF"))
+#show link: underline
+
+#rect(
+  width: 100%,
+  fill: rgb("#2563EB"),
+  inset: (x: 1.5em, y: 1.2em),
+  radius: 4pt,
+)[
+  #align(center)[
+    #text(size: 18pt, weight: "bold", fill: white)[${escapeTypst(testName)}]
+    #v(0.3em)
+    #text(size: 13pt, fill: rgb("#DBEAFE"))[${t.feedback}]
+  ]
+]
+
+#v(1em)
+
+#rect(
+  width: 100%,
+  fill: rgb("#F8FAFC"),
+  inset: 1em,
+  radius: 4pt,
+  stroke: 0.5pt + rgb("#E2E8F0"),
+)[
+  #grid(
+    columns: 2,
+    gutter: 0.8em,
+    [*${t.student}:* ${escapeTypst(studentName)}],
+    [*${t.score}:* ${totalPoints}/${maxPoints}],
+    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
+    [*${t.date}:* #datetime.today().display()],
+  )
+]
+
+#v(1em)
+
+${contentBody}
+`;
+
+  return typstContent;
+}
 
 export function generateOralTypstDocument(data: OralExportData): string {
   const {
@@ -282,17 +320,10 @@ export function generateOralTypstDocument(data: OralExportData): string {
 
   const t = oralTranslations[language];
 
-  // Helper function to get dimension label
   const getDimensionLabel = (dimension: OralFeedbackDimensionType): string => {
     return t[dimension] || dimension;
   };
 
-  // Helper function to escape special Typst characters
-  const escapeTypst = (text: string): string => {
-    return text;
-  };
-
-  // Calculate total score
   const totalScore = oralFeedback.score || 0;
 
   // Generate dimension rows for table
@@ -303,72 +334,102 @@ export function generateOralTypstDocument(data: OralExportData): string {
     return `  [${label}], [${points}], [${comment}],`;
   }).join('\n');
 
-  const typstContent = `#set document(title: "${oralTestName} - ${t.oralAssessment}")
+  const dimensionTable = `#table(
+  columns: (2fr, auto, 3fr),
+  stroke: 0.5pt + rgb("#E2E8F0"),
+  align: (left, center, left),
+  fill: (_, row) => if row == 0 { rgb("#2563EB") } else if calc.even(row) { rgb("#F8FAFC") } else { white },
+  table.header(
+    [#text(fill: white, weight: "bold")[${t.dimension}]],
+    [#text(fill: white, weight: "bold")[${t.points}]],
+    [#text(fill: white, weight: "bold")[${t.comment}]],
+  ),
+${dimensionRows}
+)`;
+
+  // Build content sections conditionally
+  const sections: string[] = [];
+
+  if (oralFeedback.dimensions.length > 0) {
+    sections.push(`== ${t.dimensions}\n\n${dimensionTable}`);
+  }
+
+  if (oralFeedback.generalObservations?.trim()) {
+    sections.push(`== ${t.generalObservations}\n\n${escapeTypst(oralFeedback.generalObservations)}`);
+  }
+
+  if (oralFeedback.taskReferences && oralFeedback.taskReferences.length > 0) {
+    sections.push(`== ${t.taskReferences}\n\n${escapeTypst(oralFeedback.taskReferences.join(', '))}`);
+  }
+
+  const contentBody = sections.join('\n\n#v(1em)\n\n');
+
+  const typstContent = `#set document(title: "${escapeTypstString(oralTestName)} - ${t.oralAssessment}")
 #set page(
   paper: "a4",
   margin: (x: 2.5cm, y: 2.5cm),
+  header: context {
+    if counter(page).get().first() > 1 [
+      #text(size: 9pt, fill: rgb("#6B7280"))[${escapeTypst(oralTestName)} #sym.dash.em ${escapeTypst(studentName)}]
+      #h(1fr)
+      #text(size: 9pt, fill: rgb("#6B7280"))[${t.oralAssessment}]
+      #v(0.3em)
+      #line(length: 100%, stroke: 0.3pt + rgb("#D1D5DB"))
+    ]
+  },
+  footer: context {
+    let total = counter(page).final().first()
+    if total > 1 {
+      align(center, text(size: 9pt, fill: rgb("#9CA3AF"))[
+        #counter(page).display("1 / 1", both: true)
+      ])
+    }
+  },
 )
 #set text(
+  font: "New Computer Modern",
   size: 11pt,
   lang: "${t.lang}",
 )
 #set par(justify: true)
-
-// Show links with underline
+#show heading: set text(fill: rgb("#1E40AF"))
 #show link: underline
 
-#align(center)[
-  #text(size: 18pt, weight: "bold")[${oralTestName}]
-
-  #text(size: 14pt)[${t.oralAssessment}]
-]
-
-#v(1em)
-
-#grid(
-  columns: 2,
-  gutter: 1em,
-  [*${t.student}:* ${studentName}],
-  [*${t.score}:* ${totalScore}/60],
-  ${studentNumber ? `[*${t.studentNumber}:* ${studentNumber}],` : ''}
-  [*${t.date}:* #datetime.today().display()],
-)
-
-#line(length: 100%, stroke: 0.5pt)
-
-#v(1em)
-
-== ${t.dimensions}
-
-#table(
-  columns: (2fr, auto, 3fr),
-  stroke: 0.5pt,
-  align: (left, center, left),
-  [*${t.dimension}*], [*${t.points}*], [*${t.comment}*],
-${dimensionRows}
-)
-
-#v(1em)
-
-== ${t.generalObservations}
-
-${escapeTypst(oralFeedback.generalObservations || '')}
-
-${oralFeedback.taskReferences && oralFeedback.taskReferences.length > 0 ? `
-#v(1em)
-
-== ${t.taskReferences}
-
-${oralFeedback.taskReferences.join(', ')}
-` : ''}
-
-#v(2em)
-
-#align(center)[
-  #text(size: 9pt, fill: gray)[
-    ${t.generatedWith}
+#rect(
+  width: 100%,
+  fill: rgb("#2563EB"),
+  inset: (x: 1.5em, y: 1.2em),
+  radius: 4pt,
+)[
+  #align(center)[
+    #text(size: 18pt, weight: "bold", fill: white)[${escapeTypst(oralTestName)}]
+    #v(0.3em)
+    #text(size: 13pt, fill: rgb("#DBEAFE"))[${t.oralAssessment}]
   ]
 ]
+
+#v(1em)
+
+#rect(
+  width: 100%,
+  fill: rgb("#F8FAFC"),
+  inset: 1em,
+  radius: 4pt,
+  stroke: 0.5pt + rgb("#E2E8F0"),
+)[
+  #grid(
+    columns: 2,
+    gutter: 0.8em,
+    [*${t.student}:* ${escapeTypst(studentName)}],
+    [*${t.score}:* ${totalScore}/60],
+    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
+    [*${t.date}:* #datetime.today().display()],
+  )
+]
+
+#v(1em)
+
+${contentBody}
 `;
 
   return typstContent;
