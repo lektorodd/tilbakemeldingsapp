@@ -78,39 +78,39 @@ export default function OralFeedbackForm({
   const score = calculateScore();
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-surface p-6 rounded-lg shadow-sm border border-border">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-2xl font-display font-bold text-text-primary">
           {t('oral.title')}
-          {studentName && <span className="text-blue-600"> - {studentName}</span>}
+          {studentName && <span className="text-brand"> - {studentName}</span>}
         </h2>
-        <p className="text-sm text-gray-600 mt-1">{t('oral.subtitle')}</p>
+        <p className="text-sm text-text-secondary mt-1">{t('oral.subtitle')}</p>
 
         {/* Score Display */}
-        <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+        <div className="mt-4 p-4 bg-violet-50 border-2 border-violet-200 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-gray-700">{t('oral.calculatedScore')}:</span>
-            <span className="text-3xl font-bold text-blue-600">{score} / 60</span>
+            <span className="font-semibold text-text-primary">{t('oral.calculatedScore')}:</span>
+            <span className="text-3xl font-display font-bold text-brand">{score} / 60</span>
           </div>
-          <p className="text-xs text-gray-600 mt-1">{t('oral.scoreExplanation')}</p>
+          <p className="text-xs text-text-secondary mt-1">{t('oral.scoreExplanation')}</p>
         </div>
       </div>
 
       {/* Assessment Date and Duration */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-text-secondary mb-1">
             {t('oral.recordedDate')}
           </label>
           <input
             type="date"
             value={oralFeedback.recordedDate || ''}
             onChange={(e) => updateGeneralField('recordedDate', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-text-secondary mb-1">
             {t('oral.duration')} ({t('oral.minutes')})
           </label>
           <input
@@ -119,7 +119,7 @@ export default function OralFeedbackForm({
             step="5"
             value={oralFeedback.duration || ''}
             onChange={(e) => updateGeneralField('duration', e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
             placeholder="15"
           />
         </div>
@@ -127,7 +127,7 @@ export default function OralFeedbackForm({
 
       {/* LK20 Assessment Dimensions */}
       <div className="space-y-6 mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+        <h3 className="text-lg font-semibold text-text-primary border-b border-border pb-2">
           {t('oral.dimensionsTitle')}
         </h3>
 
@@ -136,32 +136,39 @@ export default function OralFeedbackForm({
           const info = getDimensionInfo(dimensionType);
 
           return (
-            <div key={dimensionType} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <div key={dimensionType} className="border border-border rounded-lg p-4 bg-surface-alt">
               <div className="mb-3">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800">{info.label}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{info.description}</p>
+                    <h4 className="font-semibold text-text-primary">{info.label}</h4>
+                    <p className="text-sm text-text-secondary mt-1">{info.description}</p>
                   </div>
                   <div className="flex items-center gap-2 ml-4">
-                    <label className="text-sm text-gray-600">{t('oral.points')}:</label>
-                    <select
-                      value={dimension.points}
-                      onChange={(e) => updateDimension(dimensionType, { points: Number(e.target.value) })}
-                      className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
-                    >
+                    <label className="text-sm text-text-secondary">{t('oral.points')}:</label>
+                    <div className="flex gap-1">
                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
-                        <option key={p} value={p}>{p}</option>
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => updateDimension(dimensionType, { points: p })}
+                          className={`w-8 h-8 rounded-lg font-semibold text-sm transition-all ${
+                            dimension.points === p
+                              ? 'bg-purple-600 text-white shadow-md scale-110'
+                              : 'bg-surface border border-border text-text-secondary hover:bg-purple-50 hover:border-purple-400'
+                          }`}
+                        >
+                          {p}
+                        </button>
                       ))}
-                    </select>
-                    <span className="text-sm text-gray-600">/ 6</span>
+                    </div>
+                    <span className="text-sm text-text-secondary">/ 6</span>
                   </div>
                 </div>
 
                 {/* Rubric Guide */}
-                <details className="mt-2 text-xs text-gray-600">
-                  <summary className="cursor-pointer hover:text-blue-600">{t('oral.rubricGuide')}</summary>
-                  <div className="mt-2 space-y-1 pl-4 border-l-2 border-gray-300">
+                <details className="mt-2 text-xs text-text-secondary">
+                  <summary className="cursor-pointer hover:text-brand">{t('oral.rubricGuide')}</summary>
+                  <div className="mt-2 space-y-1 pl-4 border-l-2 border-border">
                     <div><strong>2 {t('oral.points')}:</strong> {info.rubric2}</div>
                     <div><strong>4 {t('oral.points')}:</strong> {info.rubric4}</div>
                     <div><strong>6 {t('oral.points')}:</strong> {info.rubric6}</div>
@@ -170,14 +177,14 @@ export default function OralFeedbackForm({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   {t('oral.dimensionComment')}
                 </label>
                 <textarea
                   value={dimension.comment}
                   onChange={(e) => updateDimension(dimensionType, { comment: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-sm text-text-primary"
                   placeholder={t('oral.dimensionCommentPlaceholder')}
                 />
               </div>
@@ -188,21 +195,21 @@ export default function OralFeedbackForm({
 
       {/* General Observations */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           {t('oral.generalObservations')}
         </label>
         <textarea
           value={oralFeedback.generalObservations}
           onChange={(e) => updateGeneralField('generalObservations', e.target.value)}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
           placeholder={t('oral.generalObservationsPlaceholder')}
         />
       </div>
 
       {/* Task References */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           {t('oral.taskReferences')}
         </label>
         <input
@@ -212,16 +219,16 @@ export default function OralFeedbackForm({
             const refs = e.target.value.split(',').map(r => r.trim()).filter(r => r);
             updateGeneralField('taskReferences', refs.length > 0 ? refs : undefined);
           }}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
           placeholder={t('oral.taskReferencesPlaceholder')}
         />
-        <p className="text-xs text-gray-500 mt-1">{t('oral.taskReferencesHelp')}</p>
+        <p className="text-xs text-text-disabled mt-1">{t('oral.taskReferencesHelp')}</p>
       </div>
 
       {/* Completion Status Info */}
       {oralFeedback.completedDate && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-800">
+        <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+          <p className="text-sm text-emerald-800">
             {t('oral.completedOn')}: {new Date(oralFeedback.completedDate).toLocaleDateString()}
           </p>
         </div>
