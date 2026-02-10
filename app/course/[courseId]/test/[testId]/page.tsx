@@ -509,7 +509,7 @@ export default function TestFeedbackPage() {
           <div>
             <Link
               href={`/course/${courseId}`}
-              className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
+              className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-2"
             >
               <ArrowLeft size={20} />
               {t('test.backToCourse')}
@@ -536,7 +536,7 @@ export default function TestFeedbackPage() {
           <div className="flex gap-3">
             <Link
               href={`/course/${courseId}/test/${testId}/analytics`}
-              className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
               title={t('test.taskAnalyticsTitle')}
             >
               <BarChart3 size={18} />
@@ -554,7 +554,7 @@ export default function TestFeedbackPage() {
         </div>
 
         {/* Test Settings Section */}
-        <div className="bg-surface rounded-lg shadow-sm p-6 mb-8 border-2 border-violet-200">
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-8 border-2 border-indigo-200">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('test.testSettings')}</h2>
@@ -703,7 +703,7 @@ export default function TestFeedbackPage() {
                           </div>
                           <Link
                             href={`/course/${courseId}/student/${student.id}`}
-                            className="p-1 text-brand hover:bg-violet-100 rounded transition"
+                            className="p-1 text-brand hover:bg-indigo-100 rounded transition"
                             title={t('test.viewStudentDashboard')}
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -831,7 +831,7 @@ export default function TestFeedbackPage() {
                             return (
                               <div key={subtask.id} className={`ml-4 border rounded-lg p-4 transition-colors ${
                               activeSubtask?.taskId === task.id && activeSubtask?.subtaskId === subtask.id
-                                ? 'border-brand bg-violet-50 ring-2 ring-brand/30'
+                                ? 'border-brand bg-indigo-50 ring-2 ring-brand/30'
                                 : 'border-border bg-surface-alt'
                             }`}>
                                 <div className="flex items-center gap-4 mb-3">
@@ -849,7 +849,7 @@ export default function TestFeedbackPage() {
                                           className={`w-9 h-9 rounded-lg font-semibold transition-all ${
                                             feedback.points === p
                                               ? 'bg-brand text-white shadow-md scale-110'
-                                              : 'bg-surface border border-border text-text-secondary hover:bg-violet-50 hover:border-brand'
+                                              : 'bg-surface border border-border text-text-secondary hover:bg-indigo-50 hover:border-brand'
                                           }`}
                                         >
                                           {p}
@@ -884,7 +884,7 @@ export default function TestFeedbackPage() {
                       ) : (
                         <div className={`border rounded-lg p-4 transition-colors ${
                           activeSubtask?.taskId === task.id && !activeSubtask?.subtaskId
-                            ? 'border-brand bg-violet-50 ring-2 ring-brand/30'
+                            ? 'border-brand bg-indigo-50 ring-2 ring-brand/30'
                             : 'border-border bg-surface-alt'
                         }`}>
                           {(() => {
@@ -917,7 +917,7 @@ export default function TestFeedbackPage() {
                                           className={`w-9 h-9 rounded-lg font-semibold transition-all ${
                                             feedback.points === p
                                               ? 'bg-brand text-white shadow-md scale-110'
-                                              : 'bg-surface border border-border text-text-secondary hover:bg-violet-50 hover:border-brand'
+                                              : 'bg-surface border border-border text-text-secondary hover:bg-indigo-50 hover:border-brand'
                                           }`}
                                         >
                                           {p}

@@ -11,16 +11,23 @@ export default function Icon() {
     (
       <div
         style={{
-          fontSize: 26,
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
+          background: '#4F46E5',
+          borderRadius: 6,
         }}
       >
-        🎓
+        <div style={{
+          fontSize: 20,
+          fontWeight: 800,
+          color: 'white',
+          letterSpacing: '-0.05em',
+        }}>
+          M
+        </div>
       </div>
     ),
     {

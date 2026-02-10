@@ -82,14 +82,14 @@ export default function AnalyticsPage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <BarChart3 size={28} className="text-purple-600" />
+                  <BarChart3 size={28} className="text-indigo-600" />
                   <h2 className="text-2xl font-display font-bold text-gray-800">Task Difficulty Analysis</h2>
                 </div>
                 <div>
                   <select
                     value={selectedTest}
                     onChange={(e) => setSelectedTest(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">All Tests</option>
                     {testNames.map(name => (
@@ -220,9 +220,9 @@ export default function AnalyticsPage() {
                         {studentData.averageScore.toFixed(1)}%
                       </p>
                     </div>
-                    <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                      <h3 className="text-sm font-medium text-purple-800 mb-1">Latest Score</h3>
-                      <p className="text-3xl font-display font-bold text-purple-600">
+                    <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
+                      <h3 className="text-sm font-medium text-indigo-800 mb-1">Latest Score</h3>
+                      <p className="text-3xl font-display font-bold text-indigo-600">
                         {studentData.feedbacks.length > 0
                           ? ((studentData.feedbacks[studentData.feedbacks.length - 1].totalPoints /
                               studentData.feedbacks[studentData.feedbacks.length - 1].maxPoints) *

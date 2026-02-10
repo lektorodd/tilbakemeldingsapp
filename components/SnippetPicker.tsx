@@ -63,7 +63,7 @@ export default function SnippetPicker({
       case 'standard': return 'bg-stone-100 text-stone-700';
       case 'encouragement': return 'bg-emerald-100 text-emerald-700';
       case 'error': return 'bg-rose-100 text-brand-hover';
-      case 'custom': return 'bg-violet-100 text-violet-700';
+      case 'custom': return 'bg-indigo-100 text-indigo-700';
       default: return 'bg-stone-100 text-stone-700';
     }
   };
@@ -81,9 +81,9 @@ export default function SnippetPicker({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-80 bg-surface rounded-lg shadow-xl border-2 border-violet-200 max-h-96 overflow-hidden flex flex-col">
+        <div className="absolute z-50 mt-2 w-80 bg-surface rounded-lg shadow-xl border-2 border-indigo-200 max-h-96 overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="p-3 border-b border-border bg-violet-50">
+          <div className="p-3 border-b border-border bg-indigo-50">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-text-primary flex items-center gap-2">
                 <BookmarkPlus size={18} className="text-brand" />
@@ -91,7 +91,7 @@ export default function SnippetPicker({
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-violet-100 rounded transition"
+                className="p-1 hover:bg-indigo-100 rounded transition"
               >
                 <X size={16} />
               </button>
@@ -102,7 +102,7 @@ export default function SnippetPicker({
               <button
                 onClick={() => setFilter('all')}
                 className={`px-2 py-1 text-xs rounded transition-colors ${
-                  filter === 'all' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-violet-100'
+                  filter === 'all' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-indigo-100'
                 }`}
               >
                 Alle ({snippets.length})
@@ -184,7 +184,7 @@ export default function SnippetPicker({
                       if (e.key === 'Escape') setShowAddForm(false);
                     }}
                     placeholder="Skriv inn ny snøggtekst..."
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-text-primary"
                     autoFocus
                   />
                   <div className="flex gap-2">
@@ -208,7 +208,7 @@ export default function SnippetPicker({
               ) : (
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-violet-100 text-violet-700 rounded-lg hover:bg-violet-200 transition-colors text-sm"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm"
                 >
                   <Plus size={16} />
                   Lag ny snøggtekst

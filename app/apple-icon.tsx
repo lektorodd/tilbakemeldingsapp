@@ -11,17 +11,23 @@ export default function AppleIcon() {
     (
       <div
         style={{
-          fontSize: 140,
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'white',
+          background: '#4F46E5',
           borderRadius: 36,
         }}
       >
-        🎓
+        <div style={{
+          fontSize: 110,
+          fontWeight: 800,
+          color: 'white',
+          letterSpacing: '-0.05em',
+        }}>
+          M
+        </div>
       </div>
     ),
     {

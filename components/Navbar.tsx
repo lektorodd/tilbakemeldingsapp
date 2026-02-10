@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LanguageSelector from './LanguageSelector';
-import { Home, HelpCircle, Github } from 'lucide-react';
+import { GraduationCap, HelpCircle, Github } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Navbar() {
@@ -22,7 +22,7 @@ export default function Navbar() {
               href="/courses"
               className="flex items-center gap-2 text-text-primary hover:text-brand transition-colors"
             >
-              <Home size={20} />
+              <GraduationCap size={20} />
               <span className="font-display font-semibold text-lg">{t('common.appName')}</span>
             </Link>
           </div>

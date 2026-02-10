@@ -9,32 +9,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Matte neutral palette
-        background: '#FAFAFA',
+        // Modern neutral palette (slate-tinted)
+        background: '#F8FAFC',
         surface: '#FFFFFF',
-        'surface-alt': '#F4F4F5',
+        'surface-alt': '#F1F5F9',
 
-        // Text colors
-        'text-primary': '#1A1A1A',
-        'text-secondary': '#4B5563',
-        'text-disabled': '#9CA3AF',
+        // Text colors (deeper, richer)
+        'text-primary': '#0F172A',
+        'text-secondary': '#475569',
+        'text-disabled': '#94A3B8',
 
-        // Brand (educational blue)
+        // Brand (indigo)
         brand: {
-          DEFAULT: '#2563EB',
-          hover: '#1D4ED8',
-          active: '#1E40AF',
+          DEFAULT: '#4F46E5',
+          hover: '#4338CA',
+          active: '#3730A3',
         },
 
-        // Semantic colors
-        success: '#10B981',
-        warning: '#F59E0B',
-        danger: '#EF4444',
-        focus: '#3B82F6',
+        // Semantic colors (refined)
+        success: '#059669',
+        warning: '#D97706',
+        danger: '#DC2626',
+        focus: '#6366F1',
       },
       borderColor: {
-        DEFAULT: '#E5E7EB',
-        border: '#E5E7EB',
+        DEFAULT: '#E2E8F0',
+        border: '#E2E8F0',
       },
       fontFamily: {
         sans: ['Inter', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],

@@ -196,13 +196,13 @@ export default function OralAssessmentPage() {
           <div>
             <Link
               href={`/course/${courseId}`}
-              className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-800 mb-2"
+              className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-2"
             >
               <ArrowLeft size={20} />
               {t('test.backToCourse')}
             </Link>
             <div className="flex items-center gap-3">
-              <MessageSquare size={28} className="text-purple-600" />
+              <MessageSquare size={28} className="text-indigo-600" />
               <div>
                 <div className="flex items-center gap-4">
                   <h1 className="text-3xl font-display font-bold text-text-primary">{oralTest.name}</h1>
@@ -210,7 +210,7 @@ export default function OralAssessmentPage() {
                     <select
                       value={oralTestId}
                       onChange={(e) => router.push(`/course/${courseId}/oral/${e.target.value}`)}
-                      className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all cursor-pointer"
+                      className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary hover:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all cursor-pointer"
                     >
                       {course.oralTests.map(ot => (
                         <option key={ot.id} value={ot.id}>
@@ -222,7 +222,7 @@ export default function OralAssessmentPage() {
                 </div>
                 {oralTest.description && <p className="text-text-secondary">{oralTest.description}</p>}
                 {oralTest.topics && oralTest.topics.length > 0 && (
-                  <p className="text-sm text-purple-600 mt-1">
+                  <p className="text-sm text-indigo-600 mt-1">
                     {t('course.topics')}: {oralTest.topics.join(', ')}
                   </p>
                 )}
@@ -260,8 +260,8 @@ export default function OralAssessmentPage() {
                         onClick={() => setSelectedStudent(student)}
                         className={`w-full text-left p-3 rounded-lg border transition-all ${
                           isSelected
-                            ? 'bg-purple-100 border-purple-500 shadow-md'
-                            : 'bg-background border-border hover:border-purple-300 hover:bg-purple-50'
+                            ? 'bg-indigo-100 border-indigo-500 shadow-md'
+                            : 'bg-background border-border hover:border-indigo-300 hover:bg-indigo-50'
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
@@ -288,7 +288,7 @@ export default function OralAssessmentPage() {
 
               <Link
                 href={`/course/${courseId}/analytics`}
-                className="mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition w-full text-sm"
+                className="mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition w-full text-sm"
               >
                 <BarChart3 size={16} />
                 {t('course.viewAnalytics')}
@@ -300,7 +300,7 @@ export default function OralAssessmentPage() {
           <div className="lg:col-span-9">
             {!selectedStudent ? (
               <div className="bg-surface rounded-lg shadow-sm p-12 text-center">
-                <MessageSquare size={48} className="mx-auto text-purple-300 mb-4" />
+                <MessageSquare size={48} className="mx-auto text-indigo-300 mb-4" />
                 <p className="text-text-secondary text-lg">{t('test.selectStudentPrompt')}</p>
               </div>
             ) : (
@@ -313,7 +313,7 @@ export default function OralAssessmentPage() {
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
                     >
                       <Save size={18} />
                       {t('common.save')}
