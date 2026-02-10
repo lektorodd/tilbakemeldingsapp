@@ -968,6 +968,7 @@ async function autoSaveCourse(course: Course): Promise<void> {
       students: course.students,
       createdDate: course.createdDate,
       lastModified: course.lastModified,
+      availableLabels: course.availableLabels,
     }, null, 2));
     await courseInfoWritable.close();
 
@@ -987,6 +988,11 @@ async function autoSaveCourse(course: Course): Promise<void> {
         generalComment: test.generalComment,
         createdDate: test.createdDate,
         lastModified: test.lastModified,
+        ...(test.hasTwoParts !== undefined && { hasTwoParts: test.hasTwoParts }),
+        ...(test.part1TaskCount !== undefined && { part1TaskCount: test.part1TaskCount }),
+        ...(test.part2TaskCount !== undefined && { part2TaskCount: test.part2TaskCount }),
+        ...(test.restartNumberingInPart2 !== undefined && { restartNumberingInPart2: test.restartNumberingInPart2 }),
+        ...(test.snippets !== undefined && { snippets: test.snippets }),
       }, null, 2));
       await testConfigWritable.close();
 
@@ -1195,38 +1201,63 @@ export async function importFromFolder(): Promise<{
     const importedCourses: Course[] = [];
     const errors: string[] = [];
 
-    // Iterate through course folders
-    // @ts-ignore - for await on directory handle
-    for await (const entry of dirHandle.values()) {
-      if (entry.kind !== 'directory') {
-        // Check if it's a top-level JSON file (full export)
-        if (entry.kind === 'file' && entry.name.endsWith('.json')) {
-          try {
-            const content = await readFileFromHandle(entry as FileSystemFileHandle);
-            const parsed = JSON.parse(content);
-            if (Array.isArray(parsed)) {
-              // It's a full course export array
-              importedCourses.push(...parsed);
-            } else if (parsed.id && parsed.name && parsed.tests) {
-              // Single course
-              importedCourses.push(parsed);
-            }
-          } catch (e) {
-            errors.push(`Failed to read ${entry.name}: ${e}`);
-          }
-        }
-        continue;
-      }
+    // Check if the selected folder itself is a course folder (has course-info.json)
+    // This handles the case where the user selects the course folder directly
+    // instead of the parent directory containing course folders
+    let selectedFolderIsCourse = false;
+    try {
+      await dirHandle.getFileHandle('course-info.json');
+      selectedFolderIsCourse = true;
+    } catch {
+      // No course-info.json at top level, treat as parent directory
+    }
 
-      // This is a course folder from auto-save
-      const courseDirHandle = entry as FileSystemDirectoryHandle;
+    if (selectedFolderIsCourse) {
+      // The user selected a course folder directly — import it
       try {
-        const course = await importCourseFromFolder(courseDirHandle);
+        const course = await importCourseFromFolder(dirHandle);
         if (course) {
           importedCourses.push(course);
+        } else {
+          errors.push(`Could not import course from folder "${dirHandle.name}": no students or tests found`);
         }
       } catch (e) {
-        errors.push(`Failed to import course folder "${entry.name}": ${e}`);
+        errors.push(`Failed to import course folder "${dirHandle.name}": ${e}`);
+      }
+    } else {
+      // Iterate through course folders in the parent directory
+      // @ts-ignore - for await on directory handle
+      for await (const entry of dirHandle.values()) {
+        if (entry.kind !== 'directory') {
+          // Check if it's a top-level JSON file (full export)
+          if (entry.kind === 'file' && entry.name.endsWith('.json')) {
+            try {
+              const content = await readFileFromHandle(entry as FileSystemFileHandle);
+              const parsed = JSON.parse(content);
+              if (Array.isArray(parsed)) {
+                // It's a full course export array
+                importedCourses.push(...parsed);
+              } else if (parsed.id && parsed.name && parsed.tests) {
+                // Single course
+                importedCourses.push(parsed);
+              }
+            } catch (e) {
+              errors.push(`Failed to read ${entry.name}: ${e}`);
+            }
+          }
+          continue;
+        }
+
+        // This is a course folder from auto-save
+        const courseDirHandle = entry as FileSystemDirectoryHandle;
+        try {
+          const course = await importCourseFromFolder(courseDirHandle);
+          if (course) {
+            importedCourses.push(course);
+          }
+        } catch (e) {
+          errors.push(`Failed to import course folder "${entry.name}": ${e}`);
+        }
       }
     }
 
