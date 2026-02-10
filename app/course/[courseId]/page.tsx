@@ -9,9 +9,11 @@ import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquar
 import Link from 'next/link';
 import LabelManager from '@/components/LabelManager';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function CourseDetailPage() {
   const { t } = useLanguage();
+  const { toast, confirm } = useNotification();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -52,7 +54,7 @@ export default function CourseDetailPage() {
   const loadData = () => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert(t('course.courseNotFound'));
+      toast(t('course.courseNotFound'), 'error');
       router.push('/courses');
       return;
     }
@@ -66,13 +68,13 @@ export default function CourseDetailPage() {
       await exportCourseToExcel(course);
     } catch (error) {
       console.error('Export failed:', error);
-      alert('Failed to export course data. Please try again.');
+      toast('Failed to export course data. Please try again.', 'error');
     }
   };
 
   const handleAddStudent = () => {
     if (!newStudentName.trim()) {
-      alert(t('course.studentNameRequired'));
+      toast(t('course.studentNameRequired'), 'warning');
       return;
     }
 
@@ -87,9 +89,9 @@ export default function CourseDetailPage() {
     loadData();
   };
 
-  const handleBulkAddStudents = () => {
+  const handleBulkAddStudents = async () => {
     if (!bulkStudentText.trim()) {
-      alert(t('course.oneStudentRequired'));
+      toast(t('course.oneStudentRequired'), 'warning');
       return;
     }
 
@@ -100,11 +102,11 @@ export default function CourseDetailPage() {
       .filter(name => name.length > 0); // Remove empty strings
 
     if (names.length === 0) {
-      alert(t('course.noValidStudents'));
+      toast(t('course.noValidStudents'), 'warning');
       return;
     }
 
-    const confirmAdd = confirm(t('course.addStudentsConfirm').replace('{count}', names.length.toString()) + '\n\n' + names.join('\n'));
+    const confirmAdd = await confirm(t('course.addStudentsConfirm').replace('{count}', names.length.toString()) + '\n\n' + names.join('\n'));
     if (!confirmAdd) return;
 
     let addedCount = 0;
@@ -120,11 +122,11 @@ export default function CourseDetailPage() {
     setBulkStudentText('');
     setShowBulkAddStudentModal(false);
     loadData();
-    alert(t('course.studentsAddedSuccess').replace('{count}', addedCount.toString()));
+    toast(t('course.studentsAddedSuccess').replace('{count}', addedCount.toString()), 'success');
   };
 
-  const handleDeleteStudent = (studentId: string) => {
-    if (confirm(t('course.deleteStudentConfirm'))) {
+  const handleDeleteStudent = async (studentId: string) => {
+    if (await confirm(t('course.deleteStudentConfirm'))) {
       deleteStudent(courseId, studentId);
       loadData();
     }
@@ -132,12 +134,12 @@ export default function CourseDetailPage() {
 
   const handleAddTest = () => {
     if (!newTestName.trim()) {
-      alert(t('course.testNameRequired'));
+      toast(t('course.testNameRequired'), 'warning');
       return;
     }
 
     if (!newTestDate) {
-      alert(t('course.testDateRequired'));
+      toast(t('course.testDateRequired'), 'warning');
       return;
     }
 
@@ -149,7 +151,7 @@ export default function CourseDetailPage() {
       const part2Count = parseInt(newTestPart2Count) || 2;
 
       if (part1Count < 1 || part1Count > 50 || part2Count < 1 || part2Count > 50) {
-        alert(t('course.invalidPartTaskCount'));
+        toast(t('course.invalidPartTaskCount'), 'warning');
         return;
       }
 
@@ -195,7 +197,7 @@ export default function CourseDetailPage() {
       // Single-part test (traditional)
       const taskCount = parseInt(newTestTaskCount) || 5;
       if (taskCount < 1 || taskCount > 50) {
-        alert(t('course.invalidTaskCount'));
+        toast(t('course.invalidTaskCount'), 'warning');
         return;
       }
 
@@ -229,8 +231,8 @@ export default function CourseDetailPage() {
     loadData();
   };
 
-  const handleDeleteTest = (testId: string) => {
-    if (confirm(t('course.deleteTestConfirm'))) {
+  const handleDeleteTest = async (testId: string) => {
+    if (await confirm(t('course.deleteTestConfirm'))) {
       deleteTest(courseId, testId);
       loadData();
     }
@@ -238,12 +240,12 @@ export default function CourseDetailPage() {
 
   const handleAddOralTest = () => {
     if (!newOralTestName.trim()) {
-      alert(t('course.oralTestNameRequired'));
+      toast(t('course.oralTestNameRequired'), 'warning');
       return;
     }
 
     if (!newOralTestDate) {
-      alert(t('course.oralTestDateRequired'));
+      toast(t('course.oralTestDateRequired'), 'warning');
       return;
     }
 
@@ -275,8 +277,8 @@ export default function CourseDetailPage() {
     loadData();
   };
 
-  const handleDeleteOralTest = (oralTestId: string) => {
-    if (confirm(t('course.deleteOralTestConfirm'))) {
+  const handleDeleteOralTest = async (oralTestId: string) => {
+    if (await confirm(t('course.deleteOralTestConfirm'))) {
       deleteOralTest(courseId, oralTestId);
       loadData();
     }
@@ -298,7 +300,7 @@ export default function CourseDetailPage() {
 
   const handleUpdateCourse = () => {
     if (!editCourseName.trim()) {
-      alert(t('course.courseNameRequired'));
+      toast(t('course.courseNameRequired'), 'warning');
       return;
     }
 
@@ -322,11 +324,11 @@ export default function CourseDetailPage() {
   const handleUpdateTest = () => {
     if (!editingTest) return;
     if (!newTestName.trim()) {
-      alert(t('course.testNameRequired'));
+      toast(t('course.testNameRequired'), 'warning');
       return;
     }
     if (!newTestDate) {
-      alert(t('course.testDateRequired'));
+      toast(t('course.testDateRequired'), 'warning');
       return;
     }
 
@@ -357,11 +359,11 @@ export default function CourseDetailPage() {
   const handleUpdateOralTest = () => {
     if (!editingOralTest) return;
     if (!newOralTestName.trim()) {
-      alert(t('course.oralTestNameRequired'));
+      toast(t('course.oralTestNameRequired'), 'warning');
       return;
     }
     if (!newOralTestDate) {
-      alert(t('course.oralTestDateRequired'));
+      toast(t('course.oralTestDateRequired'), 'warning');
       return;
     }
 

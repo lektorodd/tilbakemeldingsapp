@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Tag } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 
 interface LabelManagerProps {
   labels: string[];
@@ -11,6 +12,7 @@ interface LabelManagerProps {
 
 export default function LabelManager({ labels, onLabelsChange }: LabelManagerProps) {
   const { t } = useLanguage();
+  const { toast, confirm } = useNotification();
   const [showAddLabel, setShowAddLabel] = useState(false);
   const [newLabel, setNewLabel] = useState('');
 
@@ -19,7 +21,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
 
     const trimmed = newLabel.trim().toLowerCase();
     if (labels.includes(trimmed)) {
-      alert(t('course.labelAlreadyExists'));
+      toast(t('course.labelAlreadyExists'), 'warning');
       return;
     }
 
@@ -28,8 +30,8 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
     setShowAddLabel(false);
   };
 
-  const handleRemoveLabel = (label: string) => {
-    if (confirm(t('course.removeLabelConfirm').replace('{label}', label))) {
+  const handleRemoveLabel = async (label: string) => {
+    if (await confirm(t('course.removeLabelConfirm').replace('{label}', label))) {
       onLabelsChange(labels.filter(l => l !== label));
     }
   };

@@ -7,9 +7,11 @@ import { loadCourse, getTestTaskAnalytics } from '@/utils/courseStorage';
 import { ArrowLeft, Filter, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function TestAnalyticsPage() {
   const { t } = useLanguage();
+  const { toast } = useNotification();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -29,14 +31,14 @@ export default function TestAnalyticsPage() {
   useEffect(() => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert(t('course.courseNotFound'));
+      toast(t('course.courseNotFound'), 'error');
       router.push('/courses');
       return;
     }
 
     const loadedTest = loadedCourse.tests.find(t => t.id === testId);
     if (!loadedTest) {
-      alert(t('test.testNotFound'));
+      toast(t('test.testNotFound'), 'error');
       router.push(`/course/${courseId}`);
       return;
     }

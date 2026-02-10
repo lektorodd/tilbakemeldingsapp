@@ -5,8 +5,10 @@ import { Test } from '@/types';
 import { loadAllTests, deleteTest, setupAutoSaveDirectory, isAutoSaveEnabled, disableAutoSave, exportTestAsFiles, exportAllTests } from '@/utils/testStorage';
 import { Plus, Trash2, Edit, Users, FolderOpen, Download, Upload, Settings } from 'lucide-react';
 import Link from 'next/link';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function TestsPage() {
+  const { toast, confirm } = useNotification();
   const [tests, setTests] = useState<Test[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTestName, setNewTestName] = useState('');
@@ -25,7 +27,7 @@ export default function TestsPage() {
 
   const handleCreateTest = () => {
     if (!newTestName.trim()) {
-      alert('Please enter a test name');
+      toast('Please enter a test name', 'warning');
       return;
     }
 
@@ -65,8 +67,8 @@ export default function TestsPage() {
     loadData();
   };
 
-  const handleDeleteTest = (testId: string) => {
-    if (confirm('Are you sure you want to delete this test? This will delete all student feedback within it.')) {
+  const handleDeleteTest = async (testId: string) => {
+    if (await confirm('Are you sure you want to delete this test? This will delete all student feedback within it.')) {
       deleteTest(testId);
       loadData();
     }
@@ -76,14 +78,14 @@ export default function TestsPage() {
     const success = await setupAutoSaveDirectory();
     if (success) {
       setAutoSaveEnabled(true);
-      alert('Auto-save enabled! All completed feedback will be automatically saved to the selected folder.');
+      toast('Auto-save enabled! All completed feedback will be automatically saved to the selected folder.', 'success');
     }
   };
 
   const handleDisableAutoSave = () => {
     disableAutoSave();
     setAutoSaveEnabled(false);
-    alert('Auto-save disabled.');
+    toast('Auto-save disabled.', 'info');
   };
 
   const handleExportAll = () => {

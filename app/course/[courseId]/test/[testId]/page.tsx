@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData, FeedbackSnippet } from '@/types';
 import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
@@ -8,13 +8,15 @@ import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from 
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
 import ScoringGuide from '@/components/ScoringGuide';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import { loadGlobalSnippets, addGlobalSnippet, deleteGlobalSnippet, getAllSnippetsForTest } from '@/utils/snippetStorage';
 
 export default function TestFeedbackPage() {
   const { t, language } = useLanguage();
+  const { toast, confirm } = useNotification();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,6 +36,9 @@ export default function TestFeedbackPage() {
   const [showAddSnippetForm, setShowAddSnippetForm] = useState(false);
   const [newSnippetText, setNewSnippetText] = useState('');
 
+  // Track unsaved test config changes
+  const [hasUnsavedTestConfig, setHasUnsavedTestConfig] = useState(false);
+
   // Refs for textareas to handle cursor position
   const generalCommentRef = useRef<HTMLTextAreaElement>(null);
   const individualCommentRef = useRef<HTMLTextAreaElement>(null);
@@ -46,20 +51,21 @@ export default function TestFeedbackPage() {
   const loadData = () => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert(t('course.courseNotFound'));
+      toast(t('course.courseNotFound'), 'error');
       router.push('/courses');
       return;
     }
 
     const loadedTest = loadedCourse.tests.find(t => t.id === testId);
     if (!loadedTest) {
-      alert(t('test.testNotFound'));
+      toast(t('test.testNotFound'), 'error');
       router.push(`/course/${courseId}`);
       return;
     }
 
     setCourse(loadedCourse);
     setTest(loadedTest);
+    setHasUnsavedTestConfig(false);
   };
 
   // Auto-select student from URL parameter
@@ -94,10 +100,29 @@ export default function TestFeedbackPage() {
     }
   }, [test]);
 
+  // Unsaved changes warning
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedTestConfig) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedTestConfig]);
+
+  // Track test config changes
+  const handleTestChange = useCallback((updatedTest: CourseTest) => {
+    setTest(updatedTest);
+    setHasUnsavedTestConfig(true);
+  }, []);
+
   const handleSaveTest = () => {
     if (test) {
       updateTest(courseId, testId, test);
-      alert(t('test.testConfigSaved'));
+      setHasUnsavedTestConfig(false);
+      toast(t('test.testConfigSaved'), 'success');
       loadData();
     }
   };
@@ -149,7 +174,7 @@ export default function TestFeedbackPage() {
     updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
     setCurrentFeedback(updatedFeedback);
     loadData();
-    alert(t('test.feedbackMarkedComplete'));
+    toast(t('test.feedbackMarkedComplete'), 'success');
   };
 
   const handleUnmarkComplete = () => {
@@ -170,12 +195,13 @@ export default function TestFeedbackPage() {
     const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
 
     if (completedFeedbacks.length === 0) {
-      alert(t('test.noCompletedFeedback'));
+      toast(t('test.noCompletedFeedback'), 'warning');
       return;
     }
 
-    const confirmExport = confirm(
-      t('test.exportPDFsConfirm').replace('{count}', completedFeedbacks.length.toString())
+    const confirmExport = await confirm(
+      t('test.exportPDFsConfirm').replace('{count}', completedFeedbacks.length.toString()),
+      t('test.exportAllPDFs')
     );
 
     if (!confirmExport) return;
@@ -217,9 +243,9 @@ export default function TestFeedbackPage() {
     }
 
     if (failCount > 0) {
-      alert(t('test.exportComplete').replace('{success}', successCount.toString()).replace('{failed}', failCount.toString()));
+      toast(t('test.exportComplete').replace('{success}', successCount.toString()).replace('{failed}', failCount.toString()), 'warning');
     } else {
-      alert(t('test.exportSuccess').replace('{count}', successCount.toString()));
+      toast(t('test.exportSuccess').replace('{count}', successCount.toString()), 'success');
     }
   };
 
@@ -267,7 +293,7 @@ export default function TestFeedbackPage() {
 
     const success = await compileAndDownloadPDF(typstContent, filename);
     if (success) {
-      alert(t('test.pdfCompiledSuccess'));
+      toast(t('test.pdfCompiledSuccess'), 'success');
     }
   };
 
@@ -284,7 +310,7 @@ export default function TestFeedbackPage() {
     const newValue = currentValue.substring(0, start) + linkTemplate + currentValue.substring(end);
 
     if (isGeneral && test) {
-      setTest({ ...test, generalComment: newValue });
+      handleTestChange({ ...test, generalComment: newValue });
     } else if (!isGeneral && currentFeedback && selectedStudent) {
       const updatedFeedback = {
         ...currentFeedback,
@@ -314,7 +340,7 @@ export default function TestFeedbackPage() {
     const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
 
     if (isGeneral && test) {
-      setTest({ ...test, generalComment: newValue });
+      handleTestChange({ ...test, generalComment: newValue });
     } else if (!isGeneral && currentFeedback && selectedStudent) {
       const updatedFeedback = {
         ...currentFeedback,
@@ -396,6 +422,21 @@ export default function TestFeedbackPage() {
     }
   };
 
+  // --- Student Navigation ---
+  const currentStudentIndex = course && selectedStudent
+    ? course.students.findIndex(s => s.id === selectedStudent.id)
+    : -1;
+
+  const goToPreviousStudent = () => {
+    if (!course || currentStudentIndex <= 0) return;
+    setSelectedStudent(course.students[currentStudentIndex - 1]);
+  };
+
+  const goToNextStudent = () => {
+    if (!course || currentStudentIndex < 0 || currentStudentIndex >= course.students.length - 1) return;
+    setSelectedStudent(course.students[currentStudentIndex + 1]);
+  };
+
   if (!course || !test) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -471,10 +512,15 @@ export default function TestFeedbackPage() {
             </div>
             <button
               onClick={handleSaveTest}
-              className="flex items-center gap-2 px-5 py-2.5 bg-success text-white rounded-lg hover:bg-emerald-700 transition shadow-sm"
+              className={`flex items-center gap-2 px-5 py-2.5 text-white rounded-lg transition shadow-sm ${
+                hasUnsavedTestConfig
+                  ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-success hover:bg-emerald-700'
+              }`}
             >
               <Save size={18} />
               {t('test.saveSettings')}
+              {hasUnsavedTestConfig && <span className="w-2 h-2 bg-white rounded-full" />}
             </button>
           </div>
 
@@ -482,7 +528,7 @@ export default function TestFeedbackPage() {
           <div className="mb-6">
             <TaskConfiguration
               tasks={test.tasks}
-              onTasksChange={(tasks) => setTest({ ...test, tasks })}
+              onTasksChange={(tasks) => handleTestChange({ ...test, tasks })}
               availableLabels={course.availableLabels}
             />
           </div>
@@ -514,7 +560,7 @@ export default function TestFeedbackPage() {
             <textarea
               ref={generalCommentRef}
               value={test.generalComment}
-              onChange={(e) => setTest({ ...test, generalComment: e.target.value })}
+              onChange={(e) => handleTestChange({ ...test, generalComment: e.target.value })}
               rows={4}
               className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
               placeholder={t('test.generalCommentPlaceholder')}
@@ -594,6 +640,28 @@ export default function TestFeedbackPage() {
               <div className="bg-surface rounded-lg shadow-sm p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div>
+                    {/* Student navigation */}
+                    <div className="flex items-center gap-2 mb-1">
+                      <button
+                        onClick={goToPreviousStudent}
+                        disabled={currentStudentIndex <= 0}
+                        className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
+                        title={t('test.previousStudent')}
+                      >
+                        <ChevronLeft size={18} />
+                      </button>
+                      <span className="text-sm text-text-disabled tabular-nums">
+                        {currentStudentIndex + 1} / {course.students.length}
+                      </span>
+                      <button
+                        onClick={goToNextStudent}
+                        disabled={currentStudentIndex >= course.students.length - 1}
+                        className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
+                        title={t('test.nextStudent')}
+                      >
+                        <ChevronRight size={18} />
+                      </button>
+                    </div>
                     <h2 className="text-2xl font-display font-bold text-text-primary">{selectedStudent.name}</h2>
                     {selectedStudent.studentNumber && (
                       <p className="text-sm text-text-secondary">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>

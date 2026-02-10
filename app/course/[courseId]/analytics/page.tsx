@@ -7,9 +7,11 @@ import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils
 import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function CourseAnalyticsPage() {
   const { t } = useLanguage();
+  const { toast } = useNotification();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -26,7 +28,7 @@ export default function CourseAnalyticsPage() {
   const loadData = () => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert(t('course.courseNotFound'));
+      toast(t('course.courseNotFound'), 'error');
       router.push('/courses');
       return;
     }
