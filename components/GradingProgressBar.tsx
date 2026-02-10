@@ -18,7 +18,7 @@ export default function GradingProgressBar({ completedCount, totalCount }: Gradi
     <div className="bg-surface rounded-lg shadow-sm p-4 mb-6 border border-border">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-text-primary">
-          {t('test.gradingProgress') || 'Grading progress'}
+          {t('test.gradingProgress')}
         </span>
         <span className="text-sm font-semibold text-text-primary tabular-nums">
           {completedCount} / {totalCount} ({percentage}%)
@@ -38,7 +38,7 @@ export default function GradingProgressBar({ completedCount, totalCount }: Gradi
       </div>
       {percentage === 100 && (
         <p className="text-xs text-success mt-1 font-medium">
-          {t('test.allStudentsGraded') || 'All students graded!'}
+          {t('test.allStudentsGraded')}
         </p>
       )}
     </div>

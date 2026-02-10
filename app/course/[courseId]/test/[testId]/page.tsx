@@ -10,7 +10,7 @@ import SnippetPicker from '@/components/SnippetPicker';
 import ScoringGuide from '@/components/ScoringGuide';
 import GradingProgressBar from '@/components/GradingProgressBar';
 import SnippetSidebar from '@/components/SnippetSidebar';
-import { useGradingShortcuts } from '@/hooks/useGradingShortcuts';
+import { useGradingShortcuts, TaskSlot } from '@/hooks/useGradingShortcuts';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -422,6 +422,35 @@ export default function TestFeedbackPage() {
     setSelectedStudent(course.students[currentStudentIndex + 1]);
   };
 
+  // Build flat task slot list for keyboard navigation
+  const taskSlots: TaskSlot[] = test ? test.tasks.flatMap(task => {
+    if (task.hasSubtasks && task.subtasks.length > 0) {
+      return task.subtasks.map(st => ({ taskId: task.id, subtaskId: st.id }));
+    }
+    return [{ taskId: task.id }];
+  }) : [];
+
+  const activeSlotIndex = activeSubtask
+    ? taskSlots.findIndex(s => s.taskId === activeSubtask.taskId && s.subtaskId === activeSubtask.subtaskId)
+    : -1;
+
+  const setActiveSlot = useCallback((index: number) => {
+    if (index < 0 || index >= taskSlots.length) return;
+    const slot = taskSlots[index];
+    setActiveSubtask(slot);
+    // Scroll the task card into view
+    const key = `${slot.taskId}-${slot.subtaskId || 'main'}`;
+    const textarea = subtaskTextareaRefs.current.get(key);
+    textarea?.closest('.border')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [taskSlots]);
+
+  const focusCommentForActiveSlot = useCallback(() => {
+    if (!activeSubtask) return;
+    const key = `${activeSubtask.taskId}-${activeSubtask.subtaskId || 'main'}`;
+    const textarea = subtaskTextareaRefs.current.get(key);
+    textarea?.focus();
+  }, [activeSubtask]);
+
   // Keyboard shortcuts for grading
   useGradingShortcuts({
     onSetPoints: (points) => {
@@ -437,6 +466,23 @@ export default function TestFeedbackPage() {
       } else {
         handleMarkComplete();
       }
+    },
+    onNextTask: () => {
+      if (activeSlotIndex < 0 && taskSlots.length > 0) {
+        setActiveSlot(0);
+      } else if (activeSlotIndex < taskSlots.length - 1) {
+        setActiveSlot(activeSlotIndex + 1);
+      }
+    },
+    onPreviousTask: () => {
+      if (activeSlotIndex > 0) {
+        setActiveSlot(activeSlotIndex - 1);
+      }
+    },
+    onFocusComment: focusCommentForActiveSlot,
+    onFocusPoints: () => {
+      // Escape from textarea already handled by hook (blur),
+      // activeSubtask stays the same so points mode is restored
     },
     enabled: !!selectedStudent,
   });
@@ -589,19 +635,24 @@ export default function TestFeedbackPage() {
               <button
                 onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-text-secondary bg-surface-alt border border-border rounded-lg hover:bg-gray-200 transition-colors"
-                title={t('test.keyboardShortcuts') || 'Keyboard shortcuts'}
+                title={t('test.keyboardShortcuts')}
               >
                 <Keyboard size={16} />
-                {t('test.keyboardShortcuts') || 'Shortcuts'}
+                {t('test.keyboardShortcuts')}
               </button>
               {showShortcutsHelp && (
-                <div className="absolute right-0 top-full mt-2 w-72 bg-surface border border-border rounded-lg shadow-lg p-4 z-40">
-                  <h4 className="font-semibold text-text-primary text-sm mb-2">{t('test.keyboardShortcuts') || 'Keyboard shortcuts'}</h4>
+                <div className="absolute right-0 top-full mt-2 w-80 bg-surface border border-border rounded-lg shadow-lg p-4 z-40">
+                  <h4 className="font-semibold text-text-primary text-sm mb-3">{t('test.keyboardShortcuts')}</h4>
                   <div className="space-y-1.5 text-xs text-text-secondary">
-                    <div className="flex justify-between"><span>0-6</span><span>{t('test.shortcutSetPoints') || 'Set points for focused task'}</span></div>
-                    <div className="flex justify-between"><span>Alt + &larr;/&uarr;</span><span>{t('test.shortcutPrevStudent') || 'Previous student'}</span></div>
-                    <div className="flex justify-between"><span>Alt + &rarr;/&darr;</span><span>{t('test.shortcutNextStudent') || 'Next student'}</span></div>
-                    <div className="flex justify-between"><span>Alt + Enter</span><span>{t('test.shortcutToggleComplete') || 'Toggle complete'}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">0-6</kbd><span>{t('test.shortcutSetPoints')}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Tab</kbd><span>{t('test.shortcutNextTask')}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Shift+Tab</kbd><span>{t('test.shortcutPrevTask')}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Enter</kbd><span>{t('test.shortcutFocusComment')}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Escape</kbd><span>{t('test.shortcutFocusPoints')}</span></div>
+                    <hr className="border-border my-1" />
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+&larr;/&uarr;</kbd><span>{t('test.shortcutPrevStudent')}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+&rarr;/&darr;</kbd><span>{t('test.shortcutNextStudent')}</span></div>
+                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+Enter</kbd><span>{t('test.shortcutToggleComplete')}</span></div>
                   </div>
                 </div>
               )}
@@ -778,7 +829,11 @@ export default function TestFeedbackPage() {
                           {task.subtasks.map(subtask => {
                             const feedback = getFeedback(task.id, subtask.id);
                             return (
-                              <div key={subtask.id} className="ml-4 border border-border rounded-lg p-4 bg-surface-alt">
+                              <div key={subtask.id} className={`ml-4 border rounded-lg p-4 transition-colors ${
+                              activeSubtask?.taskId === task.id && activeSubtask?.subtaskId === subtask.id
+                                ? 'border-brand bg-violet-50 ring-2 ring-brand/30'
+                                : 'border-border bg-surface-alt'
+                            }`}>
                                 <div className="flex items-center gap-4 mb-3">
                                   <label className="font-medium text-text-secondary min-w-[60px]">
                                     {task.label}{subtask.label}:
@@ -827,7 +882,11 @@ export default function TestFeedbackPage() {
                           })}
                         </div>
                       ) : (
-                        <div className="border border-border rounded-lg p-4 bg-surface-alt">
+                        <div className={`border rounded-lg p-4 transition-colors ${
+                          activeSubtask?.taskId === task.id && !activeSubtask?.subtaskId
+                            ? 'border-brand bg-violet-50 ring-2 ring-brand/30'
+                            : 'border-border bg-surface-alt'
+                        }`}>
                           {(() => {
                             const feedback = getFeedback(task.id, undefined);
                             return (

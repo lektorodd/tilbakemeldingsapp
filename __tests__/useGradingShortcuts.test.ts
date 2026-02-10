@@ -72,6 +72,40 @@ describe('useGradingShortcuts', () => {
     expect(onToggleComplete).toHaveBeenCalledTimes(1);
   });
 
+  it('calls onNextTask for Tab', () => {
+    const onNextTask = vi.fn();
+    renderHook(() => useGradingShortcuts({ onNextTask, enabled: true }));
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
+    expect(onNextTask).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onPreviousTask for Shift+Tab', () => {
+    const onPreviousTask = vi.fn();
+    renderHook(() => useGradingShortcuts({ onPreviousTask, enabled: true }));
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }));
+    expect(onPreviousTask).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onFocusComment for Enter (not Alt)', () => {
+    const onFocusComment = vi.fn();
+    renderHook(() => useGradingShortcuts({ onFocusComment, enabled: true }));
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(onFocusComment).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call onFocusComment for Alt+Enter (that is toggleComplete)', () => {
+    const onFocusComment = vi.fn();
+    const onToggleComplete = vi.fn();
+    renderHook(() => useGradingShortcuts({ onFocusComment, onToggleComplete, enabled: true }));
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', altKey: true }));
+    expect(onFocusComment).not.toHaveBeenCalled();
+    expect(onToggleComplete).toHaveBeenCalledTimes(1);
+  });
+
   it('cleans up on unmount', () => {
     const { unmount } = renderHook(() => useGradingShortcuts({ enabled: true }));
     unmount();
