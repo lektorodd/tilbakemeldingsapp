@@ -9,9 +9,11 @@ import OralFeedbackForm from '@/components/OralFeedbackForm';
 import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function OralAssessmentPage() {
   const { t, language } = useLanguage();
+  const { toast } = useNotification();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,14 +33,14 @@ export default function OralAssessmentPage() {
   const loadData = () => {
     const loadedCourse = loadCourse(courseId);
     if (!loadedCourse) {
-      alert(t('course.courseNotFound'));
+      toast(t('course.courseNotFound'), 'error');
       router.push('/courses');
       return;
     }
 
     const loadedOralTest = loadedCourse.oralTests?.find(ot => ot.id === oralTestId);
     if (!loadedOralTest) {
-      alert(t('test.testNotFound'));
+      toast(t('test.testNotFound'), 'error');
       router.push(`/course/${courseId}`);
       return;
     }
@@ -108,11 +110,7 @@ export default function OralAssessmentPage() {
     loadData();
 
     // Show success message
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-success text-white px-6 py-3 rounded-lg shadow-lg z-50';
-    toast.textContent = t('test.feedbackMarkedComplete');
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    toast(t('test.feedbackMarkedComplete'), 'success');
   };
 
   const handleMarkComplete = () => {
@@ -129,7 +127,7 @@ export default function OralAssessmentPage() {
     loadData();
 
     // Show success message
-    alert(t('oral.markedComplete'));
+    toast(t('oral.markedComplete'), 'success');
   };
 
   const handleUnmarkComplete = () => {
@@ -182,7 +180,7 @@ export default function OralAssessmentPage() {
     const success = await compileAndDownloadPDF(typstContent, filename);
 
     if (success) {
-      alert(t('test.pdfCompiledSuccess'));
+      toast(t('test.pdfCompiledSuccess'), 'success');
     }
   };
 

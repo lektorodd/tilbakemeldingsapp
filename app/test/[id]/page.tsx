@@ -8,8 +8,10 @@ import { generateTypstDocument, downloadTypstFile } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import { ArrowLeft, Plus, Trash2, Save, Download, CheckCircle, Circle } from 'lucide-react';
 import Link from 'next/link';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function TestDetailPage() {
+  const { toast, confirm } = useNotification();
   const params = useParams();
   const router = useRouter();
   const testId = params.id as string;
@@ -27,7 +29,7 @@ export default function TestDetailPage() {
   const loadData = () => {
     const loadedTest = loadTest(testId);
     if (!loadedTest) {
-      alert('Test not found');
+      toast('Test not found', 'error');
       router.push('/tests');
       return;
     }
@@ -37,13 +39,13 @@ export default function TestDetailPage() {
   const handleSaveTest = () => {
     if (test) {
       saveTest(test);
-      alert('Test saved successfully!');
+      toast('Test saved successfully!', 'success');
     }
   };
 
   const handleAddStudent = () => {
     if (!newStudentName.trim()) {
-      alert('Please enter a student name');
+      toast('Please enter a student name', 'warning');
       return;
     }
 
@@ -63,8 +65,8 @@ export default function TestDetailPage() {
     setSelectedStudent(newStudent);
   };
 
-  const handleDeleteStudent = (studentId: string) => {
-    if (confirm('Are you sure you want to delete this student and their feedback?')) {
+  const handleDeleteStudent = async (studentId: string) => {
+    if (await confirm('Are you sure you want to delete this student and their feedback?')) {
       deleteStudent(testId, studentId);
       if (selectedStudent?.id === studentId) {
         setSelectedStudent(null);
@@ -109,7 +111,7 @@ export default function TestDetailPage() {
     updateStudent(testId, selectedStudent.id, updatedStudent);
     setSelectedStudent(updatedStudent);
     loadData();
-    alert('Feedback marked as complete and auto-saved!');
+    toast('Feedback marked as complete and auto-saved!', 'success');
   };
 
   const handleExportTypst = () => {

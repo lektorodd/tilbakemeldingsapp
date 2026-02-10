@@ -5,8 +5,10 @@ import { ArchivedFeedback } from '@/types';
 import { loadArchive, deleteArchivedFeedback, exportArchiveToJSON, importArchiveFromJSON, clearArchive } from '@/utils/archive';
 import { ArrowLeft, Trash2, Download, Upload, Eye, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function ArchivePage() {
+  const { toast, confirm } = useNotification();
   const [archive, setArchive] = useState<ArchivedFeedback[]>([]);
   const [selectedFeedback, setSelectedFeedback] = useState<ArchivedFeedback | null>(null);
   const [filterStudent, setFilterStudent] = useState('');
@@ -21,8 +23,8 @@ export default function ArchivePage() {
     setArchive(data);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this feedback?')) {
+  const handleDelete = async (id: string) => {
+    if (await confirm('Are you sure you want to delete this feedback?')) {
       deleteArchivedFeedback(id);
       loadData();
       if (selectedFeedback?.id === id) {
@@ -54,16 +56,16 @@ export default function ArchivePage() {
         const content = e.target?.result as string;
         importArchiveFromJSON(content);
         loadData();
-        alert('Archive imported successfully!');
+        toast('Archive imported successfully!', 'success');
       } catch (error) {
-        alert('Failed to import archive. Please check the file format.');
+        toast('Failed to import archive. Please check the file format.', 'error');
       }
     };
     reader.readAsText(file);
   };
 
-  const handleClearArchive = () => {
-    if (confirm('Are you sure you want to clear the entire archive? This cannot be undone!')) {
+  const handleClearArchive = async () => {
+    if (await confirm('Are you sure you want to clear the entire archive? This cannot be undone!')) {
       clearArchive();
       loadData();
       setSelectedFeedback(null);

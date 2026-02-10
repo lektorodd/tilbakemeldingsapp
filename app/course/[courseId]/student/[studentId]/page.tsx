@@ -6,6 +6,7 @@ import { getStudentDetailedAnalytics, loadCourse } from '@/utils/courseStorage';
 import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 import RadarChart from '@/components/RadarChart';
 import ScoringGuide from '@/components/ScoringGuide';
 import type { CourseStudent } from '@/types';
@@ -16,6 +17,7 @@ export default function StudentDashboardPage() {
   const courseId = params.courseId as string;
   const studentId = params.studentId as string;
   const { t } = useLanguage();
+  const { toast } = useNotification();
 
   const [analytics, setAnalytics] = useState<ReturnType<typeof getStudentDetailedAnalytics>>(null);
   const [allStudents, setAllStudents] = useState<CourseStudent[]>([]);
@@ -23,7 +25,7 @@ export default function StudentDashboardPage() {
   useEffect(() => {
     const data = getStudentDetailedAnalytics(courseId, studentId);
     if (!data) {
-      alert('Student or course not found');
+      toast('Student or course not found', 'error');
       router.push(`/course/${courseId}`);
       return;
     }

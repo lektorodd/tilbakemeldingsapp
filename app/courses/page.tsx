@@ -40,9 +40,11 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNotification } from '@/contexts/NotificationContext';
 
 export default function CoursesPage() {
   const { t } = useLanguage();
+  const { toast, confirm } = useNotification();
   const [courses, setCourses] = useState<Course[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newCourseName, setNewCourseName] = useState('');
@@ -117,7 +119,7 @@ export default function CoursesPage() {
 
   const handleCreateCourse = () => {
     if (!newCourseName.trim()) {
-      alert(t('course.courseNameRequired'));
+      toast(t('course.courseNameRequired'), 'warning');
       return;
     }
 
@@ -140,7 +142,7 @@ export default function CoursesPage() {
     loadData();
   };
 
-  const handleDeleteCourse = (courseId: string) => {
+  const handleDeleteCourse = async (courseId: string) => {
     const course = courses.find(c => c.id === courseId);
     const feedbackCount = course?.tests.reduce((sum, test) =>
       sum + test.studentFeedbacks.filter(f => f.completedDate).length, 0) || 0;
@@ -149,7 +151,7 @@ export default function CoursesPage() {
       ? t('course.deleteConfirmFull') + `\n\n${t('backup.warningFeedbackCount').replace('{count}', String(feedbackCount))}\n${t('backup.autoBackupCreated')}`
       : t('course.deleteConfirmFull') + `\n\n${t('backup.autoBackupCreated')}`;
 
-    if (confirm(warningMsg)) {
+    if (await confirm(warningMsg)) {
       safeDeleteCourse(courseId);
       loadData();
     }
@@ -159,14 +161,14 @@ export default function CoursesPage() {
     const success = await setupAutoSaveDirectory();
     if (success) {
       setAutoSaveEnabled(true);
-      alert(t('course.autoSaveEnabled'));
+      toast(t('course.autoSaveEnabled'), 'success');
     }
   };
 
   const handleDisableAutoSave = () => {
     disableAutoSave();
     setAutoSaveEnabled(false);
-    alert(t('course.autoSaveDisabled'));
+    toast(t('course.autoSaveDisabled'), 'success');
   };
 
   const handleConnectFolder = async () => {
@@ -185,7 +187,7 @@ export default function CoursesPage() {
         const { saveSettingsToFolder } = await import('@/utils/folderSync');
         await saveSettingsToFolder({ language: lang as 'en' | 'nb' | 'nn' });
 
-        alert(t('course.folderConnected'));
+        toast(t('course.folderConnected'), 'success');
       }
     } catch (e) {
       console.error('Failed to connect folder:', e);
@@ -195,7 +197,7 @@ export default function CoursesPage() {
   };
 
   const handleDisconnectFolder = async () => {
-    if (confirm(t('course.folderDisconnectConfirm'))) {
+    if (await confirm(t('course.folderDisconnectConfirm'))) {
       await disconnectFolder();
       setFolderConnected(false);
       setFolderName(null);
@@ -219,13 +221,13 @@ export default function CoursesPage() {
     const backup = createBackup('manual');
     if (backup) {
       setBackups(listBackups());
-      alert(t('backup.manualCreated'));
+      toast(t('backup.manualCreated'), 'success');
     } else {
-      alert(t('backup.createFailed'));
+      toast(t('backup.createFailed'), 'error');
     }
   };
 
-  const handleRestoreBackup = (backupId: string) => {
+  const handleRestoreBackup = async (backupId: string) => {
     const backup = backups.find(b => b.id === backupId);
     if (!backup) return;
 
@@ -234,19 +236,19 @@ export default function CoursesPage() {
       .replace('{courses}', String(backup.courseCount))
       .replace('{feedback}', String(backup.totalFeedback));
 
-    if (confirm(msg)) {
+    if (await confirm(msg)) {
       const result = restoreFromBackup(backupId);
       if (result.success) {
         loadData();
-        alert(t('backup.restoreSuccess').replace('{count}', String(result.courseCount)));
+        toast(t('backup.restoreSuccess').replace('{count}', String(result.courseCount)), 'success');
       } else {
-        alert(t('backup.restoreFailed'));
+        toast(t('backup.restoreFailed'), 'error');
       }
     }
   };
 
-  const handleDeleteBackup = (backupId: string) => {
-    if (confirm(t('backup.deleteConfirm'))) {
+  const handleDeleteBackup = async (backupId: string) => {
+    if (await confirm(t('backup.deleteConfirm'))) {
       deleteBackup(backupId);
       setBackups(listBackups());
     }
@@ -267,7 +269,7 @@ export default function CoursesPage() {
         setImportResult(null);
         setShowImportModal(true);
       } catch {
-        alert(t('backup.invalidFileFormat'));
+        toast(t('backup.invalidFileFormat'), 'error');
       }
     };
     reader.readAsText(file);
@@ -309,7 +311,7 @@ export default function CoursesPage() {
       setFolderImportErrors(result.errors);
       setShowImportFolderPreview(true);
     } else if (result.errors.length > 0) {
-      alert(t('backup.folderImportFailed') + '\n\n' + result.errors.join('\n'));
+      toast(t('backup.folderImportFailed') + '\n\n' + result.errors.join('\n'), 'error');
     }
   };
 
