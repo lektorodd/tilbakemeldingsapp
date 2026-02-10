@@ -263,7 +263,18 @@
     "noTasksMatch": "Ingen oppgaver passer de valgte filtrene",
     "analyticsNote": "Merk: Gj.snitt poeng er gjennomsnittlig poeng tjent på tvers av alle elever som forsøkte oppgaven. Forsøk % er prosentdel av elever som skåret 1 eller flere poeng.",
     "previousStudent": "Forrige elev",
-    "nextStudent": "Neste elev"
+    "nextStudent": "Neste elev",
+    "keyboardShortcuts": "Tastatursnarveier",
+    "shortcutSetPoints": "Sett poeng for aktiv oppgave",
+    "shortcutNextTask": "Neste oppgave",
+    "shortcutPrevTask": "Forrige oppgave",
+    "shortcutFocusComment": "Skriv kommentar",
+    "shortcutFocusPoints": "Tilbake til poeng",
+    "shortcutPrevStudent": "Forrige elev",
+    "shortcutNextStudent": "Neste elev",
+    "shortcutToggleComplete": "Skift fullføringsstatus",
+    "gradingProgress": "Retteframgang",
+    "allStudentsGraded": "Alle elever er rettet!"
   },
   "oral": {
     "title": "Muntlig vurdering",

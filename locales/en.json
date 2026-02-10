@@ -263,7 +263,18 @@
     "noTasksMatch": "No tasks match the selected filters",
     "analyticsNote": "Note: Avg Score is average points earned across all students who attempted the task. Attempt % is percentage of students who scored 1 or more points.",
     "previousStudent": "Previous Student",
-    "nextStudent": "Next Student"
+    "nextStudent": "Next Student",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "shortcutSetPoints": "Set points for active task",
+    "shortcutNextTask": "Next task",
+    "shortcutPrevTask": "Previous task",
+    "shortcutFocusComment": "Write comment",
+    "shortcutFocusPoints": "Back to points",
+    "shortcutPrevStudent": "Previous student",
+    "shortcutNextStudent": "Next student",
+    "shortcutToggleComplete": "Toggle complete",
+    "gradingProgress": "Grading Progress",
+    "allStudentsGraded": "All students graded!"
   },
   "oral": {
     "title": "Oral Assessment",
