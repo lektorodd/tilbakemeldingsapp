@@ -1,7 +1,13 @@
 import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics } from '@/types';
 
 const COURSES_KEY = 'math-feedback-courses';
+const BACKUP_KEY_PREFIX = 'math-feedback-backup-';
+const BACKUP_INDEX_KEY = 'math-feedback-backup-index';
+const MAX_BACKUPS = 10;
+const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
 let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
+let autoBackupTimer: ReturnType<typeof setInterval> | null = null;
 
 // Course CRUD operations
 export function saveCourse(course: Course): void {
@@ -1021,27 +1027,557 @@ function sanitizeFileName(name: string): string {
     .toLowerCase();
 }
 
-// Export
+// ==========================================
+// TIMED AUTO-BACKUP SYSTEM
+// ==========================================
+
+export interface BackupEntry {
+  id: string;
+  timestamp: string;
+  courseCount: number;
+  totalFeedback: number;
+  sizeBytes: number;
+  label?: string; // e.g. "before-delete", "manual", "auto"
+}
+
+function getBackupIndex(): BackupEntry[] {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem(BACKUP_INDEX_KEY);
+  return stored ? JSON.parse(stored) : [];
+}
+
+function saveBackupIndex(index: BackupEntry[]): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(BACKUP_INDEX_KEY, JSON.stringify(index));
+  }
+}
+
+export function createBackup(label: string = 'auto'): BackupEntry | null {
+  if (typeof window === 'undefined') return null;
+
+  const courses = loadAllCourses();
+  if (courses.length === 0) return null;
+
+  const data = JSON.stringify(courses);
+  const totalFeedback = courses.reduce((sum, c) =>
+    sum + c.tests.reduce((tSum, t) =>
+      tSum + t.studentFeedbacks.filter(f => f.completedDate).length, 0), 0);
+
+  const id = `backup-${Date.now()}`;
+  const entry: BackupEntry = {
+    id,
+    timestamp: new Date().toISOString(),
+    courseCount: courses.length,
+    totalFeedback,
+    sizeBytes: new Blob([data]).size,
+    label,
+  };
+
+  try {
+    localStorage.setItem(BACKUP_KEY_PREFIX + id, data);
+  } catch (e) {
+    // localStorage full — remove oldest backup and retry
+    const index = getBackupIndex();
+    if (index.length > 0) {
+      const oldest = index.shift()!;
+      localStorage.removeItem(BACKUP_KEY_PREFIX + oldest.id);
+      saveBackupIndex(index);
+      try {
+        localStorage.setItem(BACKUP_KEY_PREFIX + id, data);
+      } catch {
+        console.error('Cannot create backup: localStorage full');
+        return null;
+      }
+    } else {
+      console.error('Cannot create backup: localStorage full');
+      return null;
+    }
+  }
+
+  const index = getBackupIndex();
+  index.push(entry);
+
+  // Trim to MAX_BACKUPS (keep manual/before-delete backups longer)
+  while (index.length > MAX_BACKUPS) {
+    const oldest = index.shift()!;
+    localStorage.removeItem(BACKUP_KEY_PREFIX + oldest.id);
+  }
+
+  saveBackupIndex(index);
+  return entry;
+}
+
+export function listBackups(): BackupEntry[] {
+  return getBackupIndex().sort((a, b) =>
+    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
+export function getBackupData(backupId: string): Course[] | null {
+  if (typeof window === 'undefined') return null;
+  const data = localStorage.getItem(BACKUP_KEY_PREFIX + backupId);
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+}
+
+export function restoreFromBackup(backupId: string): { success: boolean; courseCount: number } {
+  const courses = getBackupData(backupId);
+  if (!courses) return { success: false, courseCount: 0 };
+
+  // Create a safety backup of current state before restoring
+  createBackup('before-restore');
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+  }
+  return { success: true, courseCount: courses.length };
+}
+
+export function deleteBackup(backupId: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(BACKUP_KEY_PREFIX + backupId);
+  const index = getBackupIndex().filter(e => e.id !== backupId);
+  saveBackupIndex(index);
+}
+
+export function startAutoBackup(): void {
+  if (autoBackupTimer) return; // Already running
+  // Create an initial backup right away
+  createBackup('auto');
+  autoBackupTimer = setInterval(() => {
+    createBackup('auto');
+  }, AUTO_BACKUP_INTERVAL);
+}
+
+export function stopAutoBackup(): void {
+  if (autoBackupTimer) {
+    clearInterval(autoBackupTimer);
+    autoBackupTimer = null;
+  }
+}
+
+export function isAutoBackupRunning(): boolean {
+  return autoBackupTimer !== null;
+}
+
+// ==========================================
+// IMPORT FROM FOLDER (File System Access API)
+// ==========================================
+
+async function readFileFromHandle(fileHandle: FileSystemFileHandle): Promise<string> {
+  const file = await fileHandle.getFile();
+  return await file.text();
+}
+
+export async function importFromFolder(): Promise<{
+  success: boolean;
+  courses: Course[];
+  errors: string[];
+}> {
+  if (typeof window === 'undefined') {
+    return { success: false, courses: [], errors: ['Not in browser environment'] };
+  }
+
+  if (!('showDirectoryPicker' in window)) {
+    return { success: false, courses: [], errors: ['Folder import is not supported in this browser. Use Chrome or Edge.'] };
+  }
+
+  try {
+    // @ts-ignore
+    const dirHandle: FileSystemDirectoryHandle = await window.showDirectoryPicker({
+      mode: 'read',
+      startIn: 'documents',
+    });
+
+    const importedCourses: Course[] = [];
+    const errors: string[] = [];
+
+    // Iterate through course folders
+    // @ts-ignore - for await on directory handle
+    for await (const entry of dirHandle.values()) {
+      if (entry.kind !== 'directory') {
+        // Check if it's a top-level JSON file (full export)
+        if (entry.kind === 'file' && entry.name.endsWith('.json')) {
+          try {
+            const content = await readFileFromHandle(entry as FileSystemFileHandle);
+            const parsed = JSON.parse(content);
+            if (Array.isArray(parsed)) {
+              // It's a full course export array
+              importedCourses.push(...parsed);
+            } else if (parsed.id && parsed.name && parsed.tests) {
+              // Single course
+              importedCourses.push(parsed);
+            }
+          } catch (e) {
+            errors.push(`Failed to read ${entry.name}: ${e}`);
+          }
+        }
+        continue;
+      }
+
+      // This is a course folder from auto-save
+      const courseDirHandle = entry as FileSystemDirectoryHandle;
+      try {
+        const course = await importCourseFromFolder(courseDirHandle);
+        if (course) {
+          importedCourses.push(course);
+        }
+      } catch (e) {
+        errors.push(`Failed to import course folder "${entry.name}": ${e}`);
+      }
+    }
+
+    return { success: importedCourses.length > 0, courses: importedCourses, errors };
+  } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, courses: [], errors: [] }; // User cancelled
+    }
+    return { success: false, courses: [], errors: [`${error}`] };
+  }
+}
+
+async function importCourseFromFolder(courseDirHandle: FileSystemDirectoryHandle): Promise<Course | null> {
+  let courseName = courseDirHandle.name;
+  let courseDescription = '';
+  let students: CourseStudent[] = [];
+  let createdDate = new Date().toISOString();
+  let lastModified = new Date().toISOString();
+  let availableLabels: string[] = [];
+  const tests: CourseTest[] = [];
+
+  // Try to read course-info.json
+  try {
+    const courseInfoHandle = await courseDirHandle.getFileHandle('course-info.json');
+    const content = await readFileFromHandle(courseInfoHandle);
+    const info = JSON.parse(content);
+    courseName = info.name || courseName;
+    courseDescription = info.description || '';
+    students = (info.students || []).map((s: CourseStudent) => ({
+      id: s.id || `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: s.name,
+      studentNumber: s.studentNumber,
+    }));
+    createdDate = info.createdDate || createdDate;
+    lastModified = info.lastModified || lastModified;
+    availableLabels = info.availableLabels || [];
+  } catch {
+    // No course-info.json, we'll reconstruct from folder name
+  }
+
+  // Iterate through test folders
+  // @ts-ignore
+  for await (const entry of courseDirHandle.values()) {
+    if (entry.kind !== 'directory') continue;
+
+    const testDirHandle = entry as FileSystemDirectoryHandle;
+    try {
+      const test = await importTestFromFolder(testDirHandle, students);
+      if (test) {
+        tests.push(test);
+      }
+    } catch (e) {
+      console.error(`Failed to import test folder "${entry.name}":`, e);
+    }
+  }
+
+  if (tests.length === 0 && students.length === 0) {
+    return null; // Empty folder, skip
+  }
+
+  return {
+    id: `course-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    name: courseName,
+    description: courseDescription,
+    students,
+    tests,
+    availableLabels,
+    createdDate,
+    lastModified,
+  };
+}
+
+async function importTestFromFolder(
+  testDirHandle: FileSystemDirectoryHandle,
+  students: CourseStudent[]
+): Promise<CourseTest | null> {
+  let testName = testDirHandle.name;
+  let testDescription = '';
+  let testDate = new Date().toISOString();
+  let tasks: Task[] = [];
+  let generalComment = '';
+  let hasTwoParts: boolean | undefined;
+  let part1TaskCount: number | undefined;
+  let part2TaskCount: number | undefined;
+  let restartNumberingInPart2: boolean | undefined;
+  let snippets: import('@/types').FeedbackSnippet[] | undefined;
+  let testCreatedDate = new Date().toISOString();
+  let testLastModified = new Date().toISOString();
+  const studentFeedbacks: TestFeedbackData[] = [];
+
+  // Try to read test-config.json
+  try {
+    const configHandle = await testDirHandle.getFileHandle('test-config.json');
+    const content = await readFileFromHandle(configHandle);
+    const config = JSON.parse(content);
+    testName = config.name || testName;
+    testDescription = config.description || '';
+    testDate = config.date || testDate;
+    tasks = config.tasks || [];
+    generalComment = config.generalComment || '';
+    hasTwoParts = config.hasTwoParts;
+    part1TaskCount = config.part1TaskCount;
+    part2TaskCount = config.part2TaskCount;
+    restartNumberingInPart2 = config.restartNumberingInPart2;
+    snippets = config.snippets;
+    testCreatedDate = config.createdDate || testCreatedDate;
+    testLastModified = config.lastModified || testLastModified;
+  } catch {
+    // No test-config.json
+  }
+
+  // Read student feedback files
+  // @ts-ignore
+  for await (const entry of testDirHandle.values()) {
+    if (entry.kind !== 'file') continue;
+    if (entry.name === 'test-config.json') continue;
+    if (!entry.name.endsWith('.json')) continue;
+
+    try {
+      const fileHandle = entry as FileSystemFileHandle;
+      const content = await readFileFromHandle(fileHandle);
+      const data = JSON.parse(content);
+
+      // Try to match student by name
+      let studentId = '';
+      if (data.name) {
+        const matchedStudent = students.find(s =>
+          s.name.toLowerCase() === data.name.toLowerCase()
+        );
+        if (matchedStudent) {
+          studentId = matchedStudent.id;
+        } else {
+          // Create student if not found
+          const newStudent: CourseStudent = {
+            id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            name: data.name,
+            studentNumber: data.studentNumber,
+          };
+          students.push(newStudent);
+          studentId = newStudent.id;
+        }
+      }
+
+      if (studentId) {
+        studentFeedbacks.push({
+          studentId,
+          taskFeedbacks: data.taskFeedbacks || [],
+          individualComment: data.individualComment || '',
+          completedDate: data.completedDate,
+        });
+      }
+    } catch (e) {
+      console.error(`Failed to read feedback file "${entry.name}":`, e);
+    }
+  }
+
+  const test: CourseTest = {
+    id: `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    name: testName,
+    description: testDescription,
+    date: testDate,
+    tasks,
+    generalComment,
+    studentFeedbacks,
+    createdDate: testCreatedDate,
+    lastModified: testLastModified,
+  };
+
+  if (hasTwoParts !== undefined) test.hasTwoParts = hasTwoParts;
+  if (part1TaskCount !== undefined) test.part1TaskCount = part1TaskCount;
+  if (part2TaskCount !== undefined) test.part2TaskCount = part2TaskCount;
+  if (restartNumberingInPart2 !== undefined) test.restartNumberingInPart2 = restartNumberingInPart2;
+  if (snippets !== undefined) test.snippets = snippets;
+
+  return test;
+}
+
+// ==========================================
+// EXPORT & IMPORT (improved)
+// ==========================================
+
 export function exportAllCourses(): string {
   const courses = loadAllCourses();
   return JSON.stringify(courses, null, 2);
 }
 
-export function importCourses(jsonString: string): void {
-  try {
-    const imported = JSON.parse(jsonString);
-    const courses = loadAllCourses();
+export interface ImportResult {
+  imported: number;
+  skippedDuplicates: number;
+  merged: number;
+  errors: string[];
+}
 
-    if (Array.isArray(imported)) {
-      courses.push(...imported);
-    } else {
-      courses.push(imported);
-    }
+export function validateCourseData(data: unknown): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
-    }
-  } catch (error) {
-    throw new Error('Invalid JSON format');
+  if (!data || typeof data !== 'object') {
+    errors.push('Data is not a valid object');
+    return { valid: false, errors };
   }
+
+  const courses = Array.isArray(data) ? data : [data];
+
+  for (let i = 0; i < courses.length; i++) {
+    const c = courses[i];
+    if (!c.name || typeof c.name !== 'string') {
+      errors.push(`Course ${i + 1}: missing or invalid name`);
+    }
+    if (!Array.isArray(c.students)) {
+      errors.push(`Course ${i + 1} ("${c.name || 'unknown'}"): missing students array`);
+    }
+    if (!Array.isArray(c.tests)) {
+      errors.push(`Course ${i + 1} ("${c.name || 'unknown'}"): missing tests array`);
+    }
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+export function importCourses(jsonString: string, options?: {
+  skipDuplicates?: boolean;
+  mergeExisting?: boolean;
+}): ImportResult {
+  const result: ImportResult = { imported: 0, skippedDuplicates: 0, merged: 0, errors: [] };
+
+  let imported: Course[];
+  try {
+    const parsed = JSON.parse(jsonString);
+    imported = Array.isArray(parsed) ? parsed : [parsed];
+  } catch (error) {
+    result.errors.push('Invalid JSON format');
+    return result;
+  }
+
+  const validation = validateCourseData(imported);
+  if (!validation.valid) {
+    result.errors = validation.errors;
+    return result;
+  }
+
+  // Create safety backup before import
+  createBackup('before-import');
+
+  const courses = loadAllCourses();
+  const skipDuplicates = options?.skipDuplicates ?? true;
+  const mergeExisting = options?.mergeExisting ?? false;
+
+  for (const importedCourse of imported) {
+    // Check for duplicate by ID or by name
+    const existingById = courses.findIndex(c => c.id === importedCourse.id);
+    const existingByName = courses.findIndex(c =>
+      c.name.toLowerCase() === importedCourse.name.toLowerCase()
+    );
+
+    const existingIndex = existingById >= 0 ? existingById : existingByName;
+
+    if (existingIndex >= 0) {
+      if (mergeExisting) {
+        // Merge: add new tests and students that don't exist
+        const existing = courses[existingIndex];
+
+        // Merge students
+        for (const student of importedCourse.students) {
+          const exists = existing.students.some(s =>
+            s.name.toLowerCase() === student.name.toLowerCase()
+          );
+          if (!exists) {
+            existing.students.push(student);
+          }
+        }
+
+        // Merge tests
+        for (const test of importedCourse.tests) {
+          const existingTest = existing.tests.find(t =>
+            t.name.toLowerCase() === test.name.toLowerCase()
+          );
+          if (!existingTest) {
+            existing.tests.push(test);
+          } else {
+            // Merge feedback into existing test
+            for (const feedback of test.studentFeedbacks) {
+              const existingFeedback = existingTest.studentFeedbacks.find(f =>
+                f.studentId === feedback.studentId
+              );
+              if (!existingFeedback && feedback.completedDate) {
+                existingTest.studentFeedbacks.push(feedback);
+              }
+            }
+          }
+        }
+
+        // Merge labels
+        for (const label of (importedCourse.availableLabels || [])) {
+          if (!existing.availableLabels.includes(label)) {
+            existing.availableLabels.push(label);
+          }
+        }
+
+        existing.lastModified = new Date().toISOString();
+        result.merged++;
+      } else if (skipDuplicates) {
+        result.skippedDuplicates++;
+      } else {
+        // Generate new ID to avoid conflict
+        importedCourse.id = `course-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        importedCourse.name = `${importedCourse.name} (imported)`;
+        courses.push(importedCourse);
+        result.imported++;
+      }
+    } else {
+      // Ensure valid ID
+      if (!importedCourse.id) {
+        importedCourse.id = `course-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      courses.push(importedCourse);
+      result.imported++;
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+  }
+
+  return result;
+}
+
+export function importCoursesFromData(courses: Course[], options?: {
+  skipDuplicates?: boolean;
+  mergeExisting?: boolean;
+}): ImportResult {
+  return importCourses(JSON.stringify(courses), options);
+}
+
+// ==========================================
+// SAFETY: Backup before destructive operations
+// ==========================================
+
+export function safeDeleteCourse(courseId: string): { backupId: string | null } {
+  const backup = createBackup('before-delete');
+  deleteCourse(courseId);
+  return { backupId: backup?.id || null };
+}
+
+export function safeDeleteTest(courseId: string, testId: string): { backupId: string | null } {
+  const backup = createBackup('before-delete');
+  deleteTest(courseId, testId);
+  return { backupId: backup?.id || null };
+}
+
+export function safeDeleteStudent(courseId: string, studentId: string): { backupId: string | null } {
+  const backup = createBackup('before-delete');
+  deleteStudent(courseId, studentId);
+  return { backupId: backup?.id || null };
 }
