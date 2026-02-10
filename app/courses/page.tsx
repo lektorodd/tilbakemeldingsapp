@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Course } from '@/types';
 import {
   loadAllCourses,
+  saveCourse,
   setupAutoSaveDirectory,
   isAutoSaveEnabled,
   disableAutoSave,
@@ -19,13 +20,23 @@ import {
   startAutoBackup,
   stopAutoBackup,
   isAutoBackupRunning,
+  syncFromFolder,
+  migrateToFolder,
   BackupEntry,
   ImportResult,
 } from '@/utils/courseStorage';
 import {
+  initFolderSync,
+  chooseFolderAndConnect,
+  disconnectFolder,
+  isFolderConnected,
+  getFolderName,
+} from '@/utils/folderSync';
+import { syncSnippetsFromFolder, migrateSnippetsToFolder } from '@/utils/snippetStorage';
+import {
   Plus, Trash2, Users, FileText, Settings, Download, FolderOpen,
   Upload, Shield, Clock, RotateCcw, AlertTriangle, ChevronDown,
-  ChevronUp, FolderInput, FileUp, History
+  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -49,16 +60,49 @@ export default function CoursesPage() {
   const [folderImportErrors, setFolderImportErrors] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    loadData();
-    setAutoSaveEnabled(isAutoSaveEnabled());
-    setAutoBackupEnabled(isAutoBackupRunning());
+  // Folder storage state
+  const [folderConnected, setFolderConnected] = useState(false);
+  const [folderName, setFolderName] = useState<string | null>(null);
+  const [folderSyncing, setFolderSyncing] = useState(false);
 
-    // Start auto-backup on page load
-    if (!isAutoBackupRunning()) {
-      startAutoBackup();
-      setAutoBackupEnabled(true);
-    }
+  useEffect(() => {
+    // Try to restore folder connection, then load data
+    const init = async () => {
+      setFolderSyncing(true);
+      try {
+        const connected = await initFolderSync();
+        setFolderConnected(connected);
+        setFolderName(getFolderName());
+
+        if (connected) {
+          // Load data from folder → localStorage
+          await syncFromFolder();
+          await syncSnippetsFromFolder();
+          // Also sync language
+          const { loadSettingsFromFolder } = await import('@/utils/folderSync');
+          const settings = await loadSettingsFromFolder();
+          if (settings?.language) {
+            localStorage.setItem('language', settings.language);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to init folder sync:', e);
+      } finally {
+        setFolderSyncing(false);
+      }
+
+      loadData();
+      setAutoSaveEnabled(isAutoSaveEnabled());
+      setAutoBackupEnabled(isAutoBackupRunning());
+
+      // Start auto-backup on page load
+      if (!isAutoBackupRunning()) {
+        startAutoBackup();
+        setAutoBackupEnabled(true);
+      }
+    };
+
+    init();
 
     return () => {
       // Don't stop on unmount — keep running
@@ -88,12 +132,7 @@ export default function CoursesPage() {
       lastModified: new Date().toISOString(),
     };
 
-    const allCourses = loadAllCourses();
-    allCourses.push(newCourse);
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('math-feedback-courses', JSON.stringify(allCourses));
-    }
+    saveCourse(newCourse);
 
     setNewCourseName('');
     setNewCourseDescription('');
@@ -128,6 +167,39 @@ export default function CoursesPage() {
     disableAutoSave();
     setAutoSaveEnabled(false);
     alert(t('course.autoSaveDisabled'));
+  };
+
+  const handleConnectFolder = async () => {
+    setFolderSyncing(true);
+    try {
+      const success = await chooseFolderAndConnect();
+      if (success) {
+        setFolderConnected(true);
+        setFolderName(getFolderName());
+
+        // Migrate existing localStorage data to the folder
+        await migrateToFolder();
+        await migrateSnippetsToFolder();
+        // Save current language setting
+        const lang = localStorage.getItem('language') || 'nb';
+        const { saveSettingsToFolder } = await import('@/utils/folderSync');
+        await saveSettingsToFolder({ language: lang as 'en' | 'nb' | 'nn' });
+
+        alert(t('course.folderConnected'));
+      }
+    } catch (e) {
+      console.error('Failed to connect folder:', e);
+    } finally {
+      setFolderSyncing(false);
+    }
+  };
+
+  const handleDisconnectFolder = async () => {
+    if (confirm(t('course.folderDisconnectConfirm'))) {
+      await disconnectFolder();
+      setFolderConnected(false);
+      setFolderName(null);
+    }
   };
 
   const handleExportAll = () => {
@@ -311,13 +383,51 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        {/* Auto-save & Auto-backup settings */}
+        {/* Folder storage & settings */}
         <div className="bg-surface rounded-lg shadow-sm border border-border p-6 mb-6">
+          {/* Folder storage connection */}
           <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              {folderConnected ? (
+                <Cloud size={24} className="text-success" />
+              ) : (
+                <CloudOff size={24} className="text-text-secondary" />
+              )}
+              <div>
+                <h3 className="text-lg font-display font-semibold text-text-primary">{t('course.folderStorageTitle')}</h3>
+                <p className="text-sm text-text-secondary">
+                  {folderConnected
+                    ? t('course.folderStorageConnectedDesc').replace('{folder}', folderName || '')
+                    : t('course.folderStorageDisconnectedDesc')}
+                </p>
+              </div>
+            </div>
+            {folderSyncing ? (
+              <span className="px-4 py-2 text-sm text-text-secondary">{t('course.folderSyncing')}</span>
+            ) : folderConnected ? (
+              <button
+                onClick={handleDisconnectFolder}
+                className="px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors"
+              >
+                {t('course.folderDisconnect')}
+              </button>
+            ) : (
+              <button
+                onClick={handleConnectFolder}
+                className="px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors"
+              >
+                {t('course.folderConnect')}
+              </button>
+            )}
+          </div>
+
+          {/* Legacy auto-save (only show if no folder connected) */}
+          {!folderConnected && (
+          <div className="flex items-center justify-between mb-4 border-t border-border pt-4">
             <div className="flex items-center gap-3">
               <Settings size={24} className="text-text-secondary" />
               <div>
-                <h3 className="text-lg font-display font-semibold text-text-primary">{t('course.autoSaveSettings')}</h3>
+                <h3 className="text-sm font-display font-semibold text-text-primary">{t('course.autoSaveSettings')}</h3>
                 <p className="text-sm text-text-secondary">
                   {autoSaveEnabled
                     ? t('course.autoSaveEnabledDesc')
@@ -328,19 +438,20 @@ export default function CoursesPage() {
             {autoSaveEnabled ? (
               <button
                 onClick={handleDisableAutoSave}
-                className="px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors"
+                className="px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors text-sm"
               >
                 {t('course.disableAutoSave')}
               </button>
             ) : (
               <button
                 onClick={handleSetupAutoSave}
-                className="px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                className="px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
               >
                 {t('course.setupAutoSave')}
               </button>
             )}
           </div>
+          )}
 
           {/* Auto-backup status */}
           <div className="flex items-center justify-between border-t border-border pt-4">

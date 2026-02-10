@@ -1,4 +1,5 @@
 import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics } from '@/types';
+import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from './folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
 const BACKUP_KEY_PREFIX = 'math-feedback-backup-';
@@ -26,7 +27,12 @@ export function saveCourse(course: Course): void {
     localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
   }
 
-  // Auto-save completed feedback
+  // Sync to connected folder (OneDrive etc.)
+  if (isFolderConnected()) {
+    saveCourseToFolder(course);
+  }
+
+  // Legacy auto-save (only used if old auto-save was enabled separately)
   autoSaveCourse(course);
 }
 
@@ -45,10 +51,16 @@ export function loadCourse(courseId: string): Course | null {
 
 export function deleteCourse(courseId: string): void {
   const courses = loadAllCourses();
+  const courseToDelete = courses.find(c => c.id === courseId);
   const filtered = courses.filter(c => c.id !== courseId);
 
   if (typeof window !== 'undefined') {
     localStorage.setItem(COURSES_KEY, JSON.stringify(filtered));
+  }
+
+  // Remove from connected folder
+  if (isFolderConnected() && courseToDelete) {
+    deleteCourseFromFolder(courseToDelete.name);
   }
 }
 
@@ -915,7 +927,39 @@ function calculateTaskAnalytics(
   };
 }
 
-// Auto-save functionality
+// ==========================================
+// FOLDER SYNC — Load from folder on startup, migrate to folder
+// ==========================================
+
+/**
+ * Load courses from the connected folder and populate localStorage.
+ * Call on app startup after initFolderSync() succeeds.
+ * Returns true if folder data was loaded.
+ */
+export async function syncFromFolder(): Promise<boolean> {
+  const { loadCoursesFromFolder } = await import('./folderSync');
+  const courses = await loadCoursesFromFolder();
+  if (courses === null) return false;
+
+  // Replace localStorage with folder data
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+  }
+  return true;
+}
+
+/**
+ * Migrate all existing localStorage data to the connected folder.
+ * Call after user first connects a folder, to push existing data there.
+ */
+export async function migrateToFolder(): Promise<void> {
+  const courses = loadAllCourses();
+  if (courses.length > 0) {
+    await saveAllCoursesToFolder(courses);
+  }
+}
+
+// Auto-save functionality (legacy — superseded by folder sync)
 export async function setupAutoSaveDirectory(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 

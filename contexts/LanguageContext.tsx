@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import en from '@/locales/en.json';
 import nb from '@/locales/nb.json';
 import nn from '@/locales/nn.json';
+import { isFolderConnected, saveSettingsToFolder } from '@/utils/folderSync';
 
 type Language = 'en' | 'nb' | 'nn';
 
@@ -36,6 +37,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguageState(lang);
     if (typeof window !== 'undefined') {
       localStorage.setItem('language', lang);
+    }
+    // Sync to connected folder
+    if (isFolderConnected()) {
+      saveSettingsToFolder({ language: lang });
     }
   };
 
