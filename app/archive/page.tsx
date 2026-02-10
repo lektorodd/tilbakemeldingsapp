@@ -88,7 +88,7 @@ export default function ArchivePage() {
           <div>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-4"
+              className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-4"
             >
               <ArrowLeft size={20} />
               Back to Feedback

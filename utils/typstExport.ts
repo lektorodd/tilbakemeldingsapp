@@ -212,7 +212,7 @@ export function generateTypstDocument(data: ExportData): string {
   inset: (x: 0.8em, y: 0.55em),
   stroke: 0.5pt + rgb("#E2E8F0"),
   align: (center, center, left),
-  fill: (_, row) => if row == 0 { rgb("#2563EB") } else if calc.even(row) { rgb("#F8FAFC") } else { white },
+  fill: (_, row) => if row == 0 { rgb("#4F46E5") } else if calc.even(row) { rgb("#F1F5F9") } else { white },
   table.header(
     [#text(fill: white, weight: "bold")[${t.task}]],
     [#text(fill: white, weight: "bold")[${t.points}]],
@@ -244,17 +244,17 @@ ${taskRows.join('\n')}
   margin: (x: 2cm, top: 1.8cm, bottom: 2cm),
   header: context {
     if counter(page).get().first() > 1 [
-      #text(size: 9pt, fill: rgb("#6B7280"))[${escapeTypst(testName)} #sym.dash.em ${escapeTypst(studentName)}]
+      #text(size: 9pt, fill: rgb("#64748B"))[${escapeTypst(testName)} #sym.dash.em ${escapeTypst(studentName)}]
       #h(1fr)
-      #text(size: 9pt, fill: rgb("#6B7280"))[${t.feedback}]
+      #text(size: 9pt, fill: rgb("#64748B"))[${t.feedback}]
       #v(0.3em)
-      #line(length: 100%, stroke: 0.3pt + rgb("#D1D5DB"))
+      #line(length: 100%, stroke: 0.3pt + rgb("#CBD5E1"))
     ]
   },
   footer: context {
     let total = counter(page).final().first()
     if total > 1 {
-      align(center, text(size: 9pt, fill: rgb("#9CA3AF"))[
+      align(center, text(size: 9pt, fill: rgb("#94A3B8"))[
         #counter(page).display("1 / 1", both: true)
       ])
     }
@@ -263,15 +263,15 @@ ${taskRows.join('\n')}
 #set text(
   size: 11pt,
   lang: "${t.lang}",
-  font: "Libertinus Sans",
+  font: "Source Sans 3",
 )
 #set par(justify: true)
-#show heading: set text(fill: rgb("#1E40AF"))
+#show heading: set text(fill: rgb("#3730A3"))
 #show link: underline
 
 #rect(
   width: 100%,
-  fill: rgb("#2563EB"),
+  fill: rgb("#4F46E5"),
   inset: (x: 1.5em, y: 1em),
   radius: 4pt,
 )[
@@ -286,7 +286,7 @@ ${taskRows.join('\n')}
 
 #rect(
   width: 100%,
-  fill: rgb("#F8FAFC"),
+  fill: rgb("#F1F5F9"),
   inset: (x: 1.2em, y: 0.8em),
   radius: 4pt,
   stroke: 0.5pt + rgb("#E2E8F0"),
@@ -340,7 +340,7 @@ export function generateOralTypstDocument(data: OralExportData): string {
   inset: (x: 0.8em, y: 0.55em),
   stroke: 0.5pt + rgb("#E2E8F0"),
   align: (left, center, left),
-  fill: (_, row) => if row == 0 { rgb("#2563EB") } else if calc.even(row) { rgb("#F8FAFC") } else { white },
+  fill: (_, row) => if row == 0 { rgb("#4F46E5") } else if calc.even(row) { rgb("#F1F5F9") } else { white },
   table.header(
     [#text(fill: white, weight: "bold")[${t.dimension}]],
     [#text(fill: white, weight: "bold")[${t.points}]],
@@ -372,17 +372,17 @@ ${dimensionRows}
   margin: (x: 2cm, top: 1.8cm, bottom: 2cm),
   header: context {
     if counter(page).get().first() > 1 [
-      #text(size: 9pt, fill: rgb("#6B7280"))[${escapeTypst(oralTestName)} #sym.dash.em ${escapeTypst(studentName)}]
+      #text(size: 9pt, fill: rgb("#64748B"))[${escapeTypst(oralTestName)} #sym.dash.em ${escapeTypst(studentName)}]
       #h(1fr)
-      #text(size: 9pt, fill: rgb("#6B7280"))[${t.oralAssessment}]
+      #text(size: 9pt, fill: rgb("#64748B"))[${t.oralAssessment}]
       #v(0.3em)
-      #line(length: 100%, stroke: 0.3pt + rgb("#D1D5DB"))
+      #line(length: 100%, stroke: 0.3pt + rgb("#CBD5E1"))
     ]
   },
   footer: context {
     let total = counter(page).final().first()
     if total > 1 {
-      align(center, text(size: 9pt, fill: rgb("#9CA3AF"))[
+      align(center, text(size: 9pt, fill: rgb("#94A3B8"))[
         #counter(page).display("1 / 1", both: true)
       ])
     }
@@ -391,15 +391,15 @@ ${dimensionRows}
 #set text(
   size: 11pt,
   lang: "${t.lang}",
-  font: "Libertinus Sans",
+  font: "Source Sans 3",
 )
 #set par(justify: true)
-#show heading: set text(fill: rgb("#1E40AF"))
+#show heading: set text(fill: rgb("#3730A3"))
 #show link: underline
 
 #rect(
   width: 100%,
-  fill: rgb("#2563EB"),
+  fill: rgb("#4F46E5"),
   inset: (x: 1.5em, y: 1em),
   radius: 4pt,
 )[
@@ -414,7 +414,7 @@ ${dimensionRows}
 
 #rect(
   width: 100%,
-  fill: rgb("#F8FAFC"),
+  fill: rgb("#F1F5F9"),
   inset: (x: 1.2em, y: 0.8em),
   radius: 4pt,
   stroke: 0.5pt + rgb("#E2E8F0"),

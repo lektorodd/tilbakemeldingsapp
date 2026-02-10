@@ -132,7 +132,7 @@ export default function TestAnalyticsPage() {
         <div className="mb-6">
           <Link
             href={`/course/${courseId}/test/${testId}`}
-            className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
+            className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-2"
           >
             <ArrowLeft size={20} />
             {t('test.backToTest')}
@@ -352,7 +352,7 @@ export default function TestAnalyticsPage() {
                             ta.labels.map(label => (
                               <span
                                 key={label}
-                                className="inline-block px-2 py-0.5 bg-violet-100 text-violet-700 rounded text-xs"
+                                className="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs"
                               >
                                 {label}
                               </span>

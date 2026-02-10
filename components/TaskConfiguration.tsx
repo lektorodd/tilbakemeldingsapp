@@ -260,7 +260,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                         onClick={() => toggleTaskLabel(task.id, label)}
                         className={`px-2 py-0.5 rounded-full text-xs transition ${
                           task.labels.includes(label)
-                            ? 'bg-violet-600 text-white'
+                            ? 'bg-indigo-600 text-white'
                             : 'bg-surface text-text-secondary hover:bg-gray-300 border border-border'
                         }`}
                       >
@@ -329,7 +329,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                                 onClick={() => toggleSubtaskLabel(task.id, subtask.id, label)}
                                 className={`px-2 py-0.5 rounded-full text-xs transition ${
                                   subtask.labels.includes(label)
-                                    ? 'bg-violet-600 text-white'
+                                    ? 'bg-indigo-600 text-white'
                                     : 'bg-white text-text-secondary hover:bg-gray-200 border border-border'
                                 }`}
                               >
@@ -343,7 +343,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                   ))}
                   <button
                     onClick={() => addSubtask(task.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-brand hover:bg-violet-50 rounded-lg transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-brand hover:bg-indigo-50 rounded-lg transition"
                   >
                     <Plus size={14} />
                     {t('test.addSubtaskButton')}

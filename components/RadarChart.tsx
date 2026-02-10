@@ -64,7 +64,7 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
           cy={centerY}
           r={(level / maxValue) * radius}
           fill="none"
-          stroke="#e5e7eb"
+          stroke="#E2E8F0"
           strokeWidth="1"
         />
       ))}
@@ -77,7 +77,7 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
           y1={axis.line.y1}
           x2={axis.line.x2}
           y2={axis.line.y2}
-          stroke="#d1d5db"
+          stroke="#CBD5E1"
           strokeWidth="1"
         />
       ))}
@@ -85,8 +85,8 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
       {/* Data polygon */}
       <polygon
         points={dataPolygon}
-        fill="rgba(147, 51, 234, 0.25)"
-        stroke="rgb(147, 51, 234)"
+        fill="rgba(79, 70, 229, 0.2)"
+        stroke="rgb(79, 70, 229)"
         strokeWidth="2"
       />
 
@@ -97,7 +97,7 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
           cx={point.x}
           cy={point.y}
           r="4"
-          fill="rgb(147, 51, 234)"
+          fill="rgb(79, 70, 229)"
         />
       ))}
 
@@ -131,7 +131,7 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
               textAnchor="middle"
               fontSize="11"
               fontWeight="bold"
-              fill="#7c3aed"
+              fill="#4F46E5"
               dominantBaseline="middle"
             >
               {axis.value}/6
@@ -141,12 +141,12 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
       })}
 
       {/* Center point */}
-      <circle cx={centerX} cy={centerY} r="2" fill="#9ca3af" />
+      <circle cx={centerX} cy={centerY} r="2" fill="#94A3B8" />
 
       {/* Grid level labels */}
-      <text x={centerX} y={centerY - (2 / maxValue) * radius} fontSize="8" fill="#9ca3af" textAnchor="middle" dy="-2">2</text>
-      <text x={centerX} y={centerY - (4 / maxValue) * radius} fontSize="8" fill="#9ca3af" textAnchor="middle" dy="-2">4</text>
-      <text x={centerX} y={centerY - (6 / maxValue) * radius} fontSize="8" fill="#9ca3af" textAnchor="middle" dy="-2">6</text>
+      <text x={centerX} y={centerY - (2 / maxValue) * radius} fontSize="8" fill="#94A3B8" textAnchor="middle" dy="-2">2</text>
+      <text x={centerX} y={centerY - (4 / maxValue) * radius} fontSize="8" fill="#94A3B8" textAnchor="middle" dy="-2">4</text>
+      <text x={centerX} y={centerY - (6 / maxValue) * radius} fontSize="8" fill="#94A3B8" textAnchor="middle" dy="-2">6</text>
     </svg>
   );
 }

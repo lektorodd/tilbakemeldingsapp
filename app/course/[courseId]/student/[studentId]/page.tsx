@@ -65,7 +65,7 @@ export default function StudentDashboardPage() {
         <div className="mb-6">
           <Link
             href={`/course/${courseId}`}
-            className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
+            className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-2"
           >
             <ArrowLeft size={20} />
             {t('common.back')}
@@ -243,7 +243,7 @@ export default function StudentDashboardPage() {
         {/* Oral Assessments Performance */}
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <MessageSquare size={24} className="text-purple-600" />
+            <MessageSquare size={24} className="text-indigo-600" />
             <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
           </div>
 
@@ -256,11 +256,11 @@ export default function StudentDashboardPage() {
                     {/* Oral test card - 50% width */}
                     <Link
                       href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
-                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-purple-500 hover:shadow-sm transition-colors cursor-pointer"
+                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-indigo-500 hover:shadow-sm transition-colors cursor-pointer"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <h4 className="font-semibold text-text-primary hover:text-purple-600 transition-colors">{oral.oralTestName}</h4>
+                          <h4 className="font-semibold text-text-primary hover:text-indigo-600 transition-colors">{oral.oralTestName}</h4>
                           <p className="text-xs text-text-disabled">
                             {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
                           </p>
@@ -281,7 +281,7 @@ export default function StudentDashboardPage() {
                       <div className="mb-3">
                         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className={`h-full ${oral.score >= 50 ? 'bg-purple-600' : oral.score >= 35 ? 'bg-purple-400' : 'bg-purple-300'}`}
+                            className={`h-full ${oral.score >= 50 ? 'bg-indigo-600' : oral.score >= 35 ? 'bg-indigo-400' : 'bg-indigo-300'}`}
                             style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
                           />
                         </div>

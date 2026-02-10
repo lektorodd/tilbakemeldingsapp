@@ -404,7 +404,7 @@ export default function CourseDetailPage() {
           <div>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 text-brand hover:text-rose-800 mb-2"
+              className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-2"
             >
               <ArrowLeft size={20} />
               {t('course.backToCourses')}
@@ -492,7 +492,7 @@ export default function CourseDetailPage() {
               </div>
               <div>
                 <p className="text-text-secondary">{t('course.possibleFeedback')}</p>
-                <p className="text-2xl font-display font-bold text-violet-700">
+                <p className="text-2xl font-display font-bold text-indigo-700">
                   {course.students.length * course.tests.length}
                 </p>
               </div>
@@ -580,7 +580,7 @@ export default function CourseDetailPage() {
                     value={bulkStudentText}
                     onChange={(e) => setBulkStudentText(e.target.value)}
                     rows={10}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 text-text-primary font-mono text-sm"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary font-mono text-sm"
                     placeholder={t('course.bulkAddPlaceholder')}
                     autoFocus
                   />
@@ -794,7 +794,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newOralTestName}
                     onChange={(e) => setNewOralTestName(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                     placeholder={t('course.oralTestNamePlaceholder')}
                     autoFocus
                   />
@@ -808,7 +808,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newOralTestDescription}
                     onChange={(e) => setNewOralTestDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                     placeholder={t('course.oralTestDescriptionPlaceholder')}
                   />
                 </div>
@@ -821,7 +821,7 @@ export default function CourseDetailPage() {
                     type="date"
                     value={newOralTestDate}
                     onChange={(e) => setNewOralTestDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                   />
                 </div>
 
@@ -833,7 +833,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newOralTestTopics}
                     onChange={(e) => setNewOralTestTopics(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                     placeholder={t('course.oralTestTopicsPlaceholder')}
                   />
                   <p className="text-xs text-text-disabled mt-1">
@@ -861,8 +861,8 @@ export default function CourseDetailPage() {
                           }}
                           className={`px-3 py-1 rounded-full text-sm transition ${
                             newOralTestLabels.includes(label)
-                              ? 'bg-purple-600 text-white'
-                              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
                           }`}
                         >
                           {label}
@@ -889,7 +889,7 @@ export default function CourseDetailPage() {
                 </button>
                 <button
                   onClick={handleAddOralTest}
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
                 >
                   {t('course.addOralTestButton')}
                 </button>
@@ -1032,7 +1032,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newOralTestName}
                     onChange={(e) => setNewOralTestName(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                     autoFocus
                   />
                 </div>
@@ -1045,7 +1045,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newOralTestDescription}
                     onChange={(e) => setNewOralTestDescription(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                     placeholder={t('course.oralTestDescriptionPlaceholder')}
                   />
                 </div>
@@ -1058,7 +1058,7 @@ export default function CourseDetailPage() {
                     type="date"
                     value={newOralTestDate}
                     onChange={(e) => setNewOralTestDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                   />
                 </div>
 
@@ -1070,7 +1070,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={newOralTestTopics}
                     onChange={(e) => setNewOralTestTopics(e.target.value)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-text-primary"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-text-primary"
                     placeholder={t('course.oralTestTopicsPlaceholder')}
                   />
                   <p className="text-xs text-text-disabled mt-1">
@@ -1098,8 +1098,8 @@ export default function CourseDetailPage() {
                           }}
                           className={`px-3 py-1 rounded-full text-sm transition ${
                             newOralTestLabels.includes(label)
-                              ? 'bg-purple-600 text-white'
-                              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
                           }`}
                         >
                           {label}
@@ -1122,7 +1122,7 @@ export default function CourseDetailPage() {
                 </button>
                 <button
                   onClick={handleUpdateOralTest}
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
                 >
                   {t('common.save')}
                 </button>
