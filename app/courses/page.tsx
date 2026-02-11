@@ -467,7 +467,7 @@ export default function CoursesPage() {
             </label>
             <button
               onClick={handleFolderImport}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
             >
               <FolderInput size={18} />
               {t('backup.importFolder')}

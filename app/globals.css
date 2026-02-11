@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --font-inter: 'Inter', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  --font-satoshi: 'Satoshi', 'Inter', sans-serif;
+  --font-source-sans: 'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;
+  --font-roboto-slab: 'Roboto Slab', Georgia, serif;
+  --font-jetbrains-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 @layer base {
@@ -15,6 +16,14 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-display font-semibold text-text-primary;
+  }
+
+  code, pre, kbd, samp {
+    @apply font-mono;
+  }
+
+  a {
+    @apply text-link hover:text-link-hover;
   }
 }
 

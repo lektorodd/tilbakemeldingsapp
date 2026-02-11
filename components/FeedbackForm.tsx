@@ -68,7 +68,7 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                                 className={`w-9 h-9 rounded-lg font-semibold transition-all ${
                                   feedback.points === p
                                     ? 'bg-brand text-white shadow-md scale-110'
-                                    : 'bg-surface border border-border text-text-secondary hover:bg-indigo-50 hover:border-brand'
+                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                 }`}
                               >
                                 {p}
@@ -117,7 +117,7 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                                 className={`w-9 h-9 rounded-lg font-semibold transition-all ${
                                   feedback.points === p
                                     ? 'bg-brand text-white shadow-md scale-110'
-                                    : 'bg-surface border border-border text-text-secondary hover:bg-indigo-50 hover:border-brand'
+                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                 }`}
                               >
                                 {p}
