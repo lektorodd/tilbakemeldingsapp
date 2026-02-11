@@ -1,56 +1,16 @@
-# MathMonitor / MatteMonitor
+# MatteMonitor
 
-**Modern web app for math test feedback with PDF export**
-
-A teacher-focused application for managing courses, grading tests, and providing detailed feedback with mathematical notation. Features course-centric organization, flexible scoring, Typst PDF export, and comprehensive analytics.
+A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
-
 # Open http://localhost:3000
 ```
 
-## Key Features
-
-- **Course Management** - Organize by class, add students once, track across multiple tests
-- **Flexible Grading** - 0-6 points per task, automatic 0-60 scoring
-- **Math Notation** - Full Typst support for mathematical expressions
-- **Snippet Library** - Reusable comment templates (Norwegian standards included)
-- **PDF Export** - Auto-compile professional feedback documents
-- **Analytics** - Track student progress by labels, categories, and performance
-- **Multi-Language** - Full support for English, Norwegian Bokmål, and Nynorsk
-- **Auto-Save** - Automatic file export to chosen folder (Chrome/Edge)
-
-## Basic Workflow
-
-1. **Create Course** → Add students to roster
-2. **Create Test** → Configure tasks and subtasks
-3. **Grade Students** → Add points and comments with math notation
-4. **Use Snippets** → Quick insert standard feedback
-5. **Export PDFs** → Generate and distribute feedback
-6. **View Analytics** → Track progress and identify patterns
-
-## Technology Stack
-
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Modern styling
-- **Typst** - Mathematical document generation
-- **localStorage + File System API** - Data persistence
-
-## Requirements
-
-- Node.js 18+
-- Modern browser (Chrome/Edge recommended for auto-save)
-- Typst CLI (for PDF compilation)
-
-### Install Typst
+For PDF export, you also need [Typst](https://github.com/typst/typst/releases) installed:
 
 ```bash
 # macOS
@@ -59,51 +19,140 @@ brew install typst
 # Linux
 cargo install --git https://github.com/typst/typst
 
-# Or download from https://github.com/typst/typst/releases
+# Windows / other — download from https://github.com/typst/typst/releases
 ```
 
-## Data Storage
+## Features
 
-- **Browser**: localStorage (survives restarts, private to your computer)
-- **Files**: Auto-save to folder of your choice (JSON format, easy backup)
-- **Export**: Manual backup via "Export All" button
+**Grading & Feedback**
+- Score tasks 0–6 points with automatic total (0–60 scale)
+- Write comments with Typst math notation (`$x^2 + y^2 = r^2$`)
+- Reusable snippet library for common feedback phrases
+- Keyboard-driven grading — number keys for points, Tab to move between tasks
 
-## Help & Documentation
+**Course & Test Management**
+- Organize students into courses, create multiple tests per course
+- Configure tasks with subtasks, topic labels, and difficulty categories
+- Two-part test support (no aids / all aids)
 
-Access the in-app help guide from the navbar (? icon) for:
-- Complete workflow tutorials
-- Typst math notation examples
-- Grading system explanation
-- Analytics guide
-- Keyboard shortcuts
-- Troubleshooting tips
+**Oral Assessments**
+- Grade across six LK20 curriculum dimensions (strategy, reasoning, representations, modeling, communication, subject knowledge)
+- Track duration and link to specific topics
+
+**Analytics**
+- Student progress over time
+- Performance breakdown by topic label, difficulty category, and test part
+- Task-level statistics: attempt rates, score distributions, averages
+- Course-wide and test-specific views
+
+**PDF Export**
+- Generate professional feedback documents via Typst
+- Full math rendering in exported PDFs
+- Supports English, Norwegian Bokmål, and Nynorsk
+
+**Data & Backup**
+- All data stored in the browser (localStorage) — nothing leaves your machine
+- Optional folder sync via File System API (Chrome/Edge) for auto-saving to disk
+- Manual JSON export/import for backup and transfer between machines
+- Auto-backup every 5 minutes (up to 10 rolling backups)
+
+## Workflow
+
+1. **Create a course** — add students (individually or bulk paste)
+2. **Set up a test** — define tasks, subtasks, labels, and categories
+3. **Grade** — enter points and feedback per student per task
+4. **Export** — generate PDFs and distribute to students
+5. **Review** — use analytics to spot patterns and track progress
 
 ## Project Structure
 
 ```
 app/
-  ├── courses/          # Course list
-  ├── course/[id]/      # Course detail, students, tests
-  ├── test/[id]/        # Grading interface
-  └── help/             # In-app help guide
-components/            # Reusable UI components
-utils/                 # Storage, export, calculations
-types/                 # TypeScript definitions
-locales/              # EN/NB/NN translations
+  courses/                 Course list (home page)
+  course/[courseId]/        Course detail, student roster, test list
+    test/[testId]/          Grading interface
+      analytics/            Test-level analytics
+    oral/[oralTestId]/      Oral assessment interface
+    student/[studentId]/    Individual student progress
+    analytics/              Course-level analytics
+  analytics/               Global analytics
+  archive/                 Archived feedback
+  help/                    In-app help guide
+  api/compile-typst/       PDF compilation endpoint
+
+components/                UI components (modals, forms, charts, sidebars)
+utils/                     Storage, scoring, export, folder sync
+types/                     TypeScript type definitions
+contexts/                  React contexts (language, notifications)
+hooks/                     Custom hooks (keyboard shortcuts)
+locales/                   Translations (en, nb, nn)
+fonts/                     Bundled fonts for PDF export
 ```
 
-## Browser Compatibility
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| PDF engine | Typst (external CLI) |
+| Storage | localStorage + File System API + IndexedDB |
+| Testing | Vitest + Testing Library |
+| Icons | Lucide React |
+
+## Development
+
+```bash
+npm run dev          # Start dev server (http://localhost:3000)
+npm run build        # Production build
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run test         # Run tests once
+npm run test:watch   # Run tests in watch mode
+```
+
+### Requirements
+
+- Node.js 18+
+- Typst CLI (for PDF compilation only)
+- Chrome or Edge recommended (required for folder auto-save)
+
+### Browser Support
 
 | Feature | Chrome/Edge | Firefox | Safari |
-|---------|-------------|---------|--------|
-| Core app | ✅ | ✅ | ✅ |
-| Auto-save | ✅ | ❌ | ❌ |
-| PDF compile | ✅ | ✅ | ✅ |
+|---------|:-----------:|:-------:|:------:|
+| Core app | Yes | Yes | Yes |
+| Folder auto-save | Yes | No | No |
+| PDF export | Yes | Yes | Yes |
+
+## Keyboard Shortcuts (Grading)
+
+| Key | Action |
+|-----|--------|
+| `0`–`6` | Set points for current task |
+| `Tab` / `Shift+Tab` | Next / previous task |
+| `Alt + Arrow` | Next / previous student |
+| `Enter` | Focus comment field |
+| `Escape` | Back to points mode |
+| `Alt + Enter` | Toggle student completion |
+
+## Data Storage
+
+All data stays in the browser by default. No server, no account, no cloud.
+
+- **localStorage** — primary storage, persists across sessions
+- **Folder sync** — optionally connect a local folder (Chrome/Edge) to auto-save JSON files; works well with OneDrive or similar sync services
+- **Export/Import** — download all data as JSON, or import from another machine
+
+## Multi-Language Support
+
+The app is fully translated in three languages, selectable from the navbar:
+
+- English
+- Norwegian Bokmål
+- Norwegian Nynorsk
 
 ## License
 
-MIT License
-
----
-
-**Made for teachers, by teachers** 📚✏️
+MIT
