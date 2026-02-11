@@ -87,7 +87,7 @@ export default function OralFeedbackForm({
         <p className="text-sm text-text-secondary mt-1">{t('oral.subtitle')}</p>
 
         {/* Score Display */}
-        <div className="mt-4 p-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg">
+        <div className="mt-4 p-4 bg-primary-50 border-2 border-primary-200 rounded-lg">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-text-primary">{t('oral.calculatedScore')}:</span>
             <span className="text-3xl font-display font-bold text-brand">{score} / 60</span>
@@ -153,8 +153,8 @@ export default function OralFeedbackForm({
                           onClick={() => updateDimension(dimensionType, { points: p })}
                           className={`w-8 h-8 rounded-lg font-semibold text-sm transition-all ${
                             dimension.points === p
-                              ? 'bg-indigo-600 text-white shadow-md scale-110'
-                              : 'bg-surface border border-border text-text-secondary hover:bg-indigo-50 hover:border-indigo-400'
+                              ? 'bg-primary-600 text-white shadow-md scale-110'
+                              : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-primary-400'
                           }`}
                         >
                           {p}

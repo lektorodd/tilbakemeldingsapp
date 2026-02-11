@@ -243,7 +243,7 @@ export default function StudentDashboardPage() {
         {/* Oral Assessments Performance */}
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <MessageSquare size={24} className="text-indigo-600" />
+            <MessageSquare size={24} className="text-primary-600" />
             <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
           </div>
 
@@ -256,11 +256,11 @@ export default function StudentDashboardPage() {
                     {/* Oral test card - 50% width */}
                     <Link
                       href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
-                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-indigo-500 hover:shadow-sm transition-colors cursor-pointer"
+                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-primary-500 hover:shadow-sm transition-colors cursor-pointer"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <h4 className="font-semibold text-text-primary hover:text-indigo-600 transition-colors">{oral.oralTestName}</h4>
+                          <h4 className="font-semibold text-text-primary hover:text-primary-600 transition-colors">{oral.oralTestName}</h4>
                           <p className="text-xs text-text-disabled">
                             {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
                           </p>
@@ -281,7 +281,7 @@ export default function StudentDashboardPage() {
                       <div className="mb-3">
                         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className={`h-full ${oral.score >= 50 ? 'bg-indigo-600' : oral.score >= 35 ? 'bg-indigo-400' : 'bg-indigo-300'}`}
+                            className={`h-full ${oral.score >= 50 ? 'bg-primary-600' : oral.score >= 35 ? 'bg-primary-400' : 'bg-primary-300'}`}
                             style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
                           />
                         </div>
@@ -421,7 +421,7 @@ export default function StudentDashboardPage() {
         {partPerformance && partPerformance.length > 0 && (
           <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <BookOpen size={24} className="text-indigo-600" />
+              <BookOpen size={24} className="text-primary-600" />
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('dashboard.performanceByPart')}</h2>
             </div>
 
@@ -462,8 +462,8 @@ export default function StudentDashboardPage() {
 
             {/* Comparison insight */}
             {partPerformance.length === 2 && (
-              <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-                <p className="text-sm text-indigo-900">
+              <div className="mt-4 p-4 bg-primary-50 border border-primary-200 rounded-lg">
+                <p className="text-sm text-primary-900">
                   <strong>{t('dashboard.comparison')}:</strong>{' '}
                   {partPerformance[0].averageScore > partPerformance[1].averageScore ? (
                     t('dashboard.betterNoAids')

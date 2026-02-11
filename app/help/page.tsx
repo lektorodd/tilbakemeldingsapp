@@ -46,7 +46,7 @@ export default function HelpPage() {
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <h2 className="text-xl font-bold text-text-primary mb-4">{t('help.quickLinks')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <a href="#workflow" className="flex items-center gap-2 p-3 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors">
+            <a href="#workflow" className="flex items-center gap-2 p-3 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors">
               <GraduationCap size={18} />
               <span className="text-sm font-medium">{t('help.workflow')}</span>
             </a>
@@ -89,7 +89,7 @@ export default function HelpPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="border-l-4 border-indigo-600 pl-4">
+            <div className="border-l-4 border-primary-600 pl-4">
               <h3 className="font-semibold text-text-primary mb-2">1. {t('help.step1Title')}</h3>
               <p className="text-sm text-text-secondary">{t('help.step1Desc')}</p>
             </div>
@@ -231,7 +231,7 @@ export default function HelpPage() {
               <h3 className="font-semibold text-text-primary mb-3">{t('help.exportContents')}</h3>
 
               <div className="space-y-3 text-sm">
-                <div className="border-l-4 border-indigo-600 pl-3">
+                <div className="border-l-4 border-primary-600 pl-3">
                   <h4 className="font-semibold text-text-primary mb-1">{t('help.exportContent1Title')}</h4>
                   <p className="text-text-secondary">
                     {t('help.exportContent1Desc')}
@@ -273,9 +273,9 @@ export default function HelpPage() {
               </ul>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-              <h3 className="font-semibold text-indigo-900 mb-2">{t('help.exportTipsTitle')}</h3>
-              <ul className="text-sm text-indigo-800 space-y-1">
+            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+              <h3 className="font-semibold text-primary-900 mb-2">{t('help.exportTipsTitle')}</h3>
+              <ul className="text-sm text-primary-800 space-y-1">
                 <li>• {t('help.exportTip1')}</li>
                 <li>• {t('help.exportTip2')}</li>
                 <li>• {t('help.exportTip3')}</li>
@@ -344,9 +344,9 @@ export default function HelpPage() {
               </div>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-              <h3 className="font-semibold text-indigo-900 mb-2">{t('help.whyThisSystem')}</h3>
-              <ul className="text-sm text-indigo-800 space-y-1">
+            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+              <h3 className="font-semibold text-primary-900 mb-2">{t('help.whyThisSystem')}</h3>
+              <ul className="text-sm text-primary-800 space-y-1">
                 <li>• {t('help.benefit1')}</li>
                 <li>• {t('help.benefit2')}</li>
                 <li>• {t('help.benefit3')}</li>
@@ -437,9 +437,9 @@ export default function HelpPage() {
               <p className="text-sm text-text-secondary mb-2">{t('help.createSnippetsDesc')}</p>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-              <h3 className="font-semibold text-indigo-900 mb-2">{t('help.standardSnippets')}</h3>
-              <div className="grid grid-cols-2 gap-2 text-sm text-indigo-800">
+            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+              <h3 className="font-semibold text-primary-900 mb-2">{t('help.standardSnippets')}</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm text-primary-800">
                 <div>• {t('help.standardSnippet1')}</div>
                 <div>• {t('help.standardSnippet2')}</div>
                 <div>• {t('help.standardSnippet3')}</div>
@@ -502,7 +502,7 @@ export default function HelpPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="border-l-4 border-indigo-600 pl-4">
+            <div className="border-l-4 border-primary-600 pl-4">
               <h3 className="font-semibold text-text-primary mb-1">{t('help.tip1Title')}</h3>
               <p className="text-sm text-text-secondary">{t('help.tip1Desc')}</p>
             </div>
@@ -535,12 +535,12 @@ export default function HelpPage() {
         </div>
 
         {/* Footer */}
-        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6 text-center">
-          <h3 className="font-semibold text-indigo-900 mb-2">{t('help.needMoreHelp')}</h3>
-          <p className="text-sm text-indigo-800 mb-4">{t('help.contactInfo')}</p>
+        <div className="bg-primary-50 border border-primary-200 rounded-lg p-6 text-center">
+          <h3 className="font-semibold text-primary-900 mb-2">{t('help.needMoreHelp')}</h3>
+          <p className="text-sm text-primary-800 mb-4">{t('help.contactInfo')}</p>
 
-          <div className="flex items-center justify-center gap-4 pt-4 border-t border-indigo-300">
-            <div className="flex items-center gap-2 text-indigo-700">
+          <div className="flex items-center justify-center gap-4 pt-4 border-t border-primary-300">
+            <div className="flex items-center gap-2 text-primary-700">
               <User size={16} />
               <span className="text-sm">{t('help.author')}</span>
             </div>
@@ -548,7 +548,7 @@ export default function HelpPage() {
               href="https://github.com/lektorodd/tilbakemeldingsapp"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-indigo-700 hover:text-indigo-900 transition-colors"
+              className="flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors"
             >
               <Github size={16} />
               <span className="text-sm">{t('help.viewOnGithub')}</span>

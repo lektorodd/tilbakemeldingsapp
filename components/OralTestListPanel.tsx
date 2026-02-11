@@ -28,13 +28,13 @@ export default function OralTestListPanel({
     <div className="bg-surface rounded-lg shadow-sm p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <MessageSquare size={24} className="text-indigo-600" />
+          <MessageSquare size={24} className="text-primary-600" />
           <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.oralTests')}</h2>
           <span className="text-text-secondary">({oralTests.length})</span>
         </div>
         <button
           onClick={onAddOralTest}
-          className="flex items-center gap-1 px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+          className="flex items-center gap-1 px-3 py-1 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
         >
           <Plus size={16} />
           {t('common.add')}
@@ -61,7 +61,7 @@ export default function OralTestListPanel({
                         <p className="text-xs text-text-secondary">{oralTest.description}</p>
                       )}
                       {oralTest.topics && oralTest.topics.length > 0 && (
-                        <p className="text-xs text-indigo-600 mt-1">
+                        <p className="text-xs text-primary-600 mt-1">
                           {t('course.topics')}: {oralTest.topics.join(', ')}
                         </p>
                       )}
@@ -79,7 +79,7 @@ export default function OralTestListPanel({
                     <div className="flex gap-1">
                       <button
                         onClick={() => onEditOralTest(oralTest)}
-                        className="p-1 text-indigo-600 hover:bg-indigo-50 rounded transition"
+                        className="p-1 text-primary-600 hover:bg-primary-50 rounded transition"
                       >
                         <Edit size={14} />
                       </button>
@@ -93,7 +93,7 @@ export default function OralTestListPanel({
                   </div>
                   <Link
                     href={`/course/${courseId}/oral/${oralTest.id}`}
-                    className="block text-center px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                    className="block text-center px-3 py-1 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
                   >
                     <MessageSquare size={14} className="inline mr-1" />
                     {t('course.giveOralAssessment')}

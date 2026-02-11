@@ -59,7 +59,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddLabel()}
-            className="flex-1 px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-text-primary"
+            className="flex-1 px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm text-text-primary"
             placeholder={t('course.labelPlaceholder')}
             autoFocus
           />
@@ -88,12 +88,12 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
           labels.map(label => (
             <div
               key={label}
-              className="flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm"
+              className="flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
             >
               <span>{label}</span>
               <button
                 onClick={() => handleRemoveLabel(label)}
-                className="hover:bg-indigo-200 rounded-full p-0.5 transition"
+                className="hover:bg-primary-200 rounded-full p-0.5 transition"
               >
                 <X size={14} />
               </button>

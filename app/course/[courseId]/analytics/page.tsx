@@ -101,10 +101,10 @@ export default function CourseAnalyticsPage() {
           {course.oralTests && course.oralTests.length > 0 && (
             <div className="bg-surface rounded-lg shadow-sm p-4">
               <div className="flex items-center gap-2 mb-2">
-                <UserCircle size={20} className="text-indigo-600" />
+                <UserCircle size={20} className="text-primary-600" />
                 <h3 className="font-semibold text-text-primary">{t('course.oralTests')}</h3>
               </div>
-              <p className="text-3xl font-display font-bold text-indigo-600">{course.oralTests.length}</p>
+              <p className="text-3xl font-display font-bold text-primary-600">{course.oralTests.length}</p>
             </div>
           )}
         </div>
@@ -113,7 +113,7 @@ export default function CourseAnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Test Analytics Links */}
           {course.tests.length > 0 && (
-            <div className="bg-surface rounded-lg shadow-sm p-6 border-2 border-indigo-200">
+            <div className="bg-surface rounded-lg shadow-sm p-6 border-2 border-primary-200">
               <div className="flex items-center gap-2 mb-4">
                 <FileText size={24} className="text-brand" />
                 <h2 className="text-xl font-display font-bold text-text-primary">{t('test.taskAnalyticsTitle')}</h2>
@@ -128,7 +128,7 @@ export default function CourseAnalyticsPage() {
                       <Link
                         key={test.id}
                         href={`/course/${courseId}/test/${test.id}/analytics`}
-                        className="block p-3 border border-border rounded-lg hover:border-brand hover:bg-indigo-50 transition-all group"
+                        className="block p-3 border border-border rounded-lg hover:border-brand hover:bg-primary-50 transition-all group"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -208,8 +208,8 @@ export default function CourseAnalyticsPage() {
                       key={lp.label}
                       className={`p-3 rounded-lg border-2 transition-colors cursor-pointer ${
                         selectedLabel === lp.label
-                          ? 'border-indigo-600 bg-indigo-50'
-                          : 'border-border hover:border-indigo-300'
+                          ? 'border-primary-600 bg-primary-50'
+                          : 'border-border hover:border-primary-300'
                       }`}
                       onClick={() => setSelectedLabel(lp.label === selectedLabel ? null : lp.label)}
                     >
@@ -375,9 +375,9 @@ export default function CourseAnalyticsPage() {
         )}
 
         {/* Help Section */}
-        <div className="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-          <h3 className="font-semibold text-indigo-900 mb-2">{t('analytics.howToUseAnalytics')}</h3>
-          <ul className="text-sm text-indigo-800 space-y-1">
+        <div className="mt-6 bg-primary-50 border border-primary-200 rounded-lg p-4">
+          <h3 className="font-semibold text-primary-900 mb-2">{t('analytics.howToUseAnalytics')}</h3>
+          <ul className="text-sm text-primary-800 space-y-1">
             <li>• {t('analytics.analyticsHelp1')}</li>
             <li>• {t('analytics.analyticsHelp2')}</li>
             <li>• {t('analytics.analyticsHelp3')}</li>
