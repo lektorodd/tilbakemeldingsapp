@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { writeFile, unlink, readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { tmpdir } from 'os';
 
 const execAsync = promisify(exec);
+
+const fontsDir = resolve(process.cwd(), 'fonts');
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Compile Typst file to PDF
     try {
-      const { stdout, stderr } = await execAsync(`typst compile "${typPath}" "${pdfPath}"`, {
+      const { stdout, stderr } = await execAsync(`typst compile --font-path "${fontsDir}" "${typPath}" "${pdfPath}"`, {
         timeout: 30000, // 30 second timeout
       });
 
