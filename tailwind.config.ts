@@ -108,7 +108,7 @@ const config: Config = {
         border: '#C5C8CF',
       },
       fontFamily: {
-        sans: ['"Source Sans 3"', '"Source Sans Pro"', 'system-ui', 'sans-serif'],
+        sans: ['"Source Sans Pro"', '"Source Sans 3"', 'system-ui', 'sans-serif'],
         display: ['"Roboto Slab"', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
       },

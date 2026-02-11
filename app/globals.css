@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --font-source-sans: 'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;
+  --font-source-sans: 'Source Sans Pro', 'Source Sans 3', system-ui, sans-serif;
   --font-roboto-slab: 'Roboto Slab', Georgia, serif;
   --font-jetbrains-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
