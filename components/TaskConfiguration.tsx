@@ -9,11 +9,14 @@ interface TaskConfigurationProps {
   tasks: Task[];
   onTasksChange: (tasks: Task[]) => void;
   availableLabels: string[];
+  onLabelsChange?: (labels: string[]) => void;
 }
 
-export default function TaskConfiguration({ tasks, onTasksChange, availableLabels }: TaskConfigurationProps) {
+export default function TaskConfiguration({ tasks, onTasksChange, availableLabels, onLabelsChange }: TaskConfigurationProps) {
   const { t } = useLanguage();
   const [showConfig, setShowConfig] = useState(false);
+  const [addingLabelFor, setAddingLabelFor] = useState<string | null>(null);
+  const [newLabelValue, setNewLabelValue] = useState('');
 
   const addTask = () => {
     const newTask: Task = {
@@ -136,6 +139,32 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
     updateSubtaskLabels(taskId, subtaskId, newLabels);
   };
 
+  const handleAddNewLabel = (targetTaskId: string, targetSubtaskId?: string) => {
+    if (!newLabelValue.trim() || !onLabelsChange) return;
+
+    const trimmed = newLabelValue.trim().toLowerCase();
+    if (!availableLabels.includes(trimmed)) {
+      onLabelsChange([...availableLabels, trimmed]);
+    }
+
+    // Also toggle it on for the target task/subtask
+    if (targetSubtaskId) {
+      const task = tasks.find(t => t.id === targetTaskId);
+      const subtask = task?.subtasks.find(st => st.id === targetSubtaskId);
+      if (subtask && !subtask.labels.includes(trimmed)) {
+        updateSubtaskLabels(targetTaskId, targetSubtaskId, [...subtask.labels, trimmed]);
+      }
+    } else {
+      const task = tasks.find(t => t.id === targetTaskId);
+      if (task && !task.labels.includes(trimmed)) {
+        updateTaskLabels(targetTaskId, [...task.labels, trimmed]);
+      }
+    }
+
+    setNewLabelValue('');
+    setAddingLabelFor(null);
+  };
+
   const removeSubtask = (taskId: string, subtaskId: string) => {
     onTasksChange(
       tasks.map(t => {
@@ -250,10 +279,10 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
               </div>
 
               {/* Task Theme Labels - only shown if NO subtasks */}
-              {!task.hasSubtasks && availableLabels.length > 0 && (
+              {!task.hasSubtasks && (availableLabels.length > 0 || onLabelsChange) && (
                 <div className="flex items-start gap-2">
                   <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1.5 items-center">
                     {availableLabels.map(label => (
                       <button
                         key={label}
@@ -267,6 +296,44 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                         {label}
                       </button>
                     ))}
+                    {onLabelsChange && (
+                      addingLabelFor === task.id ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="text"
+                            value={newLabelValue}
+                            onChange={(e) => setNewLabelValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAddNewLabel(task.id);
+                              if (e.key === 'Escape') { setAddingLabelFor(null); setNewLabelValue(''); }
+                            }}
+                            className="w-28 px-2 py-0.5 border border-border rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
+                            placeholder={t('test.newLabelPlaceholder')}
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => handleAddNewLabel(task.id)}
+                            className="px-2 py-0.5 bg-success text-white rounded-full text-xs hover:bg-emerald-700 transition"
+                          >
+                            {t('common.add')}
+                          </button>
+                          <button
+                            onClick={() => { setAddingLabelFor(null); setNewLabelValue(''); }}
+                            className="p-0.5 text-text-secondary hover:text-text-primary transition"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => { setAddingLabelFor(task.id); setNewLabelValue(''); }}
+                          className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs border border-dashed border-brand text-brand hover:bg-primary-50 transition"
+                        >
+                          <Plus size={12} />
+                          {t('test.addLabelInline')}
+                        </button>
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -319,10 +386,10 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                       </div>
 
                       {/* Subtask Theme Labels */}
-                      {availableLabels.length > 0 && (
+                      {(availableLabels.length > 0 || onLabelsChange) && (
                         <div className="flex items-start gap-2">
                           <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-wrap gap-1.5 items-center">
                             {availableLabels.map(label => (
                               <button
                                 key={label}
@@ -336,6 +403,44 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                                 {label}
                               </button>
                             ))}
+                            {onLabelsChange && (
+                              addingLabelFor === `${task.id}-${subtask.id}` ? (
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    type="text"
+                                    value={newLabelValue}
+                                    onChange={(e) => setNewLabelValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') handleAddNewLabel(task.id, subtask.id);
+                                      if (e.key === 'Escape') { setAddingLabelFor(null); setNewLabelValue(''); }
+                                    }}
+                                    className="w-28 px-2 py-0.5 border border-border rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-focus text-text-primary"
+                                    placeholder={t('test.newLabelPlaceholder')}
+                                    autoFocus
+                                  />
+                                  <button
+                                    onClick={() => handleAddNewLabel(task.id, subtask.id)}
+                                    className="px-2 py-0.5 bg-success text-white rounded-full text-xs hover:bg-emerald-700 transition"
+                                  >
+                                    {t('common.add')}
+                                  </button>
+                                  <button
+                                    onClick={() => { setAddingLabelFor(null); setNewLabelValue(''); }}
+                                    className="p-0.5 text-text-secondary hover:text-text-primary transition"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => { setAddingLabelFor(`${task.id}-${subtask.id}`); setNewLabelValue(''); }}
+                                  className="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs border border-dashed border-brand text-brand hover:bg-primary-50 transition"
+                                >
+                                  <Plus size={12} />
+                                  {t('test.addLabelInline')}
+                                </button>
+                              )
+                            )}
                           </div>
                         </div>
                       )}

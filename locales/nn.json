@@ -286,7 +286,9 @@
     "backToStudentGrading": "Elevretting",
     "taskOverview": "Oppgåveoversikt",
     "noComment": "Ingen kommentar",
-    "notAttempted": "Ikkje forsøkt"
+    "notAttempted": "Ikkje forsøkt",
+    "addLabelInline": "Ny",
+    "newLabelPlaceholder": "t.d. logaritmar"
   },
   "oral": {
     "title": "Munnleg vurdering",
