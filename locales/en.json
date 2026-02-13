@@ -286,7 +286,9 @@
     "backToStudentGrading": "Student Grading",
     "taskOverview": "Task Overview",
     "noComment": "No comment",
-    "notAttempted": "Not attempted"
+    "notAttempted": "Not attempted",
+    "addLabelInline": "New",
+    "newLabelPlaceholder": "e.g., logarithms"
   },
   "oral": {
     "title": "Oral Assessment",

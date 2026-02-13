@@ -286,7 +286,9 @@
     "backToStudentGrading": "Elevretting",
     "taskOverview": "Oppgaveoversikt",
     "noComment": "Ingen kommentar",
-    "notAttempted": "Ikke forsøkt"
+    "notAttempted": "Ikke forsøkt",
+    "addLabelInline": "Ny",
+    "newLabelPlaceholder": "f.eks. logaritmer"
   },
   "oral": {
     "title": "Muntlig vurdering",

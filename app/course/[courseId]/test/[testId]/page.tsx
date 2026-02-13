@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData, FeedbackSnippet } from '@/types';
-import { loadCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
+import { loadCourse, updateCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/courseStorage';
 import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
@@ -129,6 +129,12 @@ export default function TestFeedbackPage() {
       toast(t('test.testConfigSaved'), 'success');
       loadData();
     }
+  };
+
+  const handleLabelsChange = (labels: string[]) => {
+    updateCourse(courseId, { availableLabels: labels });
+    setCourse(prev => prev ? { ...prev, availableLabels: labels } : prev);
+    setHasUnsavedTestConfig(true);
   };
 
   const handleUpdateFeedback = (taskId: string, subtaskId: string | undefined, updates: Partial<TaskFeedback>) => {
@@ -588,6 +594,7 @@ export default function TestFeedbackPage() {
               tasks={test.tasks}
               onTasksChange={(tasks) => handleTestChange({ ...test, tasks })}
               availableLabels={course.availableLabels}
+              onLabelsChange={handleLabelsChange}
             />
           </div>
 
