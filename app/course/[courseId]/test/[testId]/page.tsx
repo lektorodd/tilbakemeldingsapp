@@ -11,7 +11,7 @@ import ScoringGuide from '@/components/ScoringGuide';
 import GradingProgressBar from '@/components/GradingProgressBar';
 import SnippetSidebar from '@/components/SnippetSidebar';
 import { useGradingShortcuts, TaskSlot } from '@/hooks/useGradingShortcuts';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -534,6 +534,14 @@ export default function TestFeedbackPage() {
             {test.description && <p className="text-text-secondary text-sm">{test.description}</p>}
           </div>
           <div className="flex gap-3">
+            <Link
+              href={`/course/${courseId}/test/${testId}/task-grading`}
+              className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+              title={t('test.taskGrading')}
+            >
+              <ListChecks size={18} />
+              {t('test.taskGrading')}
+            </Link>
             <Link
               href={`/course/${courseId}/test/${testId}/analytics`}
               className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"

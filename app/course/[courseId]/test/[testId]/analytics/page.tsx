@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Course, CourseTest, TaskAnalytics } from '@/types';
-import { loadCourse, getTestTaskAnalytics } from '@/utils/courseStorage';
-import { ArrowLeft, Filter, BarChart3 } from 'lucide-react';
+import { Course, CourseTest, TaskAnalytics, TaskStudentScore } from '@/types';
+import { loadCourse, getTestTaskAnalytics, getTaskStudentScores } from '@/utils/courseStorage';
+import { ArrowLeft, Filter, BarChart3, ChevronDown, ChevronRight, ListChecks, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -27,6 +27,8 @@ export default function TestAnalyticsPage() {
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'label' | 'avgScore' | 'attemptPct'>('label');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [expandedTaskKey, setExpandedTaskKey] = useState<string | null>(null);
+  const [expandedTaskScores, setExpandedTaskScores] = useState<TaskStudentScore[]>([]);
 
   useEffect(() => {
     const loadedCourse = loadCourse(courseId);
@@ -117,6 +119,18 @@ export default function TestAnalyticsPage() {
     return 'text-gray-500';
   };
 
+  const toggleTaskExpand = (ta: TaskAnalytics) => {
+    const key = `${ta.taskId}-${ta.subtaskId || 'main'}`;
+    if (expandedTaskKey === key) {
+      setExpandedTaskKey(null);
+      setExpandedTaskScores([]);
+    } else {
+      setExpandedTaskKey(key);
+      const scores = getTaskStudentScores(courseId, testId, ta.taskId, ta.subtaskId);
+      setExpandedTaskScores(scores);
+    }
+  };
+
   const getAttemptColor = (percentage: number) => {
     if (percentage >= 80) return 'text-emerald-700 font-bold';
     if (percentage >= 60) return 'text-emerald-600 font-semibold';
@@ -159,7 +173,16 @@ export default function TestAnalyticsPage() {
               </select>
             )}
           </div>
-          <p className="text-text-secondary">{course.name}</p>
+          <div className="flex items-center gap-3">
+            <p className="text-text-secondary">{course.name}</p>
+            <Link
+              href={`/course/${courseId}/test/${testId}/task-grading`}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+            >
+              <ListChecks size={16} />
+              {t('test.gradeByTask')}
+            </Link>
+          </div>
         </div>
 
         {/* Summary Stats */}
@@ -319,65 +342,121 @@ export default function TestAnalyticsPage() {
                     </td>
                   </tr>
                 ) : (
-                  sortedAnalytics.map((ta) => (
-                    <tr key={`${ta.taskId}-${ta.subtaskId || 'main'}`} className="hover:bg-surface-alt transition">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-text-primary">
-                            {t('test.task')} {ta.label}
-                          </span>
-                          {ta.part && (
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                              ta.part === 1
-                                ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                : 'bg-blue-100 text-blue-800 border border-blue-300'
-                            }`}>
-                              {ta.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {ta.category ? (
-                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${getCategoryColor(ta.category)}`}>
-                            {getCategoryLabel(ta.category)}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-text-disabled">-</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {ta.labels.length > 0 ? (
-                            ta.labels.map(label => (
-                              <span
-                                key={label}
-                                className="inline-block px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-xs"
-                              >
-                                {label}
+                  sortedAnalytics.map((ta) => {
+                    const taskKey = `${ta.taskId}-${ta.subtaskId || 'main'}`;
+                    const isExpanded = expandedTaskKey === taskKey;
+                    return (
+                      <React.Fragment key={taskKey}>
+                        <tr
+                          onClick={() => toggleTaskExpand(ta)}
+                          className="hover:bg-surface-alt transition cursor-pointer"
+                        >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              {isExpanded ? <ChevronDown size={16} className="text-brand shrink-0" /> : <ChevronRight size={16} className="text-text-disabled shrink-0" />}
+                              <span className="text-sm font-medium text-text-primary">
+                                {t('test.task')} {ta.label}
                               </span>
-                            ))
-                          ) : (
-                            <span className="text-sm text-text-disabled">-</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={`text-sm ${getScoreColor(ta.averageScore)}`}>
-                          {ta.averageScore.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-text-disabled"> / 6</span>
-                      </td>
-                      <td className="px-4 py-3 text-center text-sm text-text-secondary">
-                        {ta.attemptCount} / {ta.totalStudents}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={`text-sm ${getAttemptColor(ta.attemptPercentage)}`}>
-                          {ta.attemptPercentage.toFixed(0)}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                              {ta.part && (
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                  ta.part === 1
+                                    ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                    : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                }`}>
+                                  {ta.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {ta.category ? (
+                              <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${getCategoryColor(ta.category)}`}>
+                                {getCategoryLabel(ta.category)}
+                              </span>
+                            ) : (
+                              <span className="text-sm text-text-disabled">-</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-1">
+                              {ta.labels.length > 0 ? (
+                                ta.labels.map(label => (
+                                  <span
+                                    key={label}
+                                    className="inline-block px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-xs"
+                                  >
+                                    {label}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-sm text-text-disabled">-</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`text-sm ${getScoreColor(ta.averageScore)}`}>
+                              {ta.averageScore.toFixed(2)}
+                            </span>
+                            <span className="text-xs text-text-disabled"> / 6</span>
+                          </td>
+                          <td className="px-4 py-3 text-center text-sm text-text-secondary">
+                            {ta.attemptCount} / {ta.totalStudents}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <span className={`text-sm ${getAttemptColor(ta.attemptPercentage)}`}>
+                              {ta.attemptPercentage.toFixed(0)}%
+                            </span>
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan={6} className="px-4 py-4 bg-gray-50 border-t border-border">
+                              <div className="max-h-80 overflow-y-auto">
+                                <table className="w-full text-sm">
+                                  <thead>
+                                    <tr className="text-left text-text-secondary">
+                                      <th className="pb-2 font-medium">{t('test.selectStudent')}</th>
+                                      <th className="pb-2 font-medium text-center">{t('test.points')}</th>
+                                      <th className="pb-2 font-medium">{t('test.comment')}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-border/50">
+                                    {expandedTaskScores.map(score => (
+                                      <tr key={score.studentId} className={score.hasAttempted ? '' : 'opacity-50'}>
+                                        <td className="py-2 text-text-primary">
+                                          {score.studentName}
+                                          {score.studentNumber && <span className="text-text-disabled ml-1">#{score.studentNumber}</span>}
+                                        </td>
+                                        <td className="py-2 text-center">
+                                          <span className={getScoreColor(score.points)}>
+                                            {score.points}
+                                          </span>
+                                          <span className="text-text-disabled"> / 6</span>
+                                        </td>
+                                        <td className="py-2 text-text-secondary font-mono text-xs max-w-md truncate">
+                                          {score.comment || <span className="text-text-disabled italic">{t('test.noComment')}</span>}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div className="mt-3 pt-3 border-t border-border/50">
+                                <Link
+                                  href={`/course/${courseId}/test/${testId}/task-grading?task=${ta.label}`}
+                                  className="inline-flex items-center gap-2 text-sm text-brand hover:text-brand-hover font-medium"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Pencil size={14} />
+                                  {t('test.editInTaskGrading')}
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })
                 )}
               </tbody>
             </table>

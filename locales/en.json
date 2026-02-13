@@ -274,7 +274,19 @@
     "shortcutNextStudent": "Next student",
     "shortcutToggleComplete": "Toggle complete",
     "gradingProgress": "Grading Progress",
-    "allStudentsGraded": "All students graded!"
+    "allStudentsGraded": "All students graded!",
+    "taskGrading": "Task Grading",
+    "gradeByTask": "Grade by Task",
+    "allStudentsForTask": "All students - Task {task}",
+    "autoAdvance": "Auto-advance after setting points",
+    "gradedCount": "{count} / {total} graded",
+    "expandTaskDetails": "Show student scores",
+    "collapseTaskDetails": "Hide student scores",
+    "editInTaskGrading": "Edit in Task Grading",
+    "backToStudentGrading": "Student Grading",
+    "taskOverview": "Task Overview",
+    "noComment": "No comment",
+    "notAttempted": "Not attempted"
   },
   "oral": {
     "title": "Oral Assessment",
