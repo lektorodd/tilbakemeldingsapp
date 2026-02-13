@@ -225,6 +225,16 @@ export interface OralFeedbackData {
   score?: number; // Calculated average across dimensions (0-60 scale)
 }
 
+// Per-student scores for a specific task (used in analytics drill-down and task-level grading)
+export interface TaskStudentScore {
+  studentId: string;
+  studentName: string;
+  studentNumber?: string;
+  points: number;
+  comment: string;
+  hasAttempted: boolean;
+}
+
 // Task-level analytics for a specific test
 export interface TaskAnalytics {
   taskId: string;

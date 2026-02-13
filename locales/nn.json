@@ -274,7 +274,19 @@
     "shortcutNextStudent": "Neste elev",
     "shortcutToggleComplete": "Skift fullføringsstatus",
     "gradingProgress": "Retteframgang",
-    "allStudentsGraded": "Alle elevar er retta!"
+    "allStudentsGraded": "Alle elevar er retta!",
+    "taskGrading": "Oppgåveretting",
+    "gradeByTask": "Rett per oppgåve",
+    "allStudentsForTask": "Alle elevar - Oppgåve {task}",
+    "autoAdvance": "Gå automatisk til neste elev etter poengsetting",
+    "gradedCount": "{count} / {total} retta",
+    "expandTaskDetails": "Vis elevpoeng",
+    "collapseTaskDetails": "Gøym elevpoeng",
+    "editInTaskGrading": "Rediger i oppgåveretting",
+    "backToStudentGrading": "Elevretting",
+    "taskOverview": "Oppgåveoversikt",
+    "noComment": "Ingen kommentar",
+    "notAttempted": "Ikkje forsøkt"
   },
   "oral": {
     "title": "Munnleg vurdering",

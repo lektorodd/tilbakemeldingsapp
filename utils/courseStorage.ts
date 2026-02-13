@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore } from '@/types';
 import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from './folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
@@ -925,6 +925,36 @@ function calculateTaskAnalytics(
     totalStudents,
     scoreDistribution,
   };
+}
+
+// Get per-student scores for a specific task/subtask (used in analytics drill-down and task-level grading)
+export function getTaskStudentScores(
+  courseId: string,
+  testId: string,
+  taskId: string,
+  subtaskId?: string
+): TaskStudentScore[] {
+  const course = loadCourse(courseId);
+  if (!course) return [];
+
+  const test = course.tests.find(t => t.id === testId);
+  if (!test) return [];
+
+  return course.students.map(student => {
+    const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
+    const taskFeedback = feedback?.taskFeedbacks.find(
+      tf => tf.taskId === taskId && (subtaskId ? tf.subtaskId === subtaskId : !tf.subtaskId)
+    );
+
+    return {
+      studentId: student.id,
+      studentName: student.name,
+      studentNumber: student.studentNumber,
+      points: taskFeedback?.points ?? 0,
+      comment: taskFeedback?.comment ?? '',
+      hasAttempted: (taskFeedback?.points ?? 0) > 0 || (taskFeedback?.comment ?? '').trim().length > 0,
+    };
+  });
 }
 
 // ==========================================
