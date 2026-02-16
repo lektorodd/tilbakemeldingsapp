@@ -1,4 +1,4 @@
-# MatteMonitor
+# MatteMonitor v0.2.0
 
 A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 
@@ -7,7 +7,7 @@ A web app for math teachers to grade tests, write feedback with mathematical not
 ```bash
 npm install
 npm run dev
-# Open http://localhost:3000
+# Open http://localhost:3333
 ```
 
 For PDF export, you also need [Typst](https://github.com/typst/typst/releases) installed:
@@ -104,7 +104,7 @@ fonts/                     Bundled fonts for PDF export
 ## Development
 
 ```bash
-npm run dev          # Start dev server (http://localhost:3000)
+npm run dev          # Start dev server (http://localhost:3333)
 npm run build        # Production build
 npm run start        # Start production server
 npm run lint         # Run ESLint
@@ -156,3 +156,5 @@ The app is fully translated in three languages, selectable from the navbar:
 ## License
 
 MIT
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
