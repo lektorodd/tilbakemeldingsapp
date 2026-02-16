@@ -294,7 +294,9 @@
     "noComment": "No comment",
     "notAttempted": "Not attempted",
     "addLabelInline": "New",
-    "newLabelPlaceholder": "e.g., logarithms"
+    "newLabelPlaceholder": "e.g., logarithms",
+    "taskWeight": "Weight",
+    "taskWeightDefault": "Default: equal"
   },
   "oral": {
     "title": "Oral Assessment",

@@ -9,7 +9,7 @@ import DarkModeToggle from './DarkModeToggle';
 import { GraduationCap, HelpCircle, Github } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const APP_VERSION = '0.3.0';
+const APP_VERSION = '0.4.0';
 
 export default function Navbar() {
   const { t } = useLanguage();

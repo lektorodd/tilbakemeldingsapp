@@ -2,6 +2,20 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.4.0] — 2026-02-16
+
+### Added
+- **Task weighting** — each task can now have a custom weight (integer ≥ 1) that controls how much it contributes to the overall score. Tasks without an explicit weight default to 1.
+- Weight input field in the task configuration UI, placed beside the task label.
+- i18n keys for weight label in English, Bokmål, and Nynorsk.
+- 4 new unit tests for weighted scoring scenarios.
+
+### Changed
+- **Scoring algorithm**: `calculateStudentScore()` now computes a weighted average. For tasks with subtasks, subtask scores are averaged at the task level first, then each task's average is weighted. This fixes unfairness where tasks with many subtasks dominated the score.
+- Updated "mixed tasks" test to reflect the corrected scoring behavior.
+
+---
+
 ## [0.3.0] — 2026-02-16
 
 ### Added

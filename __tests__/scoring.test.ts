@@ -4,13 +4,14 @@ import { calculateTotalPoints, calculateMaxPoints } from '@/utils/typstExport';
 import { Task, TaskFeedback, OralFeedbackData } from '@/types';
 
 // Test helpers
-function makeTask(id: string, label: string, subtasks: { id: string; label: string }[] = []): Task {
+function makeTask(id: string, label: string, subtasks: { id: string; label: string }[] = [], weight?: number): Task {
   return {
     id,
     label,
     subtasks: subtasks.map(s => ({ ...s, labels: [] })),
     hasSubtasks: subtasks.length > 0,
     labels: [],
+    weight,
   };
 }
 
@@ -52,8 +53,9 @@ describe('calculateStudentScore', () => {
       makeFeedback('t2', 4, 's2a'),
       makeFeedback('t2', 2, 's2b'),
     ];
-    // 3 total tasks: (6+4+2)/3 = 4, *10 = 40
-    expect(calculateStudentScore(tasks, feedbacks)).toBe(40);
+    // With weighted scoring: Task 1 avg = 6 (weight 1), Task 2 avg = (4+2)/2 = 3 (weight 1)
+    // Weighted avg: (6*1 + 3*1) / (1+1) = 4.5, *10 = 45 (rounded)
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(45);
   });
 
   it('handles zero scores', () => {
@@ -67,6 +69,47 @@ describe('calculateStudentScore', () => {
     const feedbacks = [makeFeedback('t1', 6)];
     // 6/1 * 10 = 60
     expect(calculateStudentScore(tasks, feedbacks)).toBe(60);
+  });
+
+  // --- Weighted scoring tests ---
+
+  it('weighs simple tasks correctly', () => {
+    const tasks = [makeTask('t1', '1', [], 2), makeTask('t2', '2', [], 4)];
+    const feedbacks = [makeFeedback('t1', 6), makeFeedback('t2', 3)];
+    // Weighted avg: (6*2 + 3*4) / (2+4) = (12+12)/6 = 4, *10 = 40
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(40);
+  });
+
+  it('weighs tasks with subtasks correctly', () => {
+    // Task 1 (weight 3) with 2 subtasks, Task 2 (weight 1) standalone
+    const tasks = [
+      makeTask('t1', '1', [{ id: 's1a', label: 'a' }, { id: 's1b', label: 'b' }], 3),
+      makeTask('t2', '2', [], 1),
+    ];
+    const feedbacks = [
+      makeFeedback('t1', 4, 's1a'),
+      makeFeedback('t1', 6, 's1b'),
+      makeFeedback('t2', 2),
+    ];
+    // Task 1 avg: (4+6)/2 = 5, weighted: 5*3 = 15
+    // Task 2 avg: 2, weighted: 2*1 = 2
+    // Total: (15+2) / (3+1) = 17/4 = 4.25, *10 = 43 (rounded)
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(43);
+  });
+
+  it('handles mixed weighted/unweighted tasks', () => {
+    // Task 1 has weight 3, Task 2 has no weight (default=1)
+    const tasks = [makeTask('t1', '1', [], 3), makeTask('t2', '2')];
+    const feedbacks = [makeFeedback('t1', 6), makeFeedback('t2', 2)];
+    // Weighted avg: (6*3 + 2*1) / (3+1) = (18+2)/4 = 5, *10 = 50
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(50);
+  });
+
+  it('single weighted task equals its raw score * 10', () => {
+    const tasks = [makeTask('t1', '1', [], 5)];
+    const feedbacks = [makeFeedback('t1', 4)];
+    // 4*5 / 5 = 4, *10 = 40
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(40);
   });
 });
 

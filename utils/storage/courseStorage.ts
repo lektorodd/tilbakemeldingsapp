@@ -325,14 +325,35 @@ export function calculateOralScore(oralFeedback: OralFeedbackData): number {
   return Math.round(averagePoints * 10);
 }
 
-// Scoring calculations
+// Scoring calculations — weighted average per task
 export function calculateStudentScore(tasks: Task[], feedbacks: TaskFeedback[]): number {
-  const taskCount = countTasks(tasks);
-  if (taskCount === 0) return 0;
+  if (tasks.length === 0) return 0;
 
-  const totalPoints = feedbacks.reduce((sum, f) => sum + f.points, 0);
-  const averagePerTask = totalPoints / taskCount;
-  return Math.round(averagePerTask * 10);
+  let totalWeightedScore = 0;
+  let totalWeight = 0;
+
+  tasks.forEach(task => {
+    const weight = task.weight ?? 1;
+
+    if (task.hasSubtasks && task.subtasks.length > 0) {
+      // Average the subtask scores for this task
+      const subtaskFeedbacks = task.subtasks.map(st =>
+        feedbacks.find(f => f.taskId === task.id && f.subtaskId === st.id)
+      );
+      const subtaskPoints = subtaskFeedbacks.map(f => f?.points ?? 0);
+      const taskAvg = subtaskPoints.reduce((sum, p) => sum + p, 0) / task.subtasks.length;
+      totalWeightedScore += taskAvg * weight;
+    } else {
+      // Single task — use its points directly
+      const feedback = feedbacks.find(f => f.taskId === task.id && !f.subtaskId);
+      totalWeightedScore += (feedback?.points ?? 0) * weight;
+    }
+    totalWeight += weight;
+  });
+
+  if (totalWeight === 0) return 0;
+  const weightedAverage = totalWeightedScore / totalWeight;
+  return Math.round(weightedAverage * 10);
 }
 
 export function calculateMaxScore(): number {
