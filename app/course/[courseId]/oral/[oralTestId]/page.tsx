@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, OralTest, CourseStudent, OralFeedbackData, OralFeedbackDimension, OralFeedbackDimensionType } from '@/types';
-import { loadCourse, updateOralAssessment, getOralAssessment, calculateOralScore } from '@/utils/courseStorage';
+import { loadCourse, updateOralAssessment, getOralAssessment, calculateOralScore } from '@/utils/storage';
 import { generateOralTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
 import OralFeedbackForm from '@/components/OralFeedbackForm';
 import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download } from 'lucide-react';

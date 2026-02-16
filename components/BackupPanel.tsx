@@ -1,6 +1,6 @@
 'use client';
 
-import { BackupEntry } from '@/utils/courseStorage';
+import { BackupEntry } from '@/utils/storage';
 import { Clock, RotateCcw, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 

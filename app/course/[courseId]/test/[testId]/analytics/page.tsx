@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseTest, TaskAnalytics, TaskStudentScore } from '@/types';
-import { loadCourse, getTestTaskAnalytics, getTaskStudentScores } from '@/utils/courseStorage';
+import { loadCourse, getTestTaskAnalytics, getTaskStudentScores } from '@/utils/storage';
 import { ArrowLeft, Filter, BarChart3, ChevronDown, ChevronRight, ListChecks, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';

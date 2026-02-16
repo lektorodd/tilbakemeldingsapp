@@ -5,9 +5,6 @@ import { Course } from '@/types';
 import {
   loadAllCourses,
   saveCourse,
-  setupAutoSaveDirectory,
-  isAutoSaveEnabled,
-  disableAutoSave,
   exportAllCourses,
   importCourses,
   importFromFolder,
@@ -24,7 +21,7 @@ import {
   migrateToFolder,
   BackupEntry,
   ImportResult,
-} from '@/utils/courseStorage';
+} from '@/utils/storage';
 import {
   initFolderSync,
   chooseFolderAndConnect,
@@ -36,7 +33,7 @@ import { syncSnippetsFromFolder, migrateSnippetsToFolder } from '@/utils/snippet
 import {
   Plus, Trash2, Users, FileText, Settings, Download, FolderOpen,
   Upload, Shield, Clock, RotateCcw, AlertTriangle, ChevronDown,
-  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff
+  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff, X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -52,7 +49,6 @@ export default function CoursesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newCourseName, setNewCourseName] = useState('');
   const [newCourseDescription, setNewCourseDescription] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const [showBackupPanel, setShowBackupPanel] = useState(false);
   const [backups, setBackups] = useState<BackupEntry[]>([]);
@@ -69,6 +65,12 @@ export default function CoursesPage() {
   const [folderConnected, setFolderConnected] = useState(false);
   const [folderName, setFolderName] = useState<string | null>(null);
   const [folderSyncing, setFolderSyncing] = useState(false);
+  const [folderNudgeDismissed, setFolderNudgeDismissed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('folder-nudge-dismissed') === 'true';
+    }
+    return false;
+  });
 
   useEffect(() => {
     // Try to restore folder connection, then load data
@@ -97,7 +99,6 @@ export default function CoursesPage() {
       }
 
       loadData();
-      setAutoSaveEnabled(isAutoSaveEnabled());
       setAutoBackupEnabled(isAutoBackupRunning());
 
       // Start auto-backup on page load
@@ -158,20 +159,6 @@ export default function CoursesPage() {
       safeDeleteCourse(courseId);
       loadData();
     }
-  };
-
-  const handleSetupAutoSave = async () => {
-    const success = await setupAutoSaveDirectory();
-    if (success) {
-      setAutoSaveEnabled(true);
-      toast(t('course.autoSaveEnabled'), 'success');
-    }
-  };
-
-  const handleDisableAutoSave = () => {
-    disableAutoSave();
-    setAutoSaveEnabled(false);
-    toast(t('course.autoSaveDisabled'), 'success');
   };
 
   const handleConnectFolder = async () => {
@@ -362,6 +349,43 @@ export default function CoursesPage() {
           </div>
         </div>
 
+        {/* Folder nudge banner — shown when courses exist but no folder connected */}
+        {!folderConnected && !folderNudgeDismissed && courses.length > 0 && (
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6 flex items-start gap-3">
+            <AlertTriangle size={24} className="text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-800">{t('course.folderNudgeTitle')}</h3>
+              <p className="text-sm text-amber-700 mt-1">{t('course.folderNudgeDesc')}</p>
+              <div className="flex gap-3 mt-3">
+                <button
+                  onClick={handleConnectFolder}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
+                >
+                  {t('course.folderConnect')}
+                </button>
+                <button
+                  onClick={() => {
+                    setFolderNudgeDismissed(true);
+                    localStorage.setItem('folder-nudge-dismissed', 'true');
+                  }}
+                  className="px-4 py-2 text-amber-700 hover:text-amber-900 text-sm"
+                >
+                  {t('course.folderNudgeDismiss')}
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setFolderNudgeDismissed(true);
+                localStorage.setItem('folder-nudge-dismissed', 'true');
+              }}
+              className="text-amber-400 hover:text-amber-600 flex-shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        )}
+
         {/* Folder storage & settings */}
         <div className="bg-surface rounded-lg shadow-sm border border-border p-6 mb-6">
           {/* Folder storage connection */}
@@ -399,38 +423,6 @@ export default function CoursesPage() {
               </button>
             )}
           </div>
-
-          {/* Legacy auto-save (only show if no folder connected) */}
-          {!folderConnected && (
-          <div className="flex items-center justify-between mb-4 border-t border-border pt-4">
-            <div className="flex items-center gap-3">
-              <Settings size={24} className="text-text-secondary" />
-              <div>
-                <h3 className="text-sm font-display font-semibold text-text-primary">{t('course.autoSaveSettings')}</h3>
-                <p className="text-sm text-text-secondary">
-                  {autoSaveEnabled
-                    ? t('course.autoSaveEnabledDesc')
-                    : t('course.autoSaveDisabledDesc')}
-                </p>
-              </div>
-            </div>
-            {autoSaveEnabled ? (
-              <button
-                onClick={handleDisableAutoSave}
-                className="px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors text-sm"
-              >
-                {t('course.disableAutoSave')}
-              </button>
-            ) : (
-              <button
-                onClick={handleSetupAutoSave}
-                className="px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
-              >
-                {t('course.setupAutoSave')}
-              </button>
-            )}
-          </div>
-          )}
 
           {/* Auto-backup status */}
           <div className="flex items-center justify-between border-t border-border pt-4">

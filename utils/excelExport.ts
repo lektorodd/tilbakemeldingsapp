@@ -1,5 +1,5 @@
 import { Course } from '@/types';
-import { calculateStudentScore, getTestTaskAnalytics } from './courseStorage';
+import { calculateStudentScore, getTestTaskAnalytics } from './storage';
 
 /**
  * Export course data to a CSV file that Excel can open

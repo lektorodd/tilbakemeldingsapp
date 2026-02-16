@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, CourseTest, TaskFeedback, FeedbackSnippet } from '@/types';
-import { loadCourse, updateStudentFeedback } from '@/utils/courseStorage';
+import { loadCourse, updateStudentFeedback } from '@/utils/storage';
 import { TaskSlot } from '@/hooks/useGradingShortcuts';
 import { useGradingShortcuts } from '@/hooks/useGradingShortcuts';
 import TaskSidebar from '@/components/TaskSidebar';

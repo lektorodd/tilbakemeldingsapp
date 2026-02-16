@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, LabelPerformance, CategoryPerformance } from '@/types';
-import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils/courseStorage';
+import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils/storage';
 import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';

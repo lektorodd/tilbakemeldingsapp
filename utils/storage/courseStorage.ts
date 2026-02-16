@@ -1,5 +1,5 @@
 import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore } from '@/types';
-import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from './folderSync';
+import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from '../folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
 const BACKUP_KEY_PREFIX = 'math-feedback-backup-';
@@ -7,7 +7,6 @@ const BACKUP_INDEX_KEY = 'math-feedback-backup-index';
 const MAX_BACKUPS = 10;
 const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
-let autoSaveDirHandle: FileSystemDirectoryHandle | null = null;
 let autoBackupTimer: ReturnType<typeof setInterval> | null = null;
 
 // Course CRUD operations
@@ -31,9 +30,6 @@ export function saveCourse(course: Course): void {
   if (isFolderConnected()) {
     saveCourseToFolder(course);
   }
-
-  // Legacy auto-save (only used if old auto-save was enabled separately)
-  autoSaveCourse(course);
 }
 
 export function loadAllCourses(): Course[] {
@@ -958,23 +954,183 @@ export function getTaskStudentScores(
 }
 
 // ==========================================
-// FOLDER SYNC — Load from folder on startup, migrate to folder
+// FOLDER SYNC — Smart bidirectional merge on startup, migrate to folder
 // ==========================================
 
 /**
- * Load courses from the connected folder and populate localStorage.
+ * Merge feedback arrays: union-merge by studentId.
+ * For each studentId, keep the entry with more data (more taskFeedbacks,
+ * or the one with a completedDate if the other doesn't have one).
+ * Never discard in-progress feedback.
+ */
+function mergeFeedbacks(
+  localFeedbacks: TestFeedbackData[],
+  folderFeedbacks: TestFeedbackData[]
+): TestFeedbackData[] {
+  const merged = new Map<string, TestFeedbackData>();
+
+  // Start with all local feedback
+  for (const fb of localFeedbacks) {
+    merged.set(fb.studentId, fb);
+  }
+
+  // Union-merge folder feedback
+  for (const folderFb of folderFeedbacks) {
+    const existing = merged.get(folderFb.studentId);
+    if (!existing) {
+      // Student only exists in folder — keep it
+      merged.set(folderFb.studentId, folderFb);
+    } else {
+      // Student exists in both — pick the best version
+      const existingHasData = existing.taskFeedbacks.length > 0 ||
+        existing.individualComment.trim().length > 0;
+      const folderHasData = folderFb.taskFeedbacks.length > 0 ||
+        folderFb.individualComment.trim().length > 0;
+
+      if (!existingHasData && folderHasData) {
+        // Local is empty, folder has data — use folder
+        merged.set(folderFb.studentId, folderFb);
+      } else if (existingHasData && !folderHasData) {
+        // Local has data, folder is empty — keep local (in-progress work!)
+        // Already in map, do nothing
+      } else if (existingHasData && folderHasData) {
+        // Both have data — prefer completed over not-completed,
+        // then prefer more taskFeedbacks, then prefer newer
+        if (!existing.completedDate && folderFb.completedDate) {
+          // Folder is completed but local isn't — check if local has MORE feedback
+          if (existing.taskFeedbacks.length > folderFb.taskFeedbacks.length) {
+            // Local has more work, keep local (user may have added new feedback)
+          } else {
+            merged.set(folderFb.studentId, folderFb);
+          }
+        } else if (existing.completedDate && !folderFb.completedDate) {
+          // Local is completed, folder isn't — keep local
+        } else {
+          // Same completion status — prefer the one with more data
+          if (folderFb.taskFeedbacks.length > existing.taskFeedbacks.length) {
+            merged.set(folderFb.studentId, folderFb);
+          }
+        }
+      }
+    }
+  }
+
+  return Array.from(merged.values());
+}
+
+/**
+ * Merge tests: union-merge by test id.
+ * For each test, merge their studentFeedbacks.
+ */
+function mergeTests(
+  localTests: CourseTest[],
+  folderTests: CourseTest[]
+): CourseTest[] {
+  const merged = new Map<string, CourseTest>();
+
+  // Start with all local tests
+  for (const test of localTests) {
+    merged.set(test.id, test);
+  }
+
+  // Union-merge folder tests
+  for (const folderTest of folderTests) {
+    const existing = merged.get(folderTest.id);
+    if (!existing) {
+      // Test only in folder — keep it
+      merged.set(folderTest.id, folderTest);
+    } else {
+      // Test in both — merge feedback, keep newer config
+      const useFolder = new Date(folderTest.lastModified) > new Date(existing.lastModified);
+      const mergedTest: CourseTest = {
+        ...(useFolder ? folderTest : existing),
+        studentFeedbacks: mergeFeedbacks(
+          existing.studentFeedbacks,
+          folderTest.studentFeedbacks
+        ),
+      };
+      merged.set(folderTest.id, mergedTest);
+    }
+  }
+
+  return Array.from(merged.values());
+}
+
+/**
+ * Smart bidirectional sync: merge folder data with localStorage.
+ * Never discards in-progress feedback that exists only in localStorage.
  * Call on app startup after initFolderSync() succeeds.
- * Returns true if folder data was loaded.
+ * Returns true if sync completed.
  */
 export async function syncFromFolder(): Promise<boolean> {
-  const { loadCoursesFromFolder } = await import('./folderSync');
-  const courses = await loadCoursesFromFolder();
-  if (courses === null) return false;
+  const { loadCoursesFromFolder } = await import('../folderSync');
+  const folderCourses = await loadCoursesFromFolder();
+  if (folderCourses === null) return false;
 
-  // Replace localStorage with folder data
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(COURSES_KEY, JSON.stringify(courses));
+  const localCourses = loadAllCourses();
+
+  // Build lookup maps
+  const localMap = new Map<string, Course>();
+  for (const c of localCourses) localMap.set(c.id, c);
+
+  const folderMap = new Map<string, Course>();
+  for (const c of folderCourses) folderMap.set(c.id, c);
+
+  // Collect all unique course IDs
+  const allIds = new Set([...localMap.keys(), ...folderMap.keys()]);
+  const mergedCourses: Course[] = [];
+
+  for (const id of allIds) {
+    const local = localMap.get(id);
+    const folder = folderMap.get(id);
+
+    if (local && !folder) {
+      // Only in localStorage — keep it
+      mergedCourses.push(local);
+    } else if (!local && folder) {
+      // Only in folder — add it
+      mergedCourses.push(folder);
+    } else if (local && folder) {
+      // In both — smart merge
+      const useFolder = new Date(folder.lastModified) > new Date(local.lastModified);
+
+      // Merge students (union by id)
+      const studentMap = new Map<string, typeof local.students[0]>();
+      for (const s of local.students) studentMap.set(s.id, s);
+      for (const s of folder.students) {
+        if (!studentMap.has(s.id)) studentMap.set(s.id, s);
+      }
+
+      // Merge labels (union)
+      const labelSet = new Set([...(local.availableLabels || []), ...(folder.availableLabels || [])]);
+
+      const mergedCourse: Course = {
+        // Use the newer metadata
+        ...(useFolder ? folder : local),
+        // But always use merged collections
+        students: Array.from(studentMap.values()),
+        tests: mergeTests(local.tests, folder.tests),
+        oralTests: [
+          ...(local.oralTests || []),
+          ...(folder.oralTests || []).filter(ft =>
+            !(local.oralTests || []).some(lt => lt.id === ft.id)
+          ),
+        ],
+        availableLabels: Array.from(labelSet),
+      };
+
+      mergedCourses.push(mergedCourse);
+    }
   }
+
+  // Save merged result to localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(COURSES_KEY, JSON.stringify(mergedCourses));
+  }
+
+  // Write merged result back to folder so it stays in sync
+  await saveAllCoursesToFolder(mergedCourses);
+
   return true;
 }
 
@@ -987,124 +1143,6 @@ export async function migrateToFolder(): Promise<void> {
   if (courses.length > 0) {
     await saveAllCoursesToFolder(courses);
   }
-}
-
-// Auto-save functionality (legacy — superseded by folder sync)
-export async function setupAutoSaveDirectory(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
-
-  if (!('showDirectoryPicker' in window)) {
-    alert('Auto-save to folder is not supported in this browser. Use Chrome or Edge for this feature.');
-    return false;
-  }
-
-  try {
-    // @ts-ignore
-    const dirHandle = await window.showDirectoryPicker({
-      mode: 'readwrite',
-      startIn: 'documents',
-    });
-
-    autoSaveDirHandle = dirHandle;
-
-    if (dirHandle.requestPermission) {
-      await dirHandle.requestPermission({ mode: 'readwrite' });
-    }
-
-    return true;
-  } catch (error) {
-    console.error('Failed to set up auto-save directory:', error);
-    return false;
-  }
-}
-
-export function isAutoSaveEnabled(): boolean {
-  return autoSaveDirHandle !== null;
-}
-
-export function disableAutoSave(): void {
-  autoSaveDirHandle = null;
-}
-
-async function autoSaveCourse(course: Course): Promise<void> {
-  if (!autoSaveDirHandle) return;
-
-  try {
-    const courseFolderName = sanitizeFileName(course.name);
-    const courseDirHandle = await autoSaveDirHandle.getDirectoryHandle(courseFolderName, { create: true });
-
-    // Save course info
-    const courseInfoFile = await courseDirHandle.getFileHandle('course-info.json', { create: true });
-    const courseInfoWritable = await courseInfoFile.createWritable();
-    await courseInfoWritable.write(JSON.stringify({
-      name: course.name,
-      description: course.description,
-      students: course.students,
-      createdDate: course.createdDate,
-      lastModified: course.lastModified,
-      availableLabels: course.availableLabels,
-    }, null, 2));
-    await courseInfoWritable.close();
-
-    // Save each test
-    for (const test of course.tests) {
-      const testFolderName = sanitizeFileName(test.name);
-      const testDirHandle = await courseDirHandle.getDirectoryHandle(testFolderName, { create: true });
-
-      // Save test config
-      const testConfigFile = await testDirHandle.getFileHandle('test-config.json', { create: true });
-      const testConfigWritable = await testConfigFile.createWritable();
-      await testConfigWritable.write(JSON.stringify({
-        name: test.name,
-        description: test.description,
-        date: test.date,
-        tasks: test.tasks,
-        generalComment: test.generalComment,
-        createdDate: test.createdDate,
-        lastModified: test.lastModified,
-        ...(test.hasTwoParts !== undefined && { hasTwoParts: test.hasTwoParts }),
-        ...(test.part1TaskCount !== undefined && { part1TaskCount: test.part1TaskCount }),
-        ...(test.part2TaskCount !== undefined && { part2TaskCount: test.part2TaskCount }),
-        ...(test.restartNumberingInPart2 !== undefined && { restartNumberingInPart2: test.restartNumberingInPart2 }),
-        ...(test.snippets !== undefined && { snippets: test.snippets }),
-      }, null, 2));
-      await testConfigWritable.close();
-
-      // Save completed student feedback
-      for (const feedback of test.studentFeedbacks) {
-        if (feedback.completedDate) {
-          const student = course.students.find(s => s.id === feedback.studentId);
-          if (!student) continue;
-
-          const studentFileName = `${sanitizeFileName(student.name)}.json`;
-          const studentFile = await testDirHandle.getFileHandle(studentFileName, { create: true });
-          const studentWritable = await studentFile.createWritable();
-
-          const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
-
-          await studentWritable.write(JSON.stringify({
-            name: student.name,
-            studentNumber: student.studentNumber,
-            score: score,
-            maxScore: 60,
-            taskFeedbacks: feedback.taskFeedbacks,
-            individualComment: feedback.individualComment,
-            completedDate: feedback.completedDate,
-          }, null, 2));
-          await studentWritable.close();
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Auto-save failed:', error);
-  }
-}
-
-function sanitizeFileName(name: string): string {
-  return name
-    .replace(/[^a-z0-9_\-\s]/gi, '')
-    .replace(/\s+/g, '_')
-    .toLowerCase();
 }
 
 // ==========================================
