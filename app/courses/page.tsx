@@ -33,7 +33,7 @@ import { syncSnippetsFromFolder, migrateSnippetsToFolder } from '@/utils/snippet
 import {
   Plus, Trash2, Users, FileText, Settings, Download, FolderOpen,
   Upload, Shield, Clock, RotateCcw, AlertTriangle, ChevronDown,
-  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff
+  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff, X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -65,6 +65,12 @@ export default function CoursesPage() {
   const [folderConnected, setFolderConnected] = useState(false);
   const [folderName, setFolderName] = useState<string | null>(null);
   const [folderSyncing, setFolderSyncing] = useState(false);
+  const [folderNudgeDismissed, setFolderNudgeDismissed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('folder-nudge-dismissed') === 'true';
+    }
+    return false;
+  });
 
   useEffect(() => {
     // Try to restore folder connection, then load data
@@ -342,6 +348,43 @@ export default function CoursesPage() {
             </Link>
           </div>
         </div>
+
+        {/* Folder nudge banner — shown when courses exist but no folder connected */}
+        {!folderConnected && !folderNudgeDismissed && courses.length > 0 && (
+          <div className="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6 flex items-start gap-3">
+            <AlertTriangle size={24} className="text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-800">{t('course.folderNudgeTitle')}</h3>
+              <p className="text-sm text-amber-700 mt-1">{t('course.folderNudgeDesc')}</p>
+              <div className="flex gap-3 mt-3">
+                <button
+                  onClick={handleConnectFolder}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
+                >
+                  {t('course.folderConnect')}
+                </button>
+                <button
+                  onClick={() => {
+                    setFolderNudgeDismissed(true);
+                    localStorage.setItem('folder-nudge-dismissed', 'true');
+                  }}
+                  className="px-4 py-2 text-amber-700 hover:text-amber-900 text-sm"
+                >
+                  {t('course.folderNudgeDismiss')}
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setFolderNudgeDismissed(true);
+                localStorage.setItem('folder-nudge-dismissed', 'true');
+              }}
+              className="text-amber-400 hover:text-amber-600 flex-shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        )}
 
         {/* Folder storage & settings */}
         <div className="bg-surface rounded-lg shadow-sm border border-border p-6 mb-6">
