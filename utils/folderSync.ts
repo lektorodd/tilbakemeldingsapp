@@ -123,6 +123,7 @@ export function getFolderName(): string | null {
 
 export interface AppSettings {
   language: 'en' | 'nb' | 'nn';
+  darkMode?: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -141,12 +142,15 @@ export async function loadSettingsFromFolder(): Promise<AppSettings | null> {
   }
 }
 
-export async function saveSettingsToFolder(settings: AppSettings): Promise<void> {
+export async function saveSettingsToFolder(settings: Partial<AppSettings>): Promise<void> {
   if (!activeDirHandle) return;
   try {
+    // Load existing settings to merge
+    const existing = await loadSettingsFromFolder() ?? DEFAULT_SETTINGS;
+    const merged = { ...existing, ...settings };
     const fileHandle = await activeDirHandle.getFileHandle('settings.json', { create: true });
     const writable = await fileHandle.createWritable();
-    await writable.write(JSON.stringify(settings, null, 2));
+    await writable.write(JSON.stringify(merged, null, 2));
     await writable.close();
   } catch (e) {
     console.error('Failed to save settings to folder:', e);
