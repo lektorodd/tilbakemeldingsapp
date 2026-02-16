@@ -186,6 +186,9 @@
     "showDetails": "Show Details",
     "hideDetails": "Hide Details",
     "studentFeedback": "Student Feedback",
+    "progressGrid": "Grading Overview",
+    "student": "Student",
+    "total": "Total",
     "studentFeedbackDesc": "Select a student to provide individual feedback",
     "feedbackMarkedComplete": "Feedback marked as complete and auto-saved!",
     "noCompletedFeedback": "No completed feedback to export. Mark at least one student as complete first.",
@@ -604,5 +607,14 @@
     "standardSnippet4": "Well explained!",
     "standardSnippet5": "Sure?",
     "standardSnippet6": "Minor calculation errors"
+  },
+  "sync": {
+    "connected": "Connected",
+    "notConnected": "Not connected",
+    "syncing": "Syncing…",
+    "saved": "Saved",
+    "error": "Sync error",
+    "lastSync": "Last sync",
+    "connectHint": "Connect a folder from the courses page to keep your data safe across browsers and devices."
   }
 }
