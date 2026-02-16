@@ -963,7 +963,7 @@ export function getTaskStudentScores(
  * or the one with a completedDate if the other doesn't have one).
  * Never discard in-progress feedback.
  */
-function mergeFeedbacks(
+export function mergeFeedbacks(
   localFeedbacks: TestFeedbackData[],
   folderFeedbacks: TestFeedbackData[]
 ): TestFeedbackData[] {
@@ -1022,7 +1022,7 @@ function mergeFeedbacks(
  * Merge tests: union-merge by test id.
  * For each test, merge their studentFeedbacks.
  */
-function mergeTests(
+export function mergeTests(
   localTests: CourseTest[],
   folderTests: CourseTest[]
 ): CourseTest[] {

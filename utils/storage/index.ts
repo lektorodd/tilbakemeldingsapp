@@ -49,6 +49,8 @@ export {
     // Folder sync
     syncFromFolder,
     migrateToFolder,
+    mergeFeedbacks,
+    mergeTests,
 
     // Backup system
     createBackup,
