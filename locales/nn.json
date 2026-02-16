@@ -186,6 +186,9 @@
     "showDetails": "Vis detaljar",
     "hideDetails": "Gøym detaljar",
     "studentFeedback": "Elevar tilbakemeldingar",
+    "progressGrid": "Retteoversikt",
+    "student": "Elev",
+    "total": "Totalt",
     "studentFeedbackDesc": "Vel ein elev for å gi individuell tilbakemelding",
     "feedbackMarkedComplete": "Tilbakemelding merka som fullført og autolagra!",
     "noCompletedFeedback": "Ingen fullførte tilbakemeldingar å eksportere. Merk minst ein elev som fullført først.",
@@ -604,5 +607,14 @@
     "standardSnippet4": "Godt forklart!",
     "standardSnippet5": "Sikker?",
     "standardSnippet6": "Små reknefeile"
+  },
+  "sync": {
+    "connected": "Tilkopla",
+    "notConnected": "Ikkje tilkopla",
+    "syncing": "Synkroniserer…",
+    "saved": "Lagra",
+    "error": "Synkfeil",
+    "lastSync": "Sist synkronisert",
+    "connectHint": "Kople til ei mappe frå kurssida for å halde dataa dine trygge på tvers av nettlesarar og einingar."
   }
 }

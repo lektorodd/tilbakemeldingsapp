@@ -9,6 +9,7 @@ import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
 import ScoringGuide from '@/components/ScoringGuide';
 import GradingProgressBar from '@/components/GradingProgressBar';
+import ProgressGrid from '@/components/ProgressGrid';
 import SnippetSidebar from '@/components/SnippetSidebar';
 import { useGradingShortcuts, TaskSlot } from '@/hooks/useGradingShortcuts';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks } from 'lucide-react';
@@ -34,7 +35,7 @@ export default function TestFeedbackPage() {
 
   // Snippet sidebar state
   const [showSnippetSidebar, setShowSnippetSidebar] = useState(false);
-  const [activeSubtask, setActiveSubtask] = useState<{taskId: string, subtaskId?: string} | null>(null);
+  const [activeSubtask, setActiveSubtask] = useState<{ taskId: string, subtaskId?: string } | null>(null);
   const [snippetFilter, setSnippetFilter] = useState<'all' | 'standard' | 'encouragement' | 'error' | 'custom'>('all');
 
   // Track unsaved test config changes
@@ -576,11 +577,10 @@ export default function TestFeedbackPage() {
             </div>
             <button
               onClick={handleSaveTest}
-              className={`flex items-center gap-2 px-5 py-2.5 text-white rounded-lg transition shadow-sm ${
-                hasUnsavedTestConfig
+              className={`flex items-center gap-2 px-5 py-2.5 text-white rounded-lg transition shadow-sm ${hasUnsavedTestConfig
                   ? 'bg-amber-600 hover:bg-amber-700'
                   : 'bg-success hover:bg-emerald-700'
-              }`}
+                }`}
             >
               <Save size={18} />
               {t('test.saveSettings')}
@@ -639,6 +639,15 @@ export default function TestFeedbackPage() {
           totalCount={course.students.length}
         />
 
+        {/* Progress Grid — student × task heatmap */}
+        <ProgressGrid
+          courseId={courseId}
+          test={test}
+          students={course.students}
+          selectedStudentId={selectedStudent?.id}
+          onSelectStudent={setSelectedStudent}
+        />
+
         {/* Student Feedback Section */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -680,353 +689,346 @@ export default function TestFeedbackPage() {
               <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
                 <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
 
-              <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
-                {course.students.length === 0 ? (
-                  <p className="text-sm text-text-disabled text-center py-4">{t('test.noStudentsInCourse')}</p>
-                ) : (
-                  course.students.map(student => {
-                    const feedback = getStudentFeedback(courseId, testId, student.id);
-                    const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
-                    const isCompleted = feedback?.completedDate;
+                <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
+                  {course.students.length === 0 ? (
+                    <p className="text-sm text-text-disabled text-center py-4">{t('test.noStudentsInCourse')}</p>
+                  ) : (
+                    course.students.map(student => {
+                      const feedback = getStudentFeedback(courseId, testId, student.id);
+                      const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
+                      const isCompleted = feedback?.completedDate;
 
-                    return (
-                      <div
-                        key={student.id}
-                        className={`p-3 border rounded-lg transition-colors ${
-                          selectedStudent?.id === student.id
-                            ? 'border-rose-500 bg-rose-50'
-                            : 'border-border hover:bg-surface-alt'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div
-                            className="flex-1 cursor-pointer"
-                            onClick={() => setSelectedStudent(student)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-text-primary">{student.name}</h4>
-                              {isCompleted && (
-                                <CheckCircle size={16} className="text-success" />
+                      return (
+                        <div
+                          key={student.id}
+                          className={`p-3 border rounded-lg transition-colors ${selectedStudent?.id === student.id
+                              ? 'border-rose-500 bg-rose-50'
+                              : 'border-border hover:bg-surface-alt'
+                            }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div
+                              className="flex-1 cursor-pointer"
+                              onClick={() => setSelectedStudent(student)}
+                            >
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium text-text-primary">{student.name}</h4>
+                                {isCompleted && (
+                                  <CheckCircle size={16} className="text-success" />
+                                )}
+                              </div>
+                              {student.studentNumber && (
+                                <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
                               )}
+                              <p className="text-sm font-semibold text-brand mt-1">
+                                {score} / 60
+                              </p>
                             </div>
-                            {student.studentNumber && (
-                              <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
-                            )}
-                            <p className="text-sm font-semibold text-brand mt-1">
-                              {score} / 60
-                            </p>
+                            <Link
+                              href={`/course/${courseId}/student/${student.id}`}
+                              className="p-1 text-brand hover:bg-primary-100 rounded transition"
+                              title={t('test.viewStudentDashboard')}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <BarChart3 size={16} />
+                            </Link>
                           </div>
-                          <Link
-                            href={`/course/${courseId}/student/${student.id}`}
-                            className="p-1 text-brand hover:bg-primary-100 rounded transition"
-                            title={t('test.viewStudentDashboard')}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <BarChart3 size={16} />
-                          </Link>
                         </div>
-                      </div>
-                    );
-                  })
-                )}
+                      );
+                    })
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Feedback form */}
-          <div className="lg:col-span-3">
-            {selectedStudent && currentFeedback ? (
-              <div className="bg-surface rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    {/* Student navigation */}
-                    <div className="flex items-center gap-2 mb-1">
+            {/* Feedback form */}
+            <div className="lg:col-span-3">
+              {selectedStudent && currentFeedback ? (
+                <div className="bg-surface rounded-lg shadow-sm p-6">
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      {/* Student navigation */}
+                      <div className="flex items-center gap-2 mb-1">
+                        <button
+                          onClick={goToPreviousStudent}
+                          disabled={currentStudentIndex <= 0}
+                          className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
+                          title={t('test.previousStudent')}
+                        >
+                          <ChevronLeft size={18} />
+                        </button>
+                        <span className="text-sm text-text-disabled tabular-nums">
+                          {currentStudentIndex + 1} / {course.students.length}
+                        </span>
+                        <button
+                          onClick={goToNextStudent}
+                          disabled={currentStudentIndex >= course.students.length - 1}
+                          className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
+                          title={t('test.nextStudent')}
+                        >
+                          <ChevronRight size={18} />
+                        </button>
+                      </div>
+                      <h2 className="text-2xl font-display font-bold text-text-primary">{selectedStudent.name}</h2>
+                      {selectedStudent.studentNumber && (
+                        <p className="text-sm text-text-secondary">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
+                      )}
+                      <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <ScoringGuide />
+                      <div className="flex gap-2">
+                        {currentFeedback.completedDate ? (
+                          <button
+                            onClick={handleUnmarkComplete}
+                            className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200 transition-colors font-medium"
+                            title={t('test.clickToUnmarkComplete')}
+                          >
+                            <CheckCircle size={18} />
+                            {t('test.completedClickToUndo')}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={handleMarkComplete}
+                            className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
+                          >
+                            <CheckCircle size={18} />
+                            {t('test.markComplete')}
+                          </button>
+                        )}
+                        <button
+                          onClick={handleCompilePDF}
+                          className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                          title={t('test.compileToPDF')}
+                        >
+                          <Download size={18} />
+                          {t('test.generatePDF')}
+                        </button>
+                        <button
+                          onClick={handleExportTypst}
+                          className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                          title={t('test.downloadTypSource')}
+                        >
+                          <FileText size={18} />
+                          .typ
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Task Feedback */}
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
                       <button
-                        onClick={goToPreviousStudent}
-                        disabled={currentStudentIndex <= 0}
-                        className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
-                        title={t('test.previousStudent')}
+                        onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
+                        className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
+                        title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
                       >
-                        <ChevronLeft size={18} />
-                      </button>
-                      <span className="text-sm text-text-disabled tabular-nums">
-                        {currentStudentIndex + 1} / {course.students.length}
-                      </span>
-                      <button
-                        onClick={goToNextStudent}
-                        disabled={currentStudentIndex >= course.students.length - 1}
-                        className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
-                        title={t('test.nextStudent')}
-                      >
-                        <ChevronRight size={18} />
+                        {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+                        {showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
                       </button>
                     </div>
-                    <h2 className="text-2xl font-display font-bold text-text-primary">{selectedStudent.name}</h2>
-                    {selectedStudent.studentNumber && (
-                      <p className="text-sm text-text-secondary">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
-                    )}
-                    <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <ScoringGuide />
-                    <div className="flex gap-2">
-                    {currentFeedback.completedDate ? (
-                      <button
-                        onClick={handleUnmarkComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200 transition-colors font-medium"
-                        title={t('test.clickToUnmarkComplete')}
-                      >
-                        <CheckCircle size={18} />
-                        {t('test.completedClickToUndo')}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleMarkComplete}
-                        className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
-                      >
-                        <CheckCircle size={18} />
-                        {t('test.markComplete')}
-                      </button>
-                    )}
-                    <button
-                      onClick={handleCompilePDF}
-                      className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
-                      title={t('test.compileToPDF')}
-                    >
-                      <Download size={18} />
-                      {t('test.generatePDF')}
-                    </button>
-                    <button
-                      onClick={handleExportTypst}
-                      className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                      title={t('test.downloadTypSource')}
-                    >
-                      <FileText size={18} />
-                      .typ
-                    </button>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Task Feedback */}
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
-                    <button
-                      onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
-                      className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                      title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
-                    >
-                      {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
-                      {showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
-                    </button>
-                  </div>
-
-                  <div className="flex gap-4">
-                    {/* Task list */}
-                    <div className={`space-y-6 mb-6 transition-all ${showSnippetSidebar ? 'flex-1' : 'w-full'}`}>
-                  {test.tasks.map(task => (
-                    <div key={task.id}>
-                      {task.hasSubtasks ? (
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-lg font-semibold text-text-secondary">{t('test.task')} {task.label}</h4>
-                            {task.part && (
-                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                task.part === 1
-                                  ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                  : 'bg-blue-100 text-blue-800 border border-blue-300'
-                              }`}>
-                                {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
-                              </span>
+                    <div className="flex gap-4">
+                      {/* Task list */}
+                      <div className={`space-y-6 mb-6 transition-all ${showSnippetSidebar ? 'flex-1' : 'w-full'}`}>
+                        {test.tasks.map(task => (
+                          <div key={task.id}>
+                            {task.hasSubtasks ? (
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-lg font-semibold text-text-secondary">{t('test.task')} {task.label}</h4>
+                                  {task.part && (
+                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
+                                        ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                        : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                      }`}>
+                                      {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
+                                    </span>
+                                  )}
+                                </div>
+                                {task.subtasks.map(subtask => {
+                                  const feedback = getFeedback(task.id, subtask.id);
+                                  return (
+                                    <div key={subtask.id} className={`ml-4 border rounded-lg p-4 transition-colors ${activeSubtask?.taskId === task.id && activeSubtask?.subtaskId === subtask.id
+                                        ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
+                                        : 'border-border bg-surface-alt'
+                                      }`}>
+                                      <div className="flex items-center gap-4 mb-3">
+                                        <label className="font-medium text-text-secondary min-w-[60px]">
+                                          {task.label}{subtask.label}:
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                          <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
+                                          <div className="flex gap-1">
+                                            {[0, 1, 2, 3, 4, 5, 6].map(p => (
+                                              <button
+                                                key={p}
+                                                type="button"
+                                                onClick={() => handleUpdateFeedback(task.id, subtask.id, { points: p })}
+                                                className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
+                                                    ? 'bg-brand text-white shadow-md scale-110'
+                                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
+                                                  }`}
+                                              >
+                                                {p}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          <span className="text-sm text-text-secondary">/ 6</span>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <label className="block text-sm font-medium text-text-secondary mb-1">
+                                          {t('test.commentLabel')}
+                                        </label>
+                                        <textarea
+                                          ref={(el) => {
+                                            if (el) subtaskTextareaRefs.current.set(`${task.id}-${subtask.id}`, el);
+                                          }}
+                                          value={feedback.comment}
+                                          onChange={(e) =>
+                                            handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
+                                          }
+                                          onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: subtask.id })}
+                                          rows={3}
+                                          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
+                                          placeholder={t('test.commentPlaceholder1')}
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className={`border rounded-lg p-4 transition-colors ${activeSubtask?.taskId === task.id && !activeSubtask?.subtaskId
+                                  ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
+                                  : 'border-border bg-surface-alt'
+                                }`}>
+                                {(() => {
+                                  const feedback = getFeedback(task.id, undefined);
+                                  return (
+                                    <>
+                                      <div className="flex items-center gap-4 mb-3">
+                                        <div className="flex items-center gap-2">
+                                          <label className="font-medium text-text-secondary min-w-[60px]">
+                                            {t('test.task')} {task.label}:
+                                          </label>
+                                          {task.part && (
+                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
+                                                ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                                : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                              }`}>
+                                              {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
+                                          <div className="flex gap-1">
+                                            {[0, 1, 2, 3, 4, 5, 6].map(p => (
+                                              <button
+                                                key={p}
+                                                type="button"
+                                                onClick={() => handleUpdateFeedback(task.id, undefined, { points: p })}
+                                                className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
+                                                    ? 'bg-brand text-white shadow-md scale-110'
+                                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
+                                                  }`}
+                                              >
+                                                {p}
+                                              </button>
+                                            ))}
+                                          </div>
+                                          <span className="text-sm text-text-secondary">/ 6</span>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <label className="block text-sm font-medium text-text-secondary mb-1">
+                                          {t('test.commentLabel')}
+                                        </label>
+                                        <textarea
+                                          ref={(el) => {
+                                            if (el) subtaskTextareaRefs.current.set(`${task.id}-main`, el);
+                                          }}
+                                          value={feedback.comment}
+                                          onChange={(e) =>
+                                            handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
+                                          }
+                                          onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: undefined })}
+                                          rows={3}
+                                          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
+                                          placeholder={t('test.commentPlaceholder2')}
+                                        />
+                                      </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
                             )}
                           </div>
-                          {task.subtasks.map(subtask => {
-                            const feedback = getFeedback(task.id, subtask.id);
-                            return (
-                              <div key={subtask.id} className={`ml-4 border rounded-lg p-4 transition-colors ${
-                              activeSubtask?.taskId === task.id && activeSubtask?.subtaskId === subtask.id
-                                ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
-                                : 'border-border bg-surface-alt'
-                            }`}>
-                                <div className="flex items-center gap-4 mb-3">
-                                  <label className="font-medium text-text-secondary min-w-[60px]">
-                                    {task.label}{subtask.label}:
-                                  </label>
-                                  <div className="flex items-center gap-2">
-                                    <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
-                                    <div className="flex gap-1">
-                                      {[0, 1, 2, 3, 4, 5, 6].map(p => (
-                                        <button
-                                          key={p}
-                                          type="button"
-                                          onClick={() => handleUpdateFeedback(task.id, subtask.id, { points: p })}
-                                          className={`w-9 h-9 rounded-lg font-semibold transition-all ${
-                                            feedback.points === p
-                                              ? 'bg-brand text-white shadow-md scale-110'
-                                              : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
-                                          }`}
-                                        >
-                                          {p}
-                                        </button>
-                                      ))}
-                                    </div>
-                                    <span className="text-sm text-text-secondary">/ 6</span>
-                                  </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-text-secondary mb-1">
-                                    {t('test.commentLabel')}
-                                  </label>
-                                  <textarea
-                                    ref={(el) => {
-                                      if (el) subtaskTextareaRefs.current.set(`${task.id}-${subtask.id}`, el);
-                                    }}
-                                    value={feedback.comment}
-                                    onChange={(e) =>
-                                      handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
-                                    }
-                                    onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: subtask.id })}
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
-                                    placeholder={t('test.commentPlaceholder1')}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className={`border rounded-lg p-4 transition-colors ${
-                          activeSubtask?.taskId === task.id && !activeSubtask?.subtaskId
-                            ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
-                            : 'border-border bg-surface-alt'
-                        }`}>
-                          {(() => {
-                            const feedback = getFeedback(task.id, undefined);
-                            return (
-                              <>
-                                <div className="flex items-center gap-4 mb-3">
-                                  <div className="flex items-center gap-2">
-                                    <label className="font-medium text-text-secondary min-w-[60px]">
-                                      {t('test.task')} {task.label}:
-                                    </label>
-                                    {task.part && (
-                                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                        task.part === 1
-                                          ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                          : 'bg-blue-100 text-blue-800 border border-blue-300'
-                                      }`}>
-                                        {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
-                                    <div className="flex gap-1">
-                                      {[0, 1, 2, 3, 4, 5, 6].map(p => (
-                                        <button
-                                          key={p}
-                                          type="button"
-                                          onClick={() => handleUpdateFeedback(task.id, undefined, { points: p })}
-                                          className={`w-9 h-9 rounded-lg font-semibold transition-all ${
-                                            feedback.points === p
-                                              ? 'bg-brand text-white shadow-md scale-110'
-                                              : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
-                                          }`}
-                                        >
-                                          {p}
-                                        </button>
-                                      ))}
-                                    </div>
-                                    <span className="text-sm text-text-secondary">/ 6</span>
-                                  </div>
-                                </div>
-                                <div>
-                                  <label className="block text-sm font-medium text-text-secondary mb-1">
-                                    {t('test.commentLabel')}
-                                  </label>
-                                  <textarea
-                                    ref={(el) => {
-                                      if (el) subtaskTextareaRefs.current.set(`${task.id}-main`, el);
-                                    }}
-                                    value={feedback.comment}
-                                    onChange={(e) =>
-                                      handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
-                                    }
-                                    onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: undefined })}
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
-                                    placeholder={t('test.commentPlaceholder2')}
-                                  />
-                                </div>
-                              </>
-                            );
-                          })()}
-                        </div>
+                        ))}
+                      </div>
+
+                      {/* Snippet Sidebar */}
+                      {showSnippetSidebar && (
+                        <SnippetSidebar
+                          snippets={allSnippets}
+                          activeSubtask={activeSubtask}
+                          snippetFilter={snippetFilter}
+                          onFilterChange={setSnippetFilter}
+                          onInsertSnippet={insertSnippetIntoSubtask}
+                          onAddSnippet={handleAddSnippet}
+                          onDeleteSnippet={handleDeleteSnippet}
+                        />
                       )}
                     </div>
-                  ))}
-                    </div>
+                  </div>
 
-                    {/* Snippet Sidebar */}
-                    {showSnippetSidebar && (
-                      <SnippetSidebar
-                        snippets={allSnippets}
-                        activeSubtask={activeSubtask}
-                        snippetFilter={snippetFilter}
-                        onFilterChange={setSnippetFilter}
-                        onInsertSnippet={insertSnippetIntoSubtask}
-                        onAddSnippet={handleAddSnippet}
-                        onDeleteSnippet={handleDeleteSnippet}
-                      />
-                    )}
+                  {/* Individual Comment */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-medium text-text-secondary">
+                        {t('test.individualCommentLabel')}
+                      </label>
+                      <div className="flex gap-2">
+                        <SnippetPicker
+                          snippets={allSnippets}
+                          onInsert={(text) => insertSnippet(text, individualCommentRef, false)}
+                          onAddSnippet={handleAddSnippet}
+                          onDeleteSnippet={handleDeleteSnippet}
+                        />
+                        <button
+                          onClick={() => insertLinkTemplate(individualCommentRef, false)}
+                          className="flex items-center gap-1 px-2 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-xs"
+                          title="Insert link template"
+                        >
+                          <Link2 size={14} />
+                          Insert Link
+                        </button>
+                      </div>
+                    </div>
+                    <textarea
+                      ref={individualCommentRef}
+                      value={currentFeedback.individualComment}
+                      onChange={(e) => handleUpdateIndividualComment(e.target.value)}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
+                      placeholder={t('test.individualCommentPlaceholder')}
+                    />
                   </div>
                 </div>
-
-                {/* Individual Comment */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-sm font-medium text-text-secondary">
-                      {t('test.individualCommentLabel')}
-                    </label>
-                    <div className="flex gap-2">
-                      <SnippetPicker
-                        snippets={allSnippets}
-                        onInsert={(text) => insertSnippet(text, individualCommentRef, false)}
-                        onAddSnippet={handleAddSnippet}
-                        onDeleteSnippet={handleDeleteSnippet}
-                      />
-                      <button
-                        onClick={() => insertLinkTemplate(individualCommentRef, false)}
-                        className="flex items-center gap-1 px-2 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-xs"
-                        title="Insert link template"
-                      >
-                        <Link2 size={14} />
-                        Insert Link
-                      </button>
-                    </div>
+              ) : (
+                <div className="bg-surface rounded-lg shadow-sm p-12 flex items-center justify-center">
+                  <div className="text-center text-text-disabled">
+                    <Circle size={48} className="mx-auto mb-4 opacity-50" />
+                    <p>{t('test.selectStudentPrompt')}</p>
                   </div>
-                  <textarea
-                    ref={individualCommentRef}
-                    value={currentFeedback.individualComment}
-                    onChange={(e) => handleUpdateIndividualComment(e.target.value)}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
-                    placeholder={t('test.individualCommentPlaceholder')}
-                  />
                 </div>
-              </div>
-            ) : (
-              <div className="bg-surface rounded-lg shadow-sm p-12 flex items-center justify-center">
-                <div className="text-center text-text-disabled">
-                  <Circle size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>{t('test.selectStudentPrompt')}</p>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </main>

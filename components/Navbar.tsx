@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LanguageSelector from './LanguageSelector';
+import SyncStatusIndicator from './SyncStatusIndicator';
 import { GraduationCap, HelpCircle, Github } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -27,8 +28,9 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right side - GitHub + Help button + Language selector */}
+          {/* Right side - Sync + GitHub + Help + Language */}
           <div className="flex items-center gap-2">
+            <SyncStatusIndicator />
             <a
               href="https://github.com/lektorodd/tilbakemeldingsapp"
               target="_blank"
@@ -54,3 +56,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
