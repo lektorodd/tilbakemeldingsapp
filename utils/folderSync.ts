@@ -76,8 +76,9 @@ export async function chooseFolderAndConnect(): Promise<boolean> {
     });
 
     // Request write permission
-    // @ts-ignore
+    // @ts-ignore — requestPermission is not in the TS lib types yet
     if (handle.requestPermission) {
+      // @ts-ignore
       const perm = await handle.requestPermission({ mode: 'readwrite' });
       if (perm !== 'granted') return false;
     }

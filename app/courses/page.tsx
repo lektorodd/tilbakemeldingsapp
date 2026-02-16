@@ -5,9 +5,6 @@ import { Course } from '@/types';
 import {
   loadAllCourses,
   saveCourse,
-  setupAutoSaveDirectory,
-  isAutoSaveEnabled,
-  disableAutoSave,
   exportAllCourses,
   importCourses,
   importFromFolder,
@@ -52,7 +49,6 @@ export default function CoursesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newCourseName, setNewCourseName] = useState('');
   const [newCourseDescription, setNewCourseDescription] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(false);
   const [showBackupPanel, setShowBackupPanel] = useState(false);
   const [backups, setBackups] = useState<BackupEntry[]>([]);
@@ -97,7 +93,6 @@ export default function CoursesPage() {
       }
 
       loadData();
-      setAutoSaveEnabled(isAutoSaveEnabled());
       setAutoBackupEnabled(isAutoBackupRunning());
 
       // Start auto-backup on page load
@@ -158,20 +153,6 @@ export default function CoursesPage() {
       safeDeleteCourse(courseId);
       loadData();
     }
-  };
-
-  const handleSetupAutoSave = async () => {
-    const success = await setupAutoSaveDirectory();
-    if (success) {
-      setAutoSaveEnabled(true);
-      toast(t('course.autoSaveEnabled'), 'success');
-    }
-  };
-
-  const handleDisableAutoSave = () => {
-    disableAutoSave();
-    setAutoSaveEnabled(false);
-    toast(t('course.autoSaveDisabled'), 'success');
   };
 
   const handleConnectFolder = async () => {
@@ -399,38 +380,6 @@ export default function CoursesPage() {
               </button>
             )}
           </div>
-
-          {/* Legacy auto-save (only show if no folder connected) */}
-          {!folderConnected && (
-          <div className="flex items-center justify-between mb-4 border-t border-border pt-4">
-            <div className="flex items-center gap-3">
-              <Settings size={24} className="text-text-secondary" />
-              <div>
-                <h3 className="text-sm font-display font-semibold text-text-primary">{t('course.autoSaveSettings')}</h3>
-                <p className="text-sm text-text-secondary">
-                  {autoSaveEnabled
-                    ? t('course.autoSaveEnabledDesc')
-                    : t('course.autoSaveDisabledDesc')}
-                </p>
-              </div>
-            </div>
-            {autoSaveEnabled ? (
-              <button
-                onClick={handleDisableAutoSave}
-                className="px-4 py-2 bg-text-secondary text-white rounded-lg hover:bg-text-primary transition-colors text-sm"
-              >
-                {t('course.disableAutoSave')}
-              </button>
-            ) : (
-              <button
-                onClick={handleSetupAutoSave}
-                className="px-4 py-2 bg-success text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
-              >
-                {t('course.setupAutoSave')}
-              </button>
-            )}
-          </div>
-          )}
 
           {/* Auto-backup status */}
           <div className="flex items-center justify-between border-t border-border pt-4">
