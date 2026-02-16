@@ -1,7 +1,7 @@
 'use client';
 
 import { Course } from '@/types';
-import { ImportResult } from '@/utils/courseStorage';
+import { ImportResult } from '@/utils/storage';
 import { Plus, RotateCcw, AlertTriangle, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 

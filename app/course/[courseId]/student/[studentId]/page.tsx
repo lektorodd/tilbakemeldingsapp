@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getStudentDetailedAnalytics, loadCourse } from '@/utils/courseStorage';
+import { getStudentDetailedAnalytics, loadCourse } from '@/utils/storage';
 import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';

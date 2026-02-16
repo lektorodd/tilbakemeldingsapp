@@ -21,7 +21,7 @@ import {
   migrateToFolder,
   BackupEntry,
   ImportResult,
-} from '@/utils/courseStorage';
+} from '@/utils/storage';
 import {
   initFolderSync,
   chooseFolderAndConnect,

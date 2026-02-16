@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateStudentScore, calculateMaxScore, calculateOralScore } from '@/utils/courseStorage';
+import { calculateStudentScore, calculateMaxScore, calculateOralScore } from '@/utils/storage';
 import { calculateTotalPoints, calculateMaxPoints } from '@/utils/typstExport';
 import { Task, TaskFeedback, OralFeedbackData } from '@/types';
 

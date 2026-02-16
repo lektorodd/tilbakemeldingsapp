@@ -1,5 +1,5 @@
 import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore } from '@/types';
-import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from './folderSync';
+import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from '../folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
 const BACKUP_KEY_PREFIX = 'math-feedback-backup-';
@@ -1063,7 +1063,7 @@ function mergeTests(
  * Returns true if sync completed.
  */
 export async function syncFromFolder(): Promise<boolean> {
-  const { loadCoursesFromFolder } = await import('./folderSync');
+  const { loadCoursesFromFolder } = await import('../folderSync');
   const folderCourses = await loadCoursesFromFolder();
   if (folderCourses === null) return false;
 
