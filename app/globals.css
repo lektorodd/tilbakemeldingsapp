@@ -2,16 +2,96 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Light Theme (default) ===== */
 :root {
+  /* Fonts */
   --font-source-sans: 'Source Sans Pro', 'Source Sans 3', system-ui, sans-serif;
   --font-roboto-slab: 'Roboto Slab', Georgia, serif;
   --font-jetbrains-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Backgrounds */
+  --color-background: #F5F6F8;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #E2E4E8;
+
+  /* Text */
+  --color-text-primary: #1A1D23;
+  --color-text-secondary: #555B68;
+  --color-text-disabled: #8B919D;
+
+  /* Border */
+  --color-border: #C5C8CF;
+
+  /* Brand / Primary */
+  --color-brand: #008B8B;
+  --color-brand-hover: #007F7F;
+  --color-brand-active: #006666;
+
+  /* Accent */
+  --color-accent: #D85A5A;
+
+  /* Links */
+  --color-link: #6B46C1;
+  --color-link-hover: #553C9A;
+  --color-link-visited: #9333EA;
+
+  /* Functional */
+  --color-success: #10B981;
+  --color-success-bg: #D1FAE5;
+  --color-warning: #F59E0B;
+  --color-warning-bg: #FEF3C7;
+  --color-danger: #DC2626;
+  --color-danger-bg: #FEE2E2;
+  --color-info: #3B82F6;
+  --color-info-bg: #DBEAFE;
+  --color-highlight: #FBBF24;
+  --color-highlight-bg: #FEF3C7;
+
+  /* Focus ring */
+  --color-focus: #008B8B;
+}
+
+/* ===== Dark Theme ===== */
+.dark {
+  --color-background: #0F1117;
+  --color-surface: #1A1D23;
+  --color-surface-alt: #2C3038;
+
+  --color-text-primary: #E2E4E8;
+  --color-text-secondary: #A8ADB6;
+  --color-text-disabled: #6E7481;
+
+  --color-border: #3E434E;
+
+  --color-brand: #33A3A3;
+  --color-brand-hover: #1A9797;
+  --color-brand-active: #008B8B;
+
+  --color-accent: #E07B7B;
+
+  --color-link: #A78BFA;
+  --color-link-hover: #C4B5FD;
+  --color-link-visited: #D8B4FE;
+
+  --color-success: #34D399;
+  --color-success-bg: #064E3B;
+  --color-warning: #FBBF24;
+  --color-warning-bg: #78350F;
+  --color-danger: #F87171;
+  --color-danger-bg: #7F1D1D;
+  --color-info: #60A5FA;
+  --color-info-bg: #1E3A5F;
+  --color-highlight: #FBBF24;
+  --color-highlight-bg: #78350F;
+
+  --color-focus: #33A3A3;
 }
 
 @layer base {
   body {
     @apply bg-background text-text-primary;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {

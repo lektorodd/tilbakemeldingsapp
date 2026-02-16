@@ -40,6 +40,12 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
     );
   };
 
+  const updateTaskWeight = (taskId: string, weight: number | undefined) => {
+    onTasksChange(
+      tasks.map(t => (t.id === taskId ? { ...t, weight } : t))
+    );
+  };
+
   const toggleSubtasks = (taskId: string) => {
     onTasksChange(
       tasks.map(t => {
@@ -224,13 +230,27 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                   />
                 </div>
 
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-medium text-text-secondary">{t('test.taskWeight')}</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={task.weight ?? ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      updateTaskWeight(task.id, val === '' ? undefined : Math.max(1, parseInt(val) || 1));
+                    }}
+                    className="w-16 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
+                    placeholder="1"
+                  />
+                </div>
+
                 {/* Part indicator badge */}
                 {task.part && (
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                    task.part === 1
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
                       ? 'bg-orange-100 text-orange-800 border border-orange-300'
                       : 'bg-blue-100 text-blue-800 border border-blue-300'
-                  }`}>
+                    }`}>
                     {task.part === 1 ? 'Part 1' : 'Part 2'}
                   </span>
                 )}
@@ -287,11 +307,10 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                       <button
                         key={label}
                         onClick={() => toggleTaskLabel(task.id, label)}
-                        className={`px-2 py-0.5 rounded-full text-xs transition ${
-                          task.labels.includes(label)
+                        className={`px-2 py-0.5 rounded-full text-xs transition ${task.labels.includes(label)
                             ? 'bg-primary-600 text-white'
                             : 'bg-surface text-text-secondary hover:bg-gray-300 border border-border'
-                        }`}
+                          }`}
                       >
                         {label}
                       </button>
@@ -394,11 +413,10 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                               <button
                                 key={label}
                                 onClick={() => toggleSubtaskLabel(task.id, subtask.id, label)}
-                                className={`px-2 py-0.5 rounded-full text-xs transition ${
-                                  subtask.labels.includes(label)
+                                className={`px-2 py-0.5 rounded-full text-xs transition ${subtask.labels.includes(label)
                                     ? 'bg-primary-600 text-white'
                                     : 'bg-white text-text-secondary hover:bg-gray-200 border border-border'
-                                }`}
+                                  }`}
                               >
                                 {label}
                               </button>

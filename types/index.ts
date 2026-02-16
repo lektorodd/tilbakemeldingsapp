@@ -6,6 +6,7 @@ export interface Task {
   labels: string[]; // e.g., ["logarithms", "equations", "algebra"]
   category?: number; // 1, 2, or 3
   part?: 1 | 2; // 1 = no aids, 2 = all aids
+  weight?: number; // Task weight for scoring (default: 1). Controls how much this task counts toward the total score.
 }
 
 export interface Subtask {

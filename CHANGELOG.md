@@ -2,6 +2,36 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.4.0] — 2026-02-16
+
+### Added
+- **Task weighting** — each task can now have a custom weight (integer ≥ 1) that controls how much it contributes to the overall score. Tasks without an explicit weight default to 1.
+- Weight input field in the task configuration UI, placed beside the task label.
+- i18n keys for weight label in English, Bokmål, and Nynorsk.
+- 4 new unit tests for weighted scoring scenarios.
+
+### Changed
+- **Scoring algorithm**: `calculateStudentScore()` now computes a weighted average. For tasks with subtasks, subtask scores are averaged at the task level first, then each task's average is weighted. This fixes unfairness where tasks with many subtasks dominated the score.
+- Updated "mixed tasks" test to reflect the corrected scoring behavior.
+
+---
+
+## [0.3.0] — 2026-02-16
+
+### Added
+- **Sync status indicator** in the navbar — shows folder connection state (connected / syncing / saved / error) with hover tooltip displaying folder name and last sync time.
+- **Progress grid** on the grading page — student × task heatmap with color-coded cells (green 5-6, amber 3-4, red 1-2, blue comment-only). Click any row to select that student.
+- **Dark mode** — sun/moon toggle in navbar, system preference detection, localStorage + folder sync persistence. All existing UI auto-adapts via CSS custom properties.
+- **Version display** — `v0.3.0` badge shown in the navbar.
+- **Test coverage** — 46 new unit tests (84 total across 6 suites) for merge logic, backup/restore, and import/export.
+- `SyncContext` for global sync state management.
+- `localStorage` mock setup for Vitest/jsdom test environment.
+
+### Changed
+- Exported `mergeFeedbacks` and `mergeTests` from storage barrel for direct unit testing.
+- `saveSettingsToFolder` now accepts `Partial<AppSettings>` and merges with existing settings.
+- All semantic Tailwind colors converted to CSS custom properties for theme switching.
+
 ## [0.2.0] — 2026-02-16
 
 ### Fixed

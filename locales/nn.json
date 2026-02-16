@@ -294,7 +294,9 @@
     "noComment": "Ingen kommentar",
     "notAttempted": "Ikkje forsøkt",
     "addLabelInline": "Ny",
-    "newLabelPlaceholder": "t.d. logaritmar"
+    "newLabelPlaceholder": "t.d. logaritmar",
+    "taskWeight": "Vekt",
+    "taskWeightDefault": "Standard: lik"
   },
   "oral": {
     "title": "Munnleg vurdering",

@@ -6,10 +6,11 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Neutral palette (from brand guide)
+        // Neutral palette (static, used for explicit color references)
         neutral: {
           900: '#1A1D23',
           800: '#2C3038',
@@ -23,17 +24,17 @@ const config: Config = {
           50: '#F5F6F8',
         },
 
-        // Semantic backgrounds
-        background: '#F5F6F8',
-        surface: '#FFFFFF',
-        'surface-alt': '#E2E4E8',
+        // Semantic backgrounds (CSS-variable-driven)
+        background: 'var(--color-background)',
+        surface: 'var(--color-surface)',
+        'surface-alt': 'var(--color-surface-alt)',
 
         // Text colors
-        'text-primary': '#1A1D23',
-        'text-secondary': '#555B68',
-        'text-disabled': '#8B919D',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'text-disabled': 'var(--color-text-disabled)',
 
-        // Primary — Deep Teal
+        // Primary — Deep Teal (static palette for explicit use)
         primary: {
           900: '#004D4D',
           800: '#006666',
@@ -48,18 +49,18 @@ const config: Config = {
           50: '#CCE9E9',
         },
 
-        // Brand (alias for primary, backward compat)
+        // Brand (CSS-variable-driven for theme switching)
         brand: {
-          DEFAULT: '#008B8B',
-          hover: '#007F7F',
-          active: '#006666',
+          DEFAULT: 'var(--color-brand)',
+          hover: 'var(--color-brand-hover)',
+          active: 'var(--color-brand-active)',
         },
 
         // Accent — Warm Coral
         accent: {
           900: '#8B3A3A',
           800: '#A34545',
-          DEFAULT: '#D85A5A',
+          DEFAULT: 'var(--color-accent)',
           700: '#C05050',
           600: '#D85A5A',
           500: '#D85A5A',
@@ -72,40 +73,40 @@ const config: Config = {
 
         // Functional — Links
         link: {
-          DEFAULT: '#6B46C1',
-          hover: '#553C9A',
-          visited: '#9333EA',
+          DEFAULT: 'var(--color-link)',
+          hover: 'var(--color-link-hover)',
+          visited: 'var(--color-link-visited)',
         },
 
         // Functional — Highlight
         highlight: {
-          DEFAULT: '#FBBF24',
-          bg: '#FEF3C7',
+          DEFAULT: 'var(--color-highlight)',
+          bg: 'var(--color-highlight-bg)',
         },
 
         // Semantic colors
         success: {
-          DEFAULT: '#10B981',
-          bg: '#D1FAE5',
+          DEFAULT: 'var(--color-success)',
+          bg: 'var(--color-success-bg)',
         },
         warning: {
-          DEFAULT: '#F59E0B',
-          bg: '#FEF3C7',
+          DEFAULT: 'var(--color-warning)',
+          bg: 'var(--color-warning-bg)',
         },
         danger: {
-          DEFAULT: '#DC2626',
-          bg: '#FEE2E2',
+          DEFAULT: 'var(--color-danger)',
+          bg: 'var(--color-danger-bg)',
         },
         info: {
-          DEFAULT: '#3B82F6',
-          bg: '#DBEAFE',
+          DEFAULT: 'var(--color-info)',
+          bg: 'var(--color-info-bg)',
         },
 
-        focus: '#008B8B',
+        focus: 'var(--color-focus)',
       },
       borderColor: {
-        DEFAULT: '#C5C8CF',
-        border: '#C5C8CF',
+        DEFAULT: 'var(--color-border)',
+        border: 'var(--color-border)',
       },
       fontFamily: {
         sans: ['"Source Sans Pro"', '"Source Sans 3"', 'system-ui', 'sans-serif'],
