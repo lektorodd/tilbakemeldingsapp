@@ -2,6 +2,22 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.3.0] — 2026-02-16
+
+### Added
+- **Sync status indicator** in the navbar — shows folder connection state (connected / syncing / saved / error) with hover tooltip displaying folder name and last sync time.
+- **Progress grid** on the grading page — student × task heatmap with color-coded cells (green 5-6, amber 3-4, red 1-2, blue comment-only). Click any row to select that student.
+- **Dark mode** — sun/moon toggle in navbar, system preference detection, localStorage + folder sync persistence. All existing UI auto-adapts via CSS custom properties.
+- **Version display** — `v0.3.0` badge shown in the navbar.
+- **Test coverage** — 46 new unit tests (84 total across 6 suites) for merge logic, backup/restore, and import/export.
+- `SyncContext` for global sync state management.
+- `localStorage` mock setup for Vitest/jsdom test environment.
+
+### Changed
+- Exported `mergeFeedbacks` and `mergeTests` from storage barrel for direct unit testing.
+- `saveSettingsToFolder` now accepts `Partial<AppSettings>` and merges with existing settings.
+- All semantic Tailwind colors converted to CSS custom properties for theme switching.
+
 ## [0.2.0] — 2026-02-16
 
 ### Fixed
