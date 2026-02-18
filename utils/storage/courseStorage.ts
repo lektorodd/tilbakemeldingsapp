@@ -35,7 +35,31 @@ export function saveCourse(course: Course): void {
 export function loadAllCourses(): Course[] {
   if (typeof window !== 'undefined') {
     const stored = localStorage.getItem(COURSES_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+    const courses: Course[] = JSON.parse(stored);
+    // Deduplicate on read — safety net for any prior sync bugs
+    const deduped = deduplicateCourses(courses);
+
+    // Migrate old data: convert points:0 + empty comment → points:null (ungraded)
+    let migrated = false;
+    deduped.forEach(course => {
+      course.tests.forEach(test => {
+        test.studentFeedbacks.forEach(fb => {
+          fb.taskFeedbacks.forEach(tf => {
+            if (tf.points === 0 && (!tf.comment || tf.comment.trim() === '')) {
+              tf.points = null;
+              migrated = true;
+            }
+          });
+        });
+      });
+    });
+
+    if (deduped.length !== courses.length || migrated) {
+      // Persist cleaned/migrated data
+      localStorage.setItem(COURSES_KEY, JSON.stringify(deduped));
+    }
+    return deduped;
   }
   return [];
 }
@@ -491,7 +515,7 @@ export function getLabelPerformance(courseId: string): LabelPerformance[] {
           const labelData = labelMap.get(label);
           if (!labelData) return;
 
-          labelData.totalPoints += taskFeedback.points;
+          labelData.totalPoints += taskFeedback.points ?? 0;
           labelData.totalTasks += 1;
 
           // Update student-specific data
@@ -500,7 +524,7 @@ export function getLabelPerformance(courseId: string): LabelPerformance[] {
             labelData.studentScores.set(studentId, { totalPoints: 0, taskCount: 0 });
           }
           const studentData = labelData.studentScores.get(studentId)!;
-          studentData.totalPoints += taskFeedback.points;
+          studentData.totalPoints += taskFeedback.points ?? 0;
           studentData.taskCount += 1;
         });
       });
@@ -570,7 +594,7 @@ export function getCategoryPerformance(courseId: string): CategoryPerformance[] 
         const categoryData = categoryMap.get(category);
         if (!categoryData) return;
 
-        categoryData.totalPoints += taskFeedback.points;
+        categoryData.totalPoints += taskFeedback.points ?? 0;
         categoryData.totalTasks += 1;
       });
     });
@@ -621,7 +645,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     }
 
     const totalTasks = countTasks(test.tasks);
-    const tasksAttempted = feedback.taskFeedbacks.filter(f => f.points > 0).length;
+    const tasksAttempted = feedback.taskFeedbacks.filter(f => f.points !== null && f.points > 0).length;
     const attemptPercentage = totalTasks > 0 ? (tasksAttempted / totalTasks) * 100 : 0;
 
     // Calculate score distribution (how many tasks got 0, 1, 2, 3, 4, 5, 6 points)
@@ -629,7 +653,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
     // Count feedback entries
     feedback.taskFeedbacks.forEach(tf => {
-      const points = Math.min(6, Math.max(0, tf.points)); // Clamp to 0-6
+      const points = tf.points !== null ? Math.min(6, Math.max(0, tf.points)) : 0; // Clamp to 0-6
       scoreDistribution[points] = (scoreDistribution[points] || 0) + 1;
     });
 
@@ -679,7 +703,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
       labels.forEach(label => {
         const data = labelPerformance.get(label);
         if (data) {
-          data.totalPoints += taskFeedback.points;
+          data.totalPoints += taskFeedback.points ?? 0;
           data.taskCount += 1;
         }
       });
@@ -719,7 +743,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
       const data = categoryPerformance.get(category);
       if (data) {
-        data.totalPoints += taskFeedback.points;
+        data.totalPoints += taskFeedback.points ?? 0;
         data.taskCount += 1;
       }
     });
@@ -750,7 +774,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
       const data = partPerformance.get(task.part);
       if (data) {
-        data.totalPoints += taskFeedback.points;
+        data.totalPoints += taskFeedback.points ?? 0;
         data.taskCount += 1;
       }
     });
@@ -899,23 +923,25 @@ function calculateTaskAnalytics(
   };
 
   let totalPoints = 0;
-  let attemptCount = 0; // Students who scored 1+ points
+  let attemptCount = 0; // Students who were graded (points !== null)
 
   feedbacks.forEach(feedback => {
-    const points = Math.min(6, Math.max(0, feedback.points));
-    scoreDistribution[points]++;
-    totalPoints += points;
-
-    if (points >= 1) {
+    const points = feedback.points !== null ? Math.min(6, Math.max(0, feedback.points)) : null;
+    if (points !== null) {
+      scoreDistribution[points]++;
+      totalPoints += points;
       attemptCount++;
+    } else {
+      scoreDistribution[0]++;
     }
   });
 
-  // Account for students who didn't attempt (no feedback entry)
-  const unattempted = totalStudents - feedbacks.length;
-  scoreDistribution[0] += unattempted;
+  // Account for students who don't have a feedback entry at all
+  const noEntry = totalStudents - feedbacks.length;
+  scoreDistribution[0] += noEntry;
 
-  const averageScore = feedbacks.length > 0 ? totalPoints / feedbacks.length : 0;
+  const gradedCount = attemptCount;
+  const averageScore = gradedCount > 0 ? totalPoints / gradedCount : 0;
   const attemptPercentage = totalStudents > 0 ? (attemptCount / totalStudents) * 100 : 0;
 
   // Build labels
@@ -967,11 +993,125 @@ export function getTaskStudentScores(
       studentId: student.id,
       studentName: student.name,
       studentNumber: student.studentNumber,
-      points: taskFeedback?.points ?? 0,
+      points: taskFeedback?.points ?? null,
       comment: taskFeedback?.comment ?? '',
-      hasAttempted: (taskFeedback?.points ?? 0) > 0 || (taskFeedback?.comment ?? '').trim().length > 0,
+      hasAttempted: (taskFeedback?.points !== null && taskFeedback?.points !== undefined) || (taskFeedback?.comment ?? '').trim().length > 0,
     };
   });
+}
+
+// Class Progress Analytics — per-test class averages for progress chart
+export interface ClassProgressPoint {
+  testId: string;
+  testName: string;
+  testDate: string;
+  averageScore: number;   // 0–60 weighted average across completed students
+  blankPercentage: number; // 0–100, % of task slots left ungraded (points === null)
+  completedStudents: number;
+}
+
+export function getClassProgressData(courseId: string): ClassProgressPoint[] {
+  const course = loadCourse(courseId);
+  if (!course) return [];
+
+  return course.tests
+    .slice()
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map(test => {
+      const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
+      if (completedFeedbacks.length === 0) return null;
+
+      // Average score across completed students
+      const scores = completedFeedbacks.map(f =>
+        calculateStudentScore(test.tasks, f.taskFeedbacks)
+      );
+      const averageScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+
+      // Blank percentage: count task slots where points === null
+      const totalSlots = countTasks(test.tasks);
+      let totalBlank = 0;
+      let totalSlotCount = 0;
+
+      completedFeedbacks.forEach(f => {
+        test.tasks.forEach(task => {
+          if (task.hasSubtasks && task.subtasks.length > 0) {
+            task.subtasks.forEach(st => {
+              const tf = f.taskFeedbacks.find(
+                fb => fb.taskId === task.id && fb.subtaskId === st.id
+              );
+              totalSlotCount++;
+              if (!tf || tf.points === null) totalBlank++;
+            });
+          } else {
+            const tf = f.taskFeedbacks.find(
+              fb => fb.taskId === task.id && !fb.subtaskId
+            );
+            totalSlotCount++;
+            if (!tf || tf.points === null) totalBlank++;
+          }
+        });
+      });
+
+      const blankPercentage = totalSlotCount > 0
+        ? (totalBlank / totalSlotCount) * 100
+        : 0;
+
+      return {
+        testId: test.id,
+        testName: test.name,
+        testDate: test.date,
+        averageScore: Math.round(averageScore * 10) / 10,
+        blankPercentage: Math.round(blankPercentage * 10) / 10,
+        completedStudents: completedFeedbacks.length,
+      };
+    })
+    .filter((p): p is ClassProgressPoint => p !== null);
+}
+
+// ==========================================
+// DEDUPLICATION HELPER
+// ==========================================
+
+/**
+ * Remove duplicate courses that have the same name (case-insensitive).
+ * When duplicates are found, keep the one that has the most data
+ * (more tests, students, or feedback), or the most recently modified.
+ * This handles the case where folder sync created a second copy of a
+ * course with a different id.
+ */
+export function deduplicateCourses(courses: Course[]): Course[] {
+  const seen = new Map<string, Course>();
+
+  for (const course of courses) {
+    const key = course.name.trim().toLowerCase();
+    const existing = seen.get(key);
+    if (!existing) {
+      seen.set(key, course);
+    } else {
+      // Keep the one with more data
+      const existingScore = courseDataScore(existing);
+      const newScore = courseDataScore(course);
+      if (newScore > existingScore) {
+        seen.set(key, course);
+      } else if (newScore === existingScore) {
+        // Same amount of data — prefer newer lastModified
+        if (new Date(course.lastModified) > new Date(existing.lastModified)) {
+          seen.set(key, course);
+        }
+      }
+      // else keep existing
+    }
+  }
+
+  return Array.from(seen.values());
+}
+
+function courseDataScore(course: Course): number {
+  const feedbackCount = course.tests.reduce(
+    (sum, t) => sum + t.studentFeedbacks.filter(f => f.completedDate).length,
+    0
+  );
+  return course.students.length + course.tests.length * 10 + feedbackCount * 100;
 }
 
 // ==========================================
@@ -1144,13 +1284,16 @@ export async function syncFromFolder(): Promise<boolean> {
     }
   }
 
+  // Deduplicate by name — catches cases where folder courses got new IDs
+  const dedupedCourses = deduplicateCourses(mergedCourses);
+
   // Save merged result to localStorage
   if (typeof window !== 'undefined') {
-    localStorage.setItem(COURSES_KEY, JSON.stringify(mergedCourses));
+    localStorage.setItem(COURSES_KEY, JSON.stringify(dedupedCourses));
   }
 
   // Write merged result back to folder so it stays in sync
-  await saveAllCoursesToFolder(mergedCourses);
+  await saveAllCoursesToFolder(dedupedCourses);
 
   return true;
 }

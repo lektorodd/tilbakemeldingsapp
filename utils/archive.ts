@@ -86,7 +86,7 @@ export function calculateTaskStatistics(archive: ArchivedFeedback[], testName?: 
         });
       }
 
-      statsMap.get(key)!.points.push(tf.points);
+      statsMap.get(key)!.points.push(tf.points ?? 0);
     });
   });
 

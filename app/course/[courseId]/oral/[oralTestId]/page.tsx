@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, OralTest, CourseStudent, OralFeedbackData, OralFeedbackDimension, OralFeedbackDimensionType } from '@/types';
 import { loadCourse, updateOralAssessment, getOralAssessment, calculateOralScore } from '@/utils/storage';
-import { generateOralTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
+import { generateOralTypstDocument, downloadTypstFile, compileAndDownloadPDF, compileAndGetPDFBlob } from '@/utils/typstExport';
+import PdfPreviewModal from '@/components/PdfPreviewModal';
 import OralFeedbackForm from '@/components/OralFeedbackForm';
-import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -25,6 +26,10 @@ export default function OralAssessmentPage() {
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<OralFeedbackData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // PDF preview state
+  const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
+  const [previewPdfFilename, setPreviewPdfFilename] = useState<string>('');
 
   useEffect(() => {
     loadData();
@@ -184,6 +189,34 @@ export default function OralAssessmentPage() {
     }
   };
 
+  const handlePreviewPDF = async () => {
+    if (!selectedStudent || !currentFeedback || !oralTest) return;
+
+    const typstContent = generateOralTypstDocument({
+      studentName: selectedStudent.name,
+      studentNumber: selectedStudent.studentNumber,
+      oralTestName: oralTest.name,
+      oralTestDate: oralTest.date,
+      oralFeedback: currentFeedback,
+      language,
+    });
+
+    const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
+    const blob = await compileAndGetPDFBlob(typstContent, filename);
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      setPreviewPdfUrl(url);
+      setPreviewPdfFilename(filename);
+    }
+  };
+
+  const closePreview = () => {
+    if (previewPdfUrl) {
+      URL.revokeObjectURL(previewPdfUrl);
+    }
+    setPreviewPdfUrl(null);
+  };
+
   if (!course || !oralTest) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -258,11 +291,10 @@ export default function OralAssessmentPage() {
                       <button
                         key={student.id}
                         onClick={() => setSelectedStudent(student)}
-                        className={`w-full text-left p-3 rounded-lg border transition-all ${
-                          isSelected
+                        className={`w-full text-left p-3 rounded-lg border transition-all ${isSelected
                             ? 'bg-primary-100 border-primary-500 shadow-md'
                             : 'bg-background border-border hover:border-primary-300 hover:bg-primary-50'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium text-text-primary text-sm">{student.name}</span>
@@ -336,12 +368,19 @@ export default function OralAssessmentPage() {
                       </button>
                     )}
                     <button
-                      onClick={handleGeneratePDF}
+                      onClick={handlePreviewPDF}
                       className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                      title={t('test.previewPDF')}
+                    >
+                      <Eye size={18} />
+                      {t('test.previewPDF')}
+                    </button>
+                    <button
+                      onClick={handleGeneratePDF}
+                      className="flex items-center gap-2 px-3 py-2 bg-brand/80 text-white rounded-lg hover:bg-brand transition"
                       title={t('test.compileToPDF')}
                     >
-                      <FileText size={18} />
-                      {t('test.generatePDF')}
+                      <Download size={18} />
                     </button>
                     <button
                       onClick={handleDownloadTypst}
@@ -366,6 +405,11 @@ export default function OralAssessmentPage() {
           </div>
         </div>
       </div>
+      <PdfPreviewModal
+        pdfUrl={previewPdfUrl}
+        filename={previewPdfFilename}
+        onClose={closePreview}
+      />
     </main>
   );
 }

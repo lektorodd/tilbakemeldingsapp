@@ -32,7 +32,8 @@
     "createCourse": "Opprett nytt fag",
     "noCourses": "Ingen fag oppretta enno",
     "courseName": "Fagnamn",
-    "courseNamePlaceholder": "t.d. R1 2025/2026"
+    "courseNamePlaceholder": "t.d. R1 2025/2026",
+    "settingsAndTools": "Innstillingar og verktøy"
   },
   "course": {
     "students": "Elevar",
@@ -154,10 +155,10 @@
     "addButton": "Legg til",
     "cancelButton": "Avbryt",
     "noLabelsYet": "Ingen merkelappar enno. Legg til merkelappar for å kategorisere oppgåver etter tema/ferdigheit.",
-    "labelsHelpText": "Merkelappar hjelper deg å spore elevprestasjonar på tvers av tema (t.d. \"brøk\", \"logaritmar\"). Legg til fleire merkelappar på oppgåver som dekker fleire emne.",
+    "labelsHelpText": "Merkelappar hjelper deg å spore elevprestasjonar på tvers av tema. Bruk / for å gruppere, t.d. \"sannsyn/grunnleggande\" og \"sannsyn/simulering\".",
     "labelAlreadyExists": "Denne merkelappen finst allereie!",
     "removeLabelConfirm": "Fjern merkelappen \"{label}\"? Dette vil ikkje fjerne han frå eksisterande oppgåver.",
-    "labelPlaceholder": "t.d. logaritmar, brøk, likningar"
+    "labelPlaceholder": "t.d. sannsyn/grunnleggande"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",
@@ -210,6 +211,9 @@
     "markComplete": "Merk som fullført",
     "compileToPDF": "Kompiler til PDF direkte",
     "generatePDF": "Generer PDF",
+    "previewPDF": "Førehandsvis PDF",
+    "closePDFPreview": "Lukk førehandsvisning",
+    "downloadPDF": "Last ned PDF",
     "downloadTypSource": "Last ned .typ kjeldefil",
     "taskFeedbackTitle": "Oppgåvetilbakemelding",
     "task": "Oppgåve",
@@ -434,6 +438,10 @@
     "analyticsHelp2": "Kategoriar hjelper deg å gruppere oppgåver etter vanskegrad eller type (1, 2, 3)",
     "analyticsHelp3": "Klikk på eit tema for å sjå individuelle elevprestasjonar for det emnet",
     "analyticsHelp4": "Grøn (5-6), Gul (3.5-4.9), Raud (<3.5) indikerer prestasjonsnivå",
+    "classProgressTitle": "Klasseutvikling",
+    "classProgressDesc": "Snittpoeng og % blanke frå test til test",
+    "avgScore": "Snittpoeng",
+    "blankPct": "% blanke",
     "testAnalyticsDesc": "Sjå detaljert oppgåveprestasjon for kvar prøve",
     "studentDashboardsDesc": "Sjå individuelle elevprestasjonsdasboard"
   },

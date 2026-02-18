@@ -182,11 +182,10 @@ export default function ArchivePage() {
                 {filteredArchive.map(feedback => (
                   <div
                     key={feedback.id}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedFeedback?.id === feedback.id
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${selectedFeedback?.id === feedback.id
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-border hover:bg-background'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1" onClick={() => setSelectedFeedback(feedback)}>
@@ -279,7 +278,7 @@ export default function ArchivePage() {
                                           {task.label}{subtask.label}
                                         </span>
                                         <span className="text-brand font-semibold">
-                                          {feedback.points}/6
+                                          {feedback.points ?? 0}/6
                                         </span>
                                       </div>
                                       {feedback.comment && (
@@ -303,7 +302,7 @@ export default function ArchivePage() {
                                 <div className="flex items-center justify-between mb-2">
                                   <span className="font-medium text-text-primary">Task {task.label}</span>
                                   <span className="text-brand font-semibold">
-                                    {feedback.points}/6
+                                    {feedback.points ?? 0}/6
                                   </span>
                                 </div>
                                 {feedback.comment && (

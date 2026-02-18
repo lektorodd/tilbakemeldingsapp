@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, LabelPerformance, CategoryPerformance } from '@/types';
-import { loadCourse, getLabelPerformance, getCategoryPerformance } from '@/utils/storage';
+import { loadCourse, getLabelPerformance, getCategoryPerformance, getClassProgressData, ClassProgressPoint } from '@/utils/storage';
+import ClassProgressChart from '@/components/ClassProgressChart';
 import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { groupLabelsByParent, formatLabelDisplay } from '@/utils/labelUtils';
 
 export default function CourseAnalyticsPage() {
   const { t } = useLanguage();
@@ -19,6 +21,7 @@ export default function CourseAnalyticsPage() {
   const [course, setCourse] = useState<Course | null>(null);
   const [labelPerformance, setLabelPerformance] = useState<LabelPerformance[]>([]);
   const [categoryPerformance, setCategoryPerformance] = useState<CategoryPerformance[]>([]);
+  const [classProgressData, setClassProgressData] = useState<ClassProgressPoint[]>([]);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,6 +39,7 @@ export default function CourseAnalyticsPage() {
     setCourse(loadedCourse);
     setLabelPerformance(getLabelPerformance(courseId));
     setCategoryPerformance(getCategoryPerformance(courseId));
+    setClassProgressData(getClassProgressData(courseId));
   };
 
   const getScoreColor = (score: number): string => {
@@ -108,6 +112,13 @@ export default function CourseAnalyticsPage() {
             </div>
           )}
         </div>
+
+        {/* Class Progress Chart */}
+        {classProgressData.length >= 2 && (
+          <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+            <ClassProgressChart data={classProgressData} />
+          </div>
+        )}
 
         {/* Quick Access Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -203,41 +214,49 @@ export default function CourseAnalyticsPage() {
               <div>
                 <h3 className="text-lg font-semibold text-text-primary mb-3">{t('analytics.overallPerformance')}</h3>
                 <div className="space-y-2">
-                  {labelPerformance.map(lp => (
-                    <div
-                      key={lp.label}
-                      className={`p-3 rounded-lg border-2 transition-colors cursor-pointer ${
-                        selectedLabel === lp.label
-                          ? 'border-primary-600 bg-primary-50'
-                          : 'border-border hover:border-primary-300'
-                      }`}
-                      onClick={() => setSelectedLabel(lp.label === selectedLabel ? null : lp.label)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 bg-brand text-white rounded-full text-sm font-medium">
-                            {lp.label}
-                          </span>
-                          <span className="text-xs text-text-disabled">{t('analytics.tasksCount').replace('{count}', lp.taskCount.toString())}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-2xl font-bold ${getScoreColor(lp.averageScore)}`}>
-                            {lp.averageScore.toFixed(1)}
-                          </span>
-                          <span className="text-text-disabled text-sm">/ 6</span>
-                        </div>
-                      </div>
+                  {groupLabelsByParent(labelPerformance.map(lp => lp.label)).map(group => (
+                    <div key={group.parent ?? '__ungrouped'}>
+                      {group.parent && (
+                        <p className="text-sm font-medium text-text-secondary mt-3 mb-1 ml-1">{group.parent}</p>
+                      )}
+                      {group.children.map(label => {
+                        const lp = labelPerformance.find(l => l.label === label)!;
+                        return (
+                          <div
+                            key={lp.label}
+                            className={`p-3 rounded-lg border-2 transition-colors cursor-pointer ${group.parent ? 'ml-3' : ''} ${selectedLabel === lp.label
+                              ? 'border-primary-600 bg-primary-50'
+                              : 'border-border hover:border-primary-300'
+                              }`}
+                            onClick={() => setSelectedLabel(lp.label === selectedLabel ? null : lp.label)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="px-3 py-1 bg-brand text-white rounded-full text-sm font-medium">
+                                  {formatLabelDisplay(lp.label)}
+                                </span>
+                                <span className="text-xs text-text-disabled">{t('analytics.tasksCount').replace('{count}', lp.taskCount.toString())}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-2xl font-bold ${getScoreColor(lp.averageScore)}`}>
+                                  {lp.averageScore.toFixed(1)}
+                                </span>
+                                <span className="text-text-disabled text-sm">/ 6</span>
+                              </div>
+                            </div>
 
-                      {/* Progress bar */}
-                      <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${getScoreBgColor(lp.averageScore)} border-r-4 ${
-                            lp.averageScore >= 5 ? 'border-emerald-600' :
-                            lp.averageScore >= 3.5 ? 'border-amber-600' : 'border-red-600'
-                          }`}
-                          style={{ width: `${(lp.averageScore / 6) * 100}%` }}
-                        />
-                      </div>
+                            {/* Progress bar */}
+                            <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full ${getScoreBgColor(lp.averageScore)} border-r-4 ${lp.averageScore >= 5 ? 'border-emerald-600' :
+                                  lp.averageScore >= 3.5 ? 'border-amber-600' : 'border-red-600'
+                                  }`}
+                                style={{ width: `${(lp.averageScore / 6) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
@@ -248,7 +267,7 @@ export default function CourseAnalyticsPage() {
                 {selectedLabelData ? (
                   <>
                     <h3 className="text-lg font-semibold text-text-primary mb-3">
-                      {t('analytics.studentPerformance')}: <span className="text-brand">{selectedLabelData.label}</span>
+                      {t('analytics.studentPerformance')}: <span className="text-brand">{formatLabelDisplay(selectedLabelData.label)}</span>
                     </h3>
                     <div className="space-y-2 max-h-96 overflow-y-auto">
                       {selectedLabelData.studentScores.length > 0 ? (
@@ -266,10 +285,9 @@ export default function CourseAnalyticsPage() {
                             {/* Progress bar */}
                             <div className="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
                               <div
-                                className={`h-full ${
-                                  ss.averageScore >= 5 ? 'bg-success' :
+                                className={`h-full ${ss.averageScore >= 5 ? 'bg-success' :
                                   ss.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-danger'
-                                }`}
+                                  }`}
                                 style={{ width: `${(ss.averageScore / 6) * 100}%` }}
                               />
                             </div>
@@ -330,10 +348,9 @@ export default function CourseAnalyticsPage() {
                   {/* Progress bar */}
                   <div className="mt-3 h-3 bg-stone-200 rounded-full overflow-hidden mb-2">
                     <div
-                      className={`h-full ${
-                        cp.averageScore >= 5 ? 'bg-success' :
+                      className={`h-full ${cp.averageScore >= 5 ? 'bg-success' :
                         cp.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-danger'
-                      }`}
+                        }`}
                       style={{ width: `${(cp.averageScore / 6) * 100}%` }}
                     />
                   </div>

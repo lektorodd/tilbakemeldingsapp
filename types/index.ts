@@ -19,7 +19,7 @@ export interface Subtask {
 export interface TaskFeedback {
   taskId: string;
   subtaskId?: string;
-  points: number; // 0-6
+  points: number | null; // null = ungraded, 0-6 when graded
   comment: string; // Supports Typst math notation
 }
 
@@ -231,7 +231,7 @@ export interface TaskStudentScore {
   studentId: string;
   studentName: string;
   studentNumber?: string;
-  points: number;
+  points: number | null;
   comment: string;
   hasAttempted: boolean;
 }

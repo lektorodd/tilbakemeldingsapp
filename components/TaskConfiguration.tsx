@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Task, Subtask } from '@/types';
 import { Plus, Trash2, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { groupLabelsByParent, formatLabelDisplay } from '@/utils/labelUtils';
 
 interface TaskConfigurationProps {
   tasks: Task[];
@@ -248,8 +249,8 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 {/* Part indicator badge */}
                 {task.part && (
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
-                      ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                      : 'bg-blue-100 text-blue-800 border border-blue-300'
+                    ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                    : 'bg-blue-100 text-blue-800 border border-blue-300'
                     }`}>
                     {task.part === 1 ? 'Part 1' : 'Part 2'}
                   </span>
@@ -303,17 +304,24 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 <div className="flex items-start gap-2">
                   <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
                   <div className="flex flex-wrap gap-1.5 items-center">
-                    {availableLabels.map(label => (
-                      <button
-                        key={label}
-                        onClick={() => toggleTaskLabel(task.id, label)}
-                        className={`px-2 py-0.5 rounded-full text-xs transition ${task.labels.includes(label)
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-surface text-text-secondary hover:bg-gray-300 border border-border'
-                          }`}
-                      >
-                        {label}
-                      </button>
+                    {groupLabelsByParent(availableLabels).map(group => (
+                      <React.Fragment key={group.parent ?? '__ungrouped'}>
+                        {group.parent && (
+                          <span className="text-xs font-medium text-text-disabled ml-1 first:ml-0">{group.parent}/</span>
+                        )}
+                        {group.children.map(label => (
+                          <button
+                            key={label}
+                            onClick={() => toggleTaskLabel(task.id, label)}
+                            className={`px-2 py-0.5 rounded-full text-xs transition ${task.labels.includes(label)
+                              ? 'bg-primary-600 text-white'
+                              : 'bg-surface text-text-secondary hover:bg-gray-300 border border-border'
+                              }`}
+                          >
+                            {formatLabelDisplay(label)}
+                          </button>
+                        ))}
+                      </React.Fragment>
                     ))}
                     {onLabelsChange && (
                       addingLabelFor === task.id ? (
@@ -409,17 +417,24 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                         <div className="flex items-start gap-2">
                           <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
                           <div className="flex flex-wrap gap-1.5 items-center">
-                            {availableLabels.map(label => (
-                              <button
-                                key={label}
-                                onClick={() => toggleSubtaskLabel(task.id, subtask.id, label)}
-                                className={`px-2 py-0.5 rounded-full text-xs transition ${subtask.labels.includes(label)
-                                    ? 'bg-primary-600 text-white'
-                                    : 'bg-white text-text-secondary hover:bg-gray-200 border border-border'
-                                  }`}
-                              >
-                                {label}
-                              </button>
+                            {groupLabelsByParent(availableLabels).map(group => (
+                              <React.Fragment key={group.parent ?? '__ungrouped'}>
+                                {group.parent && (
+                                  <span className="text-xs font-medium text-text-disabled ml-1 first:ml-0">{group.parent}/</span>
+                                )}
+                                {group.children.map(label => (
+                                  <button
+                                    key={label}
+                                    onClick={() => toggleSubtaskLabel(task.id, subtask.id, label)}
+                                    className={`px-2 py-0.5 rounded-full text-xs transition ${subtask.labels.includes(label)
+                                      ? 'bg-primary-600 text-white'
+                                      : 'bg-white text-text-secondary hover:bg-gray-200 border border-border'
+                                      }`}
+                                  >
+                                    {formatLabelDisplay(label)}
+                                  </button>
+                                ))}
+                              </React.Fragment>
                             ))}
                             {onLabelsChange && (
                               addingLabelFor === `${task.id}-${subtask.id}` ? (

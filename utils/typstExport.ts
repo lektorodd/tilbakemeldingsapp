@@ -40,7 +40,7 @@ const translations = {
   },
   nb: {
     feedback: 'Tilbakemelding',
-    student: 'Student',
+    student: 'Namn',
     score: 'Poengsum',
     studentNumber: 'Studentnummer',
     date: 'Dato',
@@ -54,7 +54,7 @@ const translations = {
   },
   nn: {
     feedback: 'Tilbakemelding',
-    student: 'Elev',
+    student: 'Namn',
     score: 'Poengsum',
     studentNumber: 'Elevnummer',
     date: 'Dato',
@@ -93,7 +93,7 @@ const oralTranslations = {
   },
   nb: {
     oralAssessment: 'Muntlig vurdering',
-    student: 'Student',
+    student: 'Namn',
     score: 'Poengsum',
     studentNumber: 'Studentnummer',
     date: 'Dato',
@@ -114,7 +114,7 @@ const oralTranslations = {
   },
   nn: {
     oralAssessment: 'Munnleg vurdering',
-    student: 'Elev',
+    student: 'Namn',
     score: 'Poengsum',
     studentNumber: 'Elevnummer',
     date: 'Dato',
@@ -191,70 +191,78 @@ export function generateTypstDocument(data: ExportData): string {
         const feedback = getFeedback(task.id, subtask.id);
         if (feedback) {
           const taskLabel = escapeTypst(`${task.label}${subtask.label}`);
-          const points = `${feedback.points}/6`;
+          const pts = feedback.points ?? 0;
           const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
-          taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
+          taskRows.push(`  [#text(weight: "semibold")[${taskLabel}]], [#text(weight: "semibold", fill: ${pts >= 5 ? 'rgb("#16A34A")' : pts >= 3 ? 'rgb("#334155")' : 'rgb("#DC2626")'})[${pts}]], [${comment}],`);
         }
       });
     } else {
       const feedback = getFeedback(task.id, undefined);
       if (feedback) {
         const taskLabel = escapeTypst(task.label);
-        const points = `${feedback.points}/6`;
+        const pts = feedback.points ?? 0;
         const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
-        taskRows.push(`  [${taskLabel}], [${points}], [${comment}],`);
+        taskRows.push(`  [#text(weight: "semibold")[${taskLabel}]], [#text(weight: "semibold", fill: ${pts >= 5 ? 'rgb("#16A34A")' : pts >= 3 ? 'rgb("#334155")' : 'rgb("#DC2626")'})[${pts}]], [${comment}],`);
       }
     }
   });
 
-  const taskTable = taskRows.length > 0 ? `#table(
-  columns: (auto, auto, 1fr),
-  inset: (x: 0.8em, y: 0.55em),
-  stroke: 0.5pt + rgb("#E2E8F0"),
-  align: (center, center, left),
-  fill: (_, row) => if row == 0 { rgb("#4F46E5") } else if calc.even(row) { rgb("#F1F5F9") } else { white },
-  table.header(
-    [#text(fill: white, weight: "bold")[${t.task}]],
-    [#text(fill: white, weight: "bold")[${t.points}]],
-    [#text(fill: white, weight: "bold")[${t.comment}]],
-  ),
+  const taskTable = taskRows.length > 0 ? `#block(width: 100%, clip: true, radius: 6pt, stroke: 0.75pt + rgb("#E2E8F0"))[
+  #table(
+    columns: (3.5em, 3.5em, 1fr),
+    inset: (x: 0.9em, y: 0.65em),
+    stroke: none,
+    column-gutter: 0pt,
+    align: (center, center, left),
+    fill: (_, row) => if row == 0 { rgb("#1E293B") } else if calc.odd(row) { rgb("#F8FAFC") } else { white },
+    table.header(
+      [#text(fill: white, weight: "bold", size: 9pt, tracking: 0.5pt)[\\#]],
+      [#text(fill: white, weight: "bold", size: 9pt, tracking: 0.5pt)[${t.points.toUpperCase()}]],
+      [#text(fill: white, weight: "bold", size: 9pt, tracking: 0.5pt)[${t.comment.toUpperCase()}]],
+    ),
+    table.hline(stroke: 0.75pt + rgb("#E2E8F0")),
 ${taskRows.join('\n')}
-)` : '';
+  )
+]` : '';
 
   // Build content sections conditionally
   const sections: string[] = [];
 
   if (generalComment.trim()) {
-    sections.push(`== ${t.generalFeedback}\n\n${escapeTypst(generalComment)}`);
+    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.generalFeedback}]]\n  #v(0.5em)\n  #text(fill: rgb("#334155"))[${escapeTypst(generalComment)}]\n]`);
   }
 
   if (taskRows.length > 0) {
-    sections.push(`== ${t.taskComments}\n\n${taskTable}`);
+    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.taskComments}]]\n  #v(0.6em)\n  ${taskTable}\n]`);
   }
 
   if (individualComment.trim()) {
-    sections.push(`== ${t.individualFeedback}\n\n${escapeTypst(individualComment)}`);
+    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.individualFeedback}]]\n  #v(0.5em)\n  #text(fill: rgb("#334155"))[${escapeTypst(individualComment)}]\n]`);
   }
 
-  const contentBody = sections.join('\n\n#v(1em)\n\n');
+  const contentBody = sections.join('\n\n#v(1.2em)\n\n');
+
+  // Score percentage for color coding
+  const scorePct = maxPoints > 0 ? totalPoints / maxPoints : 0;
+  const scoreColor = scorePct >= 0.8 ? '#16A34A' : scorePct >= 0.5 ? '#D97706' : '#DC2626';
 
   const typstContent = `#set document(title: "${escapeTypstString(testName)} - ${t.feedback}")
 #set page(
   paper: "a4",
-  margin: (x: 2cm, top: 1.8cm, bottom: 2cm),
+  margin: (x: 1cm, top: 1.5cm, bottom: 1.5cm),
   header: context {
     if counter(page).get().first() > 1 [
-      #text(size: 9pt, fill: rgb("#64748B"))[${escapeTypst(testName)} #sym.dash.em ${escapeTypst(studentName)}]
+      #text(size: 8.5pt, fill: rgb("#94A3B8"), tracking: 0.3pt)[${escapeTypst(testName).toUpperCase()} #sym.dash.em ${escapeTypst(studentName).toUpperCase()}]
       #h(1fr)
-      #text(size: 9pt, fill: rgb("#64748B"))[${t.feedback}]
-      #v(0.3em)
-      #line(length: 100%, stroke: 0.3pt + rgb("#CBD5E1"))
+      #text(size: 8.5pt, fill: rgb("#94A3B8"))[${t.feedback}]
+      #v(0.4em)
+      #line(length: 100%, stroke: 0.4pt + rgb("#E2E8F0"))
     ]
   },
   footer: context {
     let total = counter(page).final().first()
     if total > 1 {
-      align(center, text(size: 9pt, fill: rgb("#94A3B8"))[
+      align(center, text(size: 8.5pt, fill: rgb("#94A3B8"))[
         #counter(page).display("1 / 1", both: true)
       ])
     }
@@ -262,45 +270,60 @@ ${taskRows.join('\n')}
 )
 #set text(
   size: 11pt,
+  weight: "medium",
   lang: "${t.lang}",
-  font: "Source Sans 3",
+  fill: rgb("#334155"),
+  font: "Inter",
 )
-#set par(justify: true)
-#show heading: set text(fill: rgb("#3730A3"))
+#set par(justify: true, leading: 0.7em)
 #show link: underline
 
+// ─── Header ───
 #rect(
   width: 100%,
-  fill: rgb("#4F46E5"),
-  inset: (x: 1.5em, y: 1em),
-  radius: 4pt,
+  fill: rgb("#1E293B"),
+  inset: (x: 1.8em, y: 1.2em),
+  radius: 6pt,
 )[
   #align(center)[
-    #text(size: 16pt, weight: "bold", fill: white)[${escapeTypst(testName)}]
-    #v(0.2em)
-    #text(size: 12pt, fill: white)[${t.feedback}]
+    #text(size: 10pt, fill: rgb("#94A3B8"), weight: "regular", tracking: 1pt)[${t.feedback.toUpperCase()}]
+    #v(0.25em)
+    #text(size: 18pt, weight: "bold", fill: white, tracking: 0.3pt)[${escapeTypst(testName)}]
   ]
 ]
 
-#v(0.8em)
+#v(0.7em)
 
-#rect(
-  width: 100%,
-  fill: rgb("#F1F5F9"),
-  inset: (x: 1.2em, y: 0.8em),
-  radius: 4pt,
-  stroke: 0.5pt + rgb("#E2E8F0"),
-)[
-  #grid(
-    columns: (1fr, 1fr),
-    row-gutter: 0.6em,
-    [*${t.student}:* ${escapeTypst(studentName)}],
-    [*${t.score}:* ${totalPoints}/${maxPoints}],
-    [*${t.date}:* #datetime.today().display()],
-    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
-  )
-]
+// ─── Student info ───
+#grid(
+  columns: (1fr, auto),
+  align: (left, right),
+  [
+    #text(size: 10pt, fill: rgb("#64748B"))[${t.student}]
+    #v(0.1em)
+    #text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${escapeTypst(studentName)}]
+    ${studentNumber ? `#v(0.15em)\n    #text(size: 9.5pt, fill: rgb("#94A3B8"))[${t.studentNumber}: ${escapeTypst(studentNumber)}]` : ''}
+    #v(0.15em)
+    #text(size: 9.5pt, fill: rgb("#94A3B8"))[#datetime.today().display()]
+  ],
+  [
+    #rect(
+      fill: rgb("${scoreColor}").lighten(90%),
+      inset: (x: 1em, y: 0.6em),
+      radius: 8pt,
+      stroke: 0.75pt + rgb("${scoreColor}").lighten(60%),
+    )[
+      #align(center)[
+        #text(size: 9pt, fill: rgb("${scoreColor}"), weight: "medium")[${t.score}]
+        #v(0.1em)
+        #text(size: 22pt, weight: "bold", fill: rgb("${scoreColor}"))[${totalPoints}] #text(size: 12pt, fill: rgb("${scoreColor}").lighten(30%))[#sym.slash ${maxPoints}]
+      ]
+    ]
+  ],
+)
 
+#v(0.4em)
+#line(length: 100%, stroke: 0.5pt + rgb("#E2E8F0"))
 #v(0.8em)
 
 ${contentBody}
@@ -330,59 +353,68 @@ export function generateOralTypstDocument(data: OralExportData): string {
   // Generate dimension rows for table
   const dimensionRows = oralFeedback.dimensions.map(dim => {
     const label = getDimensionLabel(dim.dimension);
-    const points = `${dim.points}/6`;
+    const pts = dim.points ?? 0;
     const comment = dim.comment ? escapeTypst(dim.comment) : '';
-    return `  [${label}], [${points}], [${comment}],`;
+    return `  [${label}], [#text(weight: "semibold", fill: ${pts >= 5 ? 'rgb("#16A34A")' : pts >= 3 ? 'rgb("#334155")' : 'rgb("#DC2626")'})[${pts}]], [${comment}],`;
   }).join('\n');
 
-  const dimensionTable = `#table(
-  columns: (2fr, auto, 3fr),
-  inset: (x: 0.8em, y: 0.55em),
-  stroke: 0.5pt + rgb("#E2E8F0"),
-  align: (left, center, left),
-  fill: (_, row) => if row == 0 { rgb("#4F46E5") } else if calc.even(row) { rgb("#F1F5F9") } else { white },
-  table.header(
-    [#text(fill: white, weight: "bold")[${t.dimension}]],
-    [#text(fill: white, weight: "bold")[${t.points}]],
-    [#text(fill: white, weight: "bold")[${t.comment}]],
-  ),
+  const dimensionTable = `#block(width: 100%, clip: true, radius: 6pt, stroke: 0.75pt + rgb("#E2E8F0"))[
+  #table(
+    columns: (2fr, 3.5em, 3fr),
+    inset: (x: 0.9em, y: 0.65em),
+    stroke: none,
+    column-gutter: 0pt,
+    align: (left, center, left),
+    fill: (_, row) => if row == 0 { rgb("#1E293B") } else if calc.odd(row) { rgb("#F8FAFC") } else { white },
+    table.header(
+      [#text(fill: white, weight: "bold", size: 9pt, tracking: 0.5pt)[${t.dimension.toUpperCase()}]],
+      [#text(fill: white, weight: "bold", size: 9pt, tracking: 0.5pt)[${t.points.toUpperCase()}]],
+      [#text(fill: white, weight: "bold", size: 9pt, tracking: 0.5pt)[${t.comment.toUpperCase()}]],
+    ),
+    table.hline(stroke: 0.75pt + rgb("#E2E8F0")),
 ${dimensionRows}
-)`;
+  )
+]`;
 
   // Build content sections conditionally
   const sections: string[] = [];
 
   if (oralFeedback.dimensions.length > 0) {
-    sections.push(`== ${t.dimensions}\n\n${dimensionTable}`);
+    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.dimensions}]]\\n  #v(0.6em)\\n  ${dimensionTable}\\n]`);
   }
 
   if (oralFeedback.generalObservations?.trim()) {
-    sections.push(`== ${t.generalObservations}\n\n${escapeTypst(oralFeedback.generalObservations)}`);
+    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.generalObservations}]]\\n  #v(0.5em)\\n  #text(fill: rgb("#334155"))[${escapeTypst(oralFeedback.generalObservations)}]\\n]`);
   }
 
   if (oralFeedback.taskReferences && oralFeedback.taskReferences.length > 0) {
-    sections.push(`== ${t.taskReferences}\n\n${escapeTypst(oralFeedback.taskReferences.join(', '))}`);
+    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.taskReferences}]]\\n  #v(0.5em)\\n  #text(fill: rgb("#334155"))[${escapeTypst(oralFeedback.taskReferences.join(', '))}]\\n]`);
   }
 
-  const contentBody = sections.join('\n\n#v(1em)\n\n');
+  const contentBody = sections.join('\n\n#v(1.2em)\n\n');
+
+  // Score color
+  const maxOralScore = oralFeedback.dimensions.length * 6;
+  const scorePct = maxOralScore > 0 ? totalScore / maxOralScore : 0;
+  const scoreColor = scorePct >= 0.8 ? '#16A34A' : scorePct >= 0.5 ? '#D97706' : '#DC2626';
 
   const typstContent = `#set document(title: "${escapeTypstString(oralTestName)} - ${t.oralAssessment}")
 #set page(
   paper: "a4",
-  margin: (x: 2cm, top: 1.8cm, bottom: 2cm),
+  margin: (x: 1cm, top: 1.5cm, bottom: 1.5cm),
   header: context {
     if counter(page).get().first() > 1 [
-      #text(size: 9pt, fill: rgb("#64748B"))[${escapeTypst(oralTestName)} #sym.dash.em ${escapeTypst(studentName)}]
+      #text(size: 8.5pt, fill: rgb("#94A3B8"), tracking: 0.3pt)[${escapeTypst(oralTestName).toUpperCase()} #sym.dash.em ${escapeTypst(studentName).toUpperCase()}]
       #h(1fr)
-      #text(size: 9pt, fill: rgb("#64748B"))[${t.oralAssessment}]
-      #v(0.3em)
-      #line(length: 100%, stroke: 0.3pt + rgb("#CBD5E1"))
+      #text(size: 8.5pt, fill: rgb("#94A3B8"))[${t.oralAssessment}]
+      #v(0.4em)
+      #line(length: 100%, stroke: 0.4pt + rgb("#E2E8F0"))
     ]
   },
   footer: context {
     let total = counter(page).final().first()
     if total > 1 {
-      align(center, text(size: 9pt, fill: rgb("#94A3B8"))[
+      align(center, text(size: 8.5pt, fill: rgb("#94A3B8"))[
         #counter(page).display("1 / 1", both: true)
       ])
     }
@@ -390,45 +422,60 @@ ${dimensionRows}
 )
 #set text(
   size: 11pt,
+  weight: "medium",
   lang: "${t.lang}",
-  font: "Source Sans 3",
+  fill: rgb("#334155"),
+  font: "Inter",
 )
-#set par(justify: true)
-#show heading: set text(fill: rgb("#3730A3"))
+#set par(justify: true, leading: 0.7em)
 #show link: underline
 
+// ─── Header ───
 #rect(
   width: 100%,
-  fill: rgb("#4F46E5"),
-  inset: (x: 1.5em, y: 1em),
-  radius: 4pt,
+  fill: rgb("#1E293B"),
+  inset: (x: 1.8em, y: 1.2em),
+  radius: 6pt,
 )[
   #align(center)[
-    #text(size: 16pt, weight: "bold", fill: white)[${escapeTypst(oralTestName)}]
-    #v(0.2em)
-    #text(size: 12pt, fill: white)[${t.oralAssessment}]
+    #text(size: 10pt, fill: rgb("#94A3B8"), weight: "regular", tracking: 1pt)[${t.oralAssessment.toUpperCase()}]
+    #v(0.25em)
+    #text(size: 18pt, weight: "bold", fill: white, tracking: 0.3pt)[${escapeTypst(oralTestName)}]
   ]
 ]
 
-#v(0.8em)
+#v(0.7em)
 
-#rect(
-  width: 100%,
-  fill: rgb("#F1F5F9"),
-  inset: (x: 1.2em, y: 0.8em),
-  radius: 4pt,
-  stroke: 0.5pt + rgb("#E2E8F0"),
-)[
-  #grid(
-    columns: (1fr, 1fr),
-    row-gutter: 0.6em,
-    [*${t.student}:* ${escapeTypst(studentName)}],
-    [*${t.score}:* ${totalScore}/60],
-    [*${t.date}:* #datetime.today().display()],
-    ${studentNumber ? `[*${t.studentNumber}:* ${escapeTypst(studentNumber)}],` : ''}
-  )
-]
+// ─── Student info ───
+#grid(
+  columns: (1fr, auto),
+  align: (left, right),
+  [
+    #text(size: 10pt, fill: rgb("#64748B"))[${t.student}]
+    #v(0.1em)
+    #text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${escapeTypst(studentName)}]
+    ${studentNumber ? `#v(0.15em)\n    #text(size: 9.5pt, fill: rgb("#94A3B8"))[${t.studentNumber}: ${escapeTypst(studentNumber)}]` : ''}
+    #v(0.15em)
+    #text(size: 9.5pt, fill: rgb("#94A3B8"))[${oralTestDate || '#datetime.today().display()'}]
+  ],
+  [
+    #rect(
+      fill: rgb("${scoreColor}").lighten(90%),
+      inset: (x: 1em, y: 0.6em),
+      radius: 8pt,
+      stroke: 0.75pt + rgb("${scoreColor}").lighten(60%),
+    )[
+      #align(center)[
+        #text(size: 9pt, fill: rgb("${scoreColor}"), weight: "medium")[${t.score}]
+        #v(0.1em)
+        #text(size: 22pt, weight: "bold", fill: rgb("${scoreColor}"))[${totalScore}] #text(size: 12pt, fill: rgb("${scoreColor}").lighten(30%))[#sym.slash ${maxOralScore}]
+      ]
+    ]
+  ],
+)
 
+#v(0.4em)
+#line(length: 100%, stroke: 0.5pt + rgb("#E2E8F0"))
 #v(0.8em)
 
 ${contentBody}
@@ -469,7 +516,7 @@ export async function compileAndDownloadPDF(content: string, filename: string): 
       if (error.error?.includes('not installed')) {
         alert('Typst is not installed!\n\nPlease install it:\n• macOS: brew install typst\n• Linux: cargo install --git https://github.com/typst/typst\n\nOr download from: https://github.com/typst/typst/releases');
       } else {
-        alert(`Failed to compile PDF: ${error.error}\n\nDetails: ${error.details || ''}`);
+        alert(`Failed to compile PDF: ${error.error} \n\nDetails: ${error.details || ''} `);
       }
       return false;
     }
@@ -493,8 +540,41 @@ export async function compileAndDownloadPDF(content: string, filename: string): 
   }
 }
 
+export async function compileAndGetPDFBlob(content: string, filename: string): Promise<Blob | null> {
+  try {
+    const response = await fetch('/api/compile-typst', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content,
+        filename,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Compilation error:', error);
+
+      if (error.error?.includes('not installed')) {
+        alert('Typst is not installed!\n\nPlease install it:\n• macOS: brew install typst\n• Linux: cargo install --git https://github.com/typst/typst\n\nOr download from: https://github.com/typst/typst/releases');
+      } else {
+        alert(`Failed to compile PDF: ${error.error} \n\nDetails: ${error.details || ''} `);
+      }
+      return null;
+    }
+
+    return await response.blob();
+  } catch (error) {
+    console.error('Network error:', error);
+    alert('Failed to compile PDF. Make sure the development server is running.');
+    return null;
+  }
+}
+
 export function calculateTotalPoints(feedbacks: TaskFeedback[]): number {
-  return feedbacks.reduce((sum, f) => sum + f.points, 0);
+  return feedbacks.reduce((sum, f) => sum + (f.points ?? 0), 0);
 }
 
 export function calculateMaxPoints(tasks: Task[], pointsPerTask: number = 6): number {

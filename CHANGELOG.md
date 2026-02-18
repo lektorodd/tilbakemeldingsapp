@@ -2,6 +2,26 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.5.0] — 2026-02-18
+
+### Added
+- **Class progress chart** — new dual-axis chart on the course analytics page showing average score and blank-answer percentage over time.
+- **Hierarchical labels** — labels now support parent/child nesting (e.g., `sannsyn/grunnleggande`). Grouped display with collapsible sections in the label manager and throughout analytics.
+- **PDF preview modal** — preview generated PDFs before exporting.
+- **Inter font** — switched the interface body font from Source Sans Pro to Inter for a cleaner look. Inter font files also bundled for PDF export.
+- New `labelUtils.ts` utility module for label grouping and formatting.
+
+### Changed
+- **Front page redesign** — courses moved to the top for quick access; admin tools (backup, import/export, folder sync) collapsed into a dedicated panel.
+- **PDF template overhaul** — modern table styling with rounded-corner blocks, color-coded scores (green ≥ 5, red ≤ 2), semibold task labels, and scores shown as points only (not fractions).
+- **Ungraded tasks** — `TaskFeedback.points` can now be `null` (ungraded) instead of defaulting to `0`. All analytics, scoring, and export logic updated to handle nullable points. Includes an automatic data migration for existing data.
+- **SyncContext centralization** — folder-sync initialization moved from the courses page into `SyncContext`, so sync works correctly on all pages.
+- **Course deduplication** — `loadAllCourses()` now deduplicates on read as a safety net against prior sync bugs.
+- Norwegian PDF translations refined (`student` → `Namn`).
+- Updated translations (en, nb, nn) with new i18n keys for labels and charts.
+
+---
+
 ## [0.4.0] — 2026-02-16
 
 ### Added

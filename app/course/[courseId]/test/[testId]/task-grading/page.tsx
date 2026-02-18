@@ -126,7 +126,7 @@ export default function TaskGradingPage() {
       map.set(student.id, fb || {
         taskId: activeTaskSlot.taskId,
         subtaskId: activeTaskSlot.subtaskId,
-        points: 0,
+        points: null,
         comment: '',
       });
     });
@@ -158,8 +158,8 @@ export default function TaskGradingPage() {
             (slot.subtaskId ? f.subtaskId === slot.subtaskId : !f.subtaskId)
         );
         if (fb) {
-          totalPoints += fb.points;
-          if (fb.points > 0 || fb.comment.trim().length > 0) {
+          totalPoints += fb.points ?? 0;
+          if (fb.points !== null || fb.comment.trim().length > 0) {
             gradedCount++;
           }
         }
@@ -196,7 +196,7 @@ export default function TaskGradingPage() {
       const existing = idx >= 0 ? feedbacks[idx] : {
         taskId: activeTaskSlot.taskId,
         subtaskId: activeTaskSlot.subtaskId,
-        points: 0,
+        points: null,
         comment: '',
       };
 

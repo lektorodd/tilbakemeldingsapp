@@ -6,8 +6,10 @@ import { Course, CourseTest, TaskAnalytics, TaskStudentScore } from '@/types';
 import { loadCourse, getTestTaskAnalytics, getTaskStudentScores } from '@/utils/storage';
 import { ArrowLeft, Filter, BarChart3, ChevronDown, ChevronRight, ListChecks, Pencil } from 'lucide-react';
 import Link from 'next/link';
+import ProgressGrid from '@/components/ProgressGrid';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { groupLabelsByParent, formatLabelDisplay, getParentLabel } from '@/utils/labelUtils';
 
 export default function TestAnalyticsPage() {
   const { t } = useLanguage();
@@ -89,6 +91,16 @@ export default function TestAnalyticsPage() {
       setSelectedLabels(selectedLabels.filter(l => l !== label));
     } else {
       setSelectedLabels([...selectedLabels, label]);
+    }
+  };
+
+  const toggleParentLabels = (parent: string) => {
+    const childLabels = Array.from(availableLabels).filter(l => getParentLabel(l) === parent);
+    const allSelected = childLabels.every(l => selectedLabels.includes(l));
+    if (allSelected) {
+      setSelectedLabels(selectedLabels.filter(l => !childLabels.includes(l)));
+    } else {
+      setSelectedLabels([...new Set([...selectedLabels, ...childLabels])]);
     }
   };
 
@@ -211,6 +223,17 @@ export default function TestAnalyticsPage() {
           </div>
         </div>
 
+        {/* Student Progress Heatmap */}
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6 border border-border">
+          <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentProgress')}</h3>
+          <ProgressGrid
+            courseId={courseId}
+            test={test}
+            students={course.students}
+            onSelectStudent={(student) => router.push(`/course/${courseId}/test/${testId}?student=${student.id}`)}
+          />
+        </div>
+
         {/* Filters */}
         <div className="bg-surface rounded-lg shadow-sm p-6 mb-6 border border-border">
           <div className="flex items-center gap-2 mb-4">
@@ -293,19 +316,33 @@ export default function TestAnalyticsPage() {
               <label className="block text-sm font-medium text-text-secondary mb-2">
                 {t('test.themeLabels')}
               </label>
-              <div className="flex flex-wrap gap-2">
-                {Array.from(availableLabels).sort().map(label => (
-                  <button
-                    key={label}
-                    onClick={() => toggleLabel(label)}
-                    className={`px-3 py-1 rounded-full text-sm transition ${
-                      selectedLabels.includes(label)
-                        ? 'bg-brand text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {label}
-                  </button>
+              <div className="flex flex-wrap gap-2 items-center">
+                {groupLabelsByParent(Array.from(availableLabels)).map(group => (
+                  <React.Fragment key={group.parent ?? '__ungrouped'}>
+                    {group.parent && (
+                      <button
+                        onClick={() => toggleParentLabels(group.parent!)}
+                        className={`px-2 py-0.5 rounded text-xs font-medium transition ${group.children.every(l => selectedLabels.includes(l))
+                          ? 'bg-brand/20 text-brand border border-brand'
+                          : 'bg-gray-50 text-text-disabled hover:bg-gray-100 border border-transparent'
+                          }`}
+                      >
+                        {group.parent}/
+                      </button>
+                    )}
+                    {group.children.map(label => (
+                      <button
+                        key={label}
+                        onClick={() => toggleLabel(label)}
+                        className={`px-3 py-1 rounded-full text-sm transition ${selectedLabels.includes(label)
+                          ? 'bg-brand text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                      >
+                        {formatLabelDisplay(label)}
+                      </button>
+                    ))}
+                  </React.Fragment>
                 ))}
               </div>
               {selectedLabels.length > 0 && (
@@ -358,11 +395,10 @@ export default function TestAnalyticsPage() {
                                 {t('test.task')} {ta.label}
                               </span>
                               {ta.part && (
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  ta.part === 1
-                                    ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                    : 'bg-blue-100 text-blue-800 border border-blue-300'
-                                }`}>
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${ta.part === 1
+                                  ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                  : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                  }`}>
                                   {ta.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
                                 </span>
                               )}
@@ -384,6 +420,7 @@ export default function TestAnalyticsPage() {
                                   <span
                                     key={label}
                                     className="inline-block px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-xs"
+                                    title={label}
                                   >
                                     {label}
                                   </span>
@@ -428,8 +465,8 @@ export default function TestAnalyticsPage() {
                                           {score.studentNumber && <span className="text-text-disabled ml-1">#{score.studentNumber}</span>}
                                         </td>
                                         <td className="py-2 text-center">
-                                          <span className={getScoreColor(score.points)}>
-                                            {score.points}
+                                          <span className={score.points !== null ? getScoreColor(score.points) : 'text-text-disabled'}>
+                                            {score.points !== null ? score.points : '-'}
                                           </span>
                                           <span className="text-text-disabled"> / 6</span>
                                         </td>

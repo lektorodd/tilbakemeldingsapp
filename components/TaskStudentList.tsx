@@ -56,7 +56,7 @@ export default function TaskStudentList({
         const feedback = feedbackMap.get(student.id) || {
           taskId,
           subtaskId,
-          points: 0,
+          points: null,
           comment: '',
         };
         const isActive = index === activeStudentIndex;
@@ -69,11 +69,10 @@ export default function TaskStudentList({
               if (el) rowRefs.current.set(index, el);
             }}
             onClick={() => onSetActiveStudent(index)}
-            className={`border rounded-lg p-4 transition-all cursor-pointer ${
-              isActive
+            className={`border rounded-lg p-4 transition-all cursor-pointer ${isActive
                 ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
                 : 'border-border bg-surface-alt hover:border-gray-300'
-            }`}
+              }`}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -90,7 +89,7 @@ export default function TaskStudentList({
                 )}
               </div>
               <span className="text-sm font-semibold text-text-secondary">
-                {feedback.points} / 6
+                {feedback.points ?? 0} / 6
               </span>
             </div>
 
@@ -107,11 +106,10 @@ export default function TaskStudentList({
                         onSetActiveStudent(index);
                         onUpdateFeedback(student.id, { points: p });
                       }}
-                      className={`w-9 h-9 rounded-lg font-semibold transition-all ${
-                        feedback.points === p
+                      className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
                           ? 'bg-brand text-white shadow-md scale-110'
                           : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
-                      }`}
+                        }`}
                     >
                       {p}
                     </button>

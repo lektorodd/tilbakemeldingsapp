@@ -21,7 +21,7 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
     const existing = feedbacks.find(
       f => f.taskId === taskId && f.subtaskId === subtaskId
     );
-    return existing || { taskId, subtaskId, points: 0, comment: '' };
+    return existing || { taskId, subtaskId, points: null, comment: '' };
   };
 
   const updateFeedback = (taskId: string, subtaskId: string | undefined, updates: Partial<TaskFeedback>) => {
@@ -34,7 +34,7 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
       newFeedbacks = [...feedbacks];
       newFeedbacks[existingIndex] = { ...newFeedbacks[existingIndex], ...updates };
     } else {
-      newFeedbacks = [...feedbacks, { taskId, subtaskId, points: 0, comment: '', ...updates }];
+      newFeedbacks = [...feedbacks, { taskId, subtaskId, points: null, comment: '', ...updates }];
     }
 
     onFeedbackChange(newFeedbacks);
@@ -65,11 +65,10 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                                 key={p}
                                 type="button"
                                 onClick={() => updateFeedback(task.id, subtask.id, { points: p })}
-                                className={`w-9 h-9 rounded-lg font-semibold transition-all ${
-                                  feedback.points === p
+                                className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
                                     ? 'bg-brand text-white shadow-md scale-110'
                                     : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
-                                }`}
+                                  }`}
                               >
                                 {p}
                               </button>
@@ -114,11 +113,10 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                                 key={p}
                                 type="button"
                                 onClick={() => updateFeedback(task.id, undefined, { points: p })}
-                                className={`w-9 h-9 rounded-lg font-semibold transition-all ${
-                                  feedback.points === p
+                                className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
                                     ? 'bg-brand text-white shadow-md scale-110'
                                     : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
-                                }`}
+                                  }`}
                               >
                                 {p}
                               </button>

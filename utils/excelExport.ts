@@ -71,7 +71,7 @@ function generateCourseCSV(course: Course): string {
 
   // Section 2: Detailed Test Data
   course.tests.forEach((test, testIndex) => {
-    lines.push(`"========== TEST ${testIndex + 1}: ${escapeCsv(test.name)} =========="}`);
+    lines.push(`"========== TEST ${testIndex + 1}: ${escapeCsv(test.name)} ==========="`);
     lines.push('');
 
     // Test information
@@ -146,7 +146,7 @@ function generateCourseCSV(course: Course): string {
 
           lines.push([
             taskLabel,
-            `${taskFeedback.points}/6`,
+            `${taskFeedback.points ?? 0}/6`,
             taskFeedback.comment || '-',
           ].map(escapeCsv).join(','));
         });
@@ -192,7 +192,7 @@ function escapeCsv(value: string): string {
  */
 function sanitizeFileName(name: string): string {
   return name
-    .replace(/[^a-z0-9_\-\s]/gi, '')
+    .replace(/[^a-z0-9æøåÆØÅ_\-\s]/gi, '')
     .replace(/\s+/g, '_')
     .toLowerCase();
 }

@@ -32,7 +32,8 @@
     "createCourse": "Opprett nytt fag",
     "noCourses": "Ingen fag opprettet ennå",
     "courseName": "Fagnavn",
-    "courseNamePlaceholder": "f.eks. R1 2025/2026"
+    "courseNamePlaceholder": "f.eks. R1 2025/2026",
+    "settingsAndTools": "Innstillinger og verktøy"
   },
   "course": {
     "students": "Elever",
@@ -154,10 +155,10 @@
     "addButton": "Legg til",
     "cancelButton": "Avbryt",
     "noLabelsYet": "Ingen merkelapper ennå. Legg til merkelapper for å kategorisere oppgaver etter tema/ferdighet.",
-    "labelsHelpText": "Merkelapper hjelper deg å spore elevprestasjoner på tvers av temaer (f.eks. \"brøk\", \"logaritmer\"). Legg til flere merkelapper på oppgaver som dekker flere emner.",
+    "labelsHelpText": "Merkelapper hjelper deg å spore elevprestasjoner på tvers av temaer. Bruk / for å gruppere, f.eks. \"sannsyn/grunnleggende\" og \"sannsyn/simulering\".",
     "labelAlreadyExists": "Denne merkelappen finnes allerede!",
     "removeLabelConfirm": "Fjern merkelappen \"{label}\"? Dette vil ikke fjerne den fra eksisterende oppgaver.",
-    "labelPlaceholder": "f.eks. logaritmer, brøk, likninger"
+    "labelPlaceholder": "f.eks. sannsyn/grunnleggende"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",
@@ -210,6 +211,9 @@
     "markComplete": "Merk som fullført",
     "compileToPDF": "Kompiler til PDF direkte",
     "generatePDF": "Generer PDF",
+    "previewPDF": "Forhåndsvis PDF",
+    "closePDFPreview": "Lukk forhåndsvisning",
+    "downloadPDF": "Last ned PDF",
     "downloadTypSource": "Last ned .typ kildefil",
     "taskFeedbackTitle": "Oppgavetilbakemelding",
     "task": "Oppgave",
@@ -434,6 +438,10 @@
     "analyticsHelp2": "Kategorier hjelper deg å gruppere oppgaver etter vanskelighetsgrad eller type (1, 2, 3)",
     "analyticsHelp3": "Klikk på et tema for å se individuelle elevprestasjoner for det emnet",
     "analyticsHelp4": "Grønn (5-6), Gul (3.5-4.9), Rød (<3.5) indikerer prestasjonsnivåer",
+    "classProgressTitle": "Klasseutvikling",
+    "classProgressDesc": "Gjennomsnittspoeng og % blanke fra test til test",
+    "avgScore": "Gjennomsnittspoeng",
+    "blankPct": "% blanke",
     "testAnalyticsDesc": "Se detaljert oppgaveprestasjon for hver prøve",
     "studentDashboardsDesc": "Se individuelle elevprestasjonsdashboard"
   },

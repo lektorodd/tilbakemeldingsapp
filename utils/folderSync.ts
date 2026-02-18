@@ -191,7 +191,7 @@ export async function saveSnippetsToFolder(snippets: FeedbackSnippet[]): Promise
 
 function sanitizeFileName(name: string): string {
   return name
-    .replace(/[^a-z0-9_\-\s]/gi, '')
+    .replace(/[^a-z0-9æøåÆØÅ_\-\s]/gi, '')
     .replace(/\s+/g, '_')
     .toLowerCase();
 }

@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, CourseTest, CourseStudent, TaskFeedback, TestFeedbackData, FeedbackSnippet } from '@/types';
 import { loadCourse, updateCourse, updateTest, updateStudentFeedback, getStudentFeedback, calculateStudentScore } from '@/utils/storage';
-import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF } from '@/utils/typstExport';
+import { generateTypstDocument, downloadTypstFile, compileAndDownloadPDF, compileAndGetPDFBlob } from '@/utils/typstExport';
+import PdfPreviewModal from '@/components/PdfPreviewModal';
 import TaskConfiguration from '@/components/TaskConfiguration';
 import SnippetPicker from '@/components/SnippetPicker';
 import ScoringGuide from '@/components/ScoringGuide';
@@ -12,7 +13,7 @@ import GradingProgressBar from '@/components/GradingProgressBar';
 import ProgressGrid from '@/components/ProgressGrid';
 import SnippetSidebar from '@/components/SnippetSidebar';
 import { useGradingShortcuts, TaskSlot } from '@/hooks/useGradingShortcuts';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -43,6 +44,10 @@ export default function TestFeedbackPage() {
 
   // Keyboard shortcuts visibility
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+
+  // PDF preview state
+  const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
+  const [previewPdfFilename, setPreviewPdfFilename] = useState<string>('');
 
   // Refs for textareas to handle cursor position
   const generalCommentRef = useRef<HTMLTextAreaElement>(null);
@@ -150,7 +155,7 @@ export default function TestFeedbackPage() {
       newFeedbacks = [...currentFeedback.taskFeedbacks];
       newFeedbacks[existingIndex] = { ...newFeedbacks[existingIndex], ...updates };
     } else {
-      newFeedbacks = [...currentFeedback.taskFeedbacks, { taskId, subtaskId, points: 0, comment: '', ...updates }];
+      newFeedbacks = [...currentFeedback.taskFeedbacks, { taskId, subtaskId, points: null, comment: '', ...updates }];
     }
 
     const updatedFeedback = {
@@ -306,6 +311,41 @@ export default function TestFeedbackPage() {
     if (success) {
       toast(t('test.pdfCompiledSuccess'), 'success');
     }
+  };
+
+  const handlePreviewPDF = async () => {
+    if (!selectedStudent || !test || !currentFeedback) return;
+
+    const score = calculateStudentScore(test.tasks, currentFeedback.taskFeedbacks);
+
+    const typstContent = generateTypstDocument({
+      studentName: selectedStudent.name,
+      studentNumber: selectedStudent.studentNumber,
+      testName: test.name,
+      tasks: test.tasks,
+      feedbacks: currentFeedback.taskFeedbacks,
+      generalComment: test.generalComment,
+      individualComment: currentFeedback.individualComment,
+      totalPoints: score,
+      maxPoints: 60,
+      language,
+    });
+
+    const filename = `${selectedStudent.name.replace(/\s+/g, '_')}_${test.name.replace(/\s+/g, '_')}.pdf`;
+
+    const blob = await compileAndGetPDFBlob(typstContent, filename);
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      setPreviewPdfUrl(url);
+      setPreviewPdfFilename(filename);
+    }
+  };
+
+  const closePreview = () => {
+    if (previewPdfUrl) {
+      URL.revokeObjectURL(previewPdfUrl);
+    }
+    setPreviewPdfUrl(null);
   };
 
   // Insert link template at cursor position
@@ -499,7 +539,7 @@ export default function TestFeedbackPage() {
   }
 
   const getFeedback = (taskId: string, subtaskId?: string): TaskFeedback => {
-    if (!currentFeedback) return { taskId, subtaskId, points: 0, comment: '' };
+    if (!currentFeedback) return { taskId, subtaskId, points: null, comment: '' };
 
     const existing = currentFeedback.taskFeedbacks.find(
       f => f.taskId === taskId && f.subtaskId === subtaskId
@@ -578,8 +618,8 @@ export default function TestFeedbackPage() {
             <button
               onClick={handleSaveTest}
               className={`flex items-center gap-2 px-5 py-2.5 text-white rounded-lg transition shadow-sm ${hasUnsavedTestConfig
-                  ? 'bg-amber-600 hover:bg-amber-700'
-                  : 'bg-success hover:bg-emerald-700'
+                ? 'bg-amber-600 hover:bg-amber-700'
+                : 'bg-success hover:bg-emerald-700'
                 }`}
             >
               <Save size={18} />
@@ -702,8 +742,8 @@ export default function TestFeedbackPage() {
                         <div
                           key={student.id}
                           className={`p-3 border rounded-lg transition-colors ${selectedStudent?.id === student.id
-                              ? 'border-rose-500 bg-rose-50'
-                              : 'border-border hover:bg-surface-alt'
+                            ? 'border-rose-500 bg-rose-50'
+                            : 'border-border hover:bg-surface-alt'
                             }`}
                         >
                           <div className="flex items-start justify-between">
@@ -797,12 +837,19 @@ export default function TestFeedbackPage() {
                           </button>
                         )}
                         <button
-                          onClick={handleCompilePDF}
+                          onClick={handlePreviewPDF}
                           className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
+                          title={t('test.previewPDF')}
+                        >
+                          <Eye size={18} />
+                          {t('test.previewPDF')}
+                        </button>
+                        <button
+                          onClick={handleCompilePDF}
+                          className="flex items-center gap-2 px-3 py-2 bg-brand/80 text-white rounded-lg hover:bg-brand transition"
                           title={t('test.compileToPDF')}
                         >
                           <Download size={18} />
-                          {t('test.generatePDF')}
                         </button>
                         <button
                           onClick={handleExportTypst}
@@ -841,8 +888,8 @@ export default function TestFeedbackPage() {
                                   <h4 className="text-lg font-semibold text-text-secondary">{t('test.task')} {task.label}</h4>
                                   {task.part && (
                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
-                                        ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                        : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                      ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                      : 'bg-blue-100 text-blue-800 border border-blue-300'
                                       }`}>
                                       {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
                                     </span>
@@ -852,8 +899,8 @@ export default function TestFeedbackPage() {
                                   const feedback = getFeedback(task.id, subtask.id);
                                   return (
                                     <div key={subtask.id} className={`ml-4 border rounded-lg p-4 transition-colors ${activeSubtask?.taskId === task.id && activeSubtask?.subtaskId === subtask.id
-                                        ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
-                                        : 'border-border bg-surface-alt'
+                                      ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
+                                      : 'border-border bg-surface-alt'
                                       }`}>
                                       <div className="flex items-center gap-4 mb-3">
                                         <label className="font-medium text-text-secondary min-w-[60px]">
@@ -868,8 +915,8 @@ export default function TestFeedbackPage() {
                                                 type="button"
                                                 onClick={() => handleUpdateFeedback(task.id, subtask.id, { points: p })}
                                                 className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
-                                                    ? 'bg-brand text-white shadow-md scale-110'
-                                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
+                                                  ? 'bg-brand text-white shadow-md scale-110'
+                                                  : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                                   }`}
                                               >
                                                 {p}
@@ -903,8 +950,8 @@ export default function TestFeedbackPage() {
                               </div>
                             ) : (
                               <div className={`border rounded-lg p-4 transition-colors ${activeSubtask?.taskId === task.id && !activeSubtask?.subtaskId
-                                  ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
-                                  : 'border-border bg-surface-alt'
+                                ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
+                                : 'border-border bg-surface-alt'
                                 }`}>
                                 {(() => {
                                   const feedback = getFeedback(task.id, undefined);
@@ -917,8 +964,8 @@ export default function TestFeedbackPage() {
                                           </label>
                                           {task.part && (
                                             <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
-                                                ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                                : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                              ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                                              : 'bg-blue-100 text-blue-800 border border-blue-300'
                                               }`}>
                                               {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
                                             </span>
@@ -933,8 +980,8 @@ export default function TestFeedbackPage() {
                                                 type="button"
                                                 onClick={() => handleUpdateFeedback(task.id, undefined, { points: p })}
                                                 className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
-                                                    ? 'bg-brand text-white shadow-md scale-110'
-                                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
+                                                  ? 'bg-brand text-white shadow-md scale-110'
+                                                  : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                                   }`}
                                               >
                                                 {p}
@@ -1031,6 +1078,11 @@ export default function TestFeedbackPage() {
           </div>
         </div>
       </div>
+      <PdfPreviewModal
+        pdfUrl={previewPdfUrl}
+        filename={previewPdfFilename}
+        onClose={closePreview}
+      />
     </main>
   );
 }

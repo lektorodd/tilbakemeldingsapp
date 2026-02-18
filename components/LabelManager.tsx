@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, X, Tag } from 'lucide-react';
+import { Plus, X, Tag, ChevronDown, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { groupLabelsByParent, formatLabelDisplay, getParentLabel } from '@/utils/labelUtils';
 
 interface LabelManagerProps {
   labels: string[];
@@ -15,6 +16,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
   const { toast, confirm } = useNotification();
   const [showAddLabel, setShowAddLabel] = useState(false);
   const [newLabel, setNewLabel] = useState('');
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
   const handleAddLabel = () => {
     if (!newLabel.trim()) return;
@@ -35,6 +37,20 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
       onLabelsChange(labels.filter(l => l !== label));
     }
   };
+
+  const toggleGroupCollapsed = (parent: string) => {
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(parent)) {
+        next.delete(parent);
+      } else {
+        next.add(parent);
+      }
+      return next;
+    });
+  };
+
+  const labelGroups = groupLabelsByParent(labels);
 
   return (
     <div className="bg-surface rounded-lg shadow-sm p-4">
@@ -81,22 +97,47 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="space-y-2">
         {labels.length === 0 ? (
           <p className="text-sm text-text-disabled">{t('course.noLabelsYet')}</p>
         ) : (
-          labels.map(label => (
-            <div
-              key={label}
-              className="flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
-            >
-              <span>{label}</span>
-              <button
-                onClick={() => handleRemoveLabel(label)}
-                className="hover:bg-primary-200 rounded-full p-0.5 transition"
-              >
-                <X size={14} />
-              </button>
+          labelGroups.map(group => (
+            <div key={group.parent ?? '__ungrouped'}>
+              {/* Parent group header */}
+              {group.parent && (
+                <button
+                  onClick={() => toggleGroupCollapsed(group.parent!)}
+                  className="flex items-center gap-1.5 mb-1.5 text-sm font-medium text-text-secondary hover:text-text-primary transition"
+                >
+                  {collapsedGroups.has(group.parent) ? (
+                    <ChevronRight size={14} />
+                  ) : (
+                    <ChevronDown size={14} />
+                  )}
+                  <span>{group.parent}</span>
+                  <span className="text-xs text-text-disabled">({group.children.length})</span>
+                </button>
+              )}
+
+              {/* Labels (hidden if group is collapsed) */}
+              {(!group.parent || !collapsedGroups.has(group.parent)) && (
+                <div className={`flex flex-wrap gap-2 ${group.parent ? 'ml-5 mb-2' : ''}`}>
+                  {group.children.map(label => (
+                    <div
+                      key={label}
+                      className="flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
+                    >
+                      <span>{formatLabelDisplay(label)}</span>
+                      <button
+                        onClick={() => handleRemoveLabel(label)}
+                        className="hover:bg-primary-200 rounded-full p-0.5 transition"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))
         )}

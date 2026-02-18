@@ -99,15 +99,15 @@ export default function ProgressGrid({
                                         const fb = feedback?.taskFeedbacks.find(
                                             f => f.taskId === slot.taskId && f.subtaskId === slot.subtaskId
                                         );
-                                        const points = fb?.points ?? 0;
+                                        const points = fb?.points ?? null;
                                         const hasComment = !!fb?.comment?.trim();
-                                        const hasPoints = points > 0;
-                                        const isGraded = hasPoints || hasComment;
+                                        const isGraded = points !== null || hasComment;
+                                        const displayPoints = points ?? 0;
 
                                         // Color based on score (0-6 scale)
                                         let cellColor = 'bg-gray-100 text-text-disabled'; // not graded
                                         if (isGraded) {
-                                            const ratio = points / MAX_POINTS;
+                                            const ratio = displayPoints / MAX_POINTS;
                                             if (ratio >= 0.83) cellColor = 'bg-emerald-100 text-emerald-700';       // 5-6
                                             else if (ratio >= 0.5) cellColor = 'bg-amber-100 text-amber-700';        // 3-4
                                             else if (ratio > 0) cellColor = 'bg-red-100 text-red-700';               // 1-2
@@ -118,9 +118,9 @@ export default function ProgressGrid({
                                             <td key={i} className="text-center px-1 py-1">
                                                 <div
                                                     className={`inline-flex items-center justify-center w-7 h-6 rounded text-[10px] font-semibold ${cellColor}`}
-                                                    title={`${slot.label}: ${points}/${MAX_POINTS}${hasComment ? ' 💬' : ''}`}
+                                                    title={`${slot.label}: ${displayPoints}/${MAX_POINTS}${hasComment ? ' 💬' : ''}`}
                                                 >
-                                                    {isGraded ? points : '·'}
+                                                    {isGraded ? displayPoints : '·'}
                                                 </div>
                                             </td>
                                         );

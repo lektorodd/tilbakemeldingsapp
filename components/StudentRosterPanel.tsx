@@ -48,36 +48,37 @@ export default function StudentRosterPanel({
         </div>
       </div>
 
-      <div className="space-y-2 max-h-96 overflow-y-auto">
+      <div className="space-y-1 max-h-[600px] overflow-y-auto">
         {students.length === 0 ? (
           <p className="text-sm text-text-disabled text-center py-8">{t('course.noStudentsYet')}</p>
         ) : (
           students.map(student => (
             <div
               key={student.id}
-              className="border border-border rounded-lg p-3 hover:bg-background"
+              className="flex items-center justify-between border border-border rounded-lg px-3 py-2 hover:bg-background transition-colors"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <h4 className="font-medium text-text-primary">{student.name}</h4>
-                  {student.studentNumber && (
-                    <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
-                  )}
-                </div>
+              <div className="flex items-center gap-2 min-w-0">
+                <h4 className="font-medium text-text-primary text-sm truncate">{student.name}</h4>
+                {student.studentNumber && (
+                  <span className="text-xs text-text-disabled shrink-0">#{student.studentNumber}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-1 shrink-0 ml-2">
+                <Link
+                  href={`/course/${courseId}/student/${student.id}`}
+                  className="p-1.5 text-brand hover:bg-surface-alt rounded transition-colors"
+                  title={t('test.viewDashboard')}
+                >
+                  <BarChart3 size={15} />
+                </Link>
                 <button
                   onClick={() => onDeleteStudent(student.id)}
-                  className="p-1 text-danger hover:bg-red-50 rounded transition"
+                  className="p-1.5 text-danger hover:bg-red-50 rounded transition-colors"
+                  title={t('common.delete')}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={15} />
                 </button>
               </div>
-              <Link
-                href={`/course/${courseId}/student/${student.id}`}
-                className="block text-center px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-              >
-                <BarChart3 size={14} className="inline mr-1" />
-                {t('test.viewDashboard')}
-              </Link>
             </div>
           ))
         )}

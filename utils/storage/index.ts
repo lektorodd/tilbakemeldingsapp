@@ -38,6 +38,7 @@ export {
     calculateMaxScore,
 
     // Analytics
+    getClassProgressData,
     getStudentProgress,
     getTestResults,
     getLabelPerformance,
@@ -51,6 +52,7 @@ export {
     migrateToFolder,
     mergeFeedbacks,
     mergeTests,
+    deduplicateCourses,
 
     // Backup system
     createBackup,
@@ -75,4 +77,4 @@ export {
 } from './courseStorage';
 
 // Re-export types/interfaces
-export type { BackupEntry, ImportResult } from './courseStorage';
+export type { BackupEntry, ImportResult, ClassProgressPoint } from './courseStorage';

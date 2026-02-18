@@ -32,7 +32,8 @@
     "createCourse": "Create New Course",
     "noCourses": "No courses created yet",
     "courseName": "Course Name",
-    "courseNamePlaceholder": "e.g. 1MX Fall 2024"
+    "courseNamePlaceholder": "e.g. 1MX Fall 2024",
+    "settingsAndTools": "Settings & Tools"
   },
   "course": {
     "students": "Students",
@@ -154,10 +155,10 @@
     "addButton": "Add",
     "cancelButton": "Cancel",
     "noLabelsYet": "No labels yet. Add labels to categorize tasks by theme/skill.",
-    "labelsHelpText": "Labels help you track student performance across themes (e.g., \"fractions\", \"logarithms\"). Add multiple labels to tasks that cover multiple topics.",
+    "labelsHelpText": "Labels help you track student performance across themes. Use / to group, e.g. \"probability/basics\" and \"probability/simulation\".",
     "labelAlreadyExists": "This label already exists!",
     "removeLabelConfirm": "Remove label \"{label}\"? This will not remove it from existing tasks.",
-    "labelPlaceholder": "e.g., logarithms, fractions, equations"
+    "labelPlaceholder": "e.g. probability/basics"
   },
   "test": {
     "giveFeedback": "Give Feedback",
@@ -210,6 +211,9 @@
     "markComplete": "Mark Complete",
     "compileToPDF": "Compile to PDF directly",
     "generatePDF": "Generate PDF",
+    "previewPDF": "Preview PDF",
+    "closePDFPreview": "Close preview",
+    "downloadPDF": "Download PDF",
     "downloadTypSource": "Download .typ source file",
     "taskFeedbackTitle": "Task Feedback",
     "task": "Task",
@@ -434,6 +438,10 @@
     "analyticsHelp2": "Categories help you group tasks by difficulty or type (1, 2, 3)",
     "analyticsHelp3": "Click on a label to see individual student performance for that theme",
     "analyticsHelp4": "Green (5-6), Yellow (3.5-4.9), Red (<3.5) indicate performance levels",
+    "classProgressTitle": "Class Progress",
+    "classProgressDesc": "Average score and % blank from test to test",
+    "avgScore": "Avg. Score",
+    "blankPct": "% Blank",
     "testAnalyticsDesc": "View detailed task performance for each test",
     "studentDashboardsDesc": "View individual student performance dashboards"
   },

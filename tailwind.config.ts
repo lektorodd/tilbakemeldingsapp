@@ -109,7 +109,7 @@ const config: Config = {
         border: 'var(--color-border)',
       },
       fontFamily: {
-        sans: ['"Source Sans Pro"', '"Source Sans 3"', 'system-ui', 'sans-serif'],
+        sans: ['Inter', '"Source Sans Pro"', '"Source Sans 3"', 'system-ui', 'sans-serif'],
         display: ['"Roboto Slab"', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
       },

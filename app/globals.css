@@ -5,7 +5,7 @@
 /* ===== Light Theme (default) ===== */
 :root {
   /* Fonts */
-  --font-source-sans: 'Source Sans Pro', 'Source Sans 3', system-ui, sans-serif;
+  --font-source-sans: 'Inter', 'Source Sans Pro', 'Source Sans 3', system-ui, sans-serif;
   --font-roboto-slab: 'Roboto Slab', Georgia, serif;
   --font-jetbrains-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
@@ -94,11 +94,19 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-semibold text-text-primary;
   }
 
-  code, pre, kbd, samp {
+  code,
+  pre,
+  kbd,
+  samp {
     @apply font-mono;
   }
 
@@ -118,6 +126,7 @@
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);

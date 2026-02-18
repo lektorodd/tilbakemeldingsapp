@@ -1,4 +1,4 @@
-# MatteMonitor v0.2.0
+# MatteMonitor v0.5.0
 
 A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 

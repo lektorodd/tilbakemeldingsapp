@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
 import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest } from '@/utils/storage';
@@ -13,6 +13,7 @@ import TestListPanel from '@/components/TestListPanel';
 import OralTestListPanel from '@/components/OralTestListPanel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { groupLabelsByParent, formatLabelDisplay } from '@/utils/labelUtils';
 
 export default function CourseDetailPage() {
   const { t } = useLanguage();
@@ -848,25 +849,31 @@ export default function CourseDetailPage() {
                       {t('course.themeLabels')} (optional)
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      {course.availableLabels.map(label => (
-                        <button
-                          key={label}
-                          type="button"
-                          onClick={() => {
-                            if (newOralTestLabels.includes(label)) {
-                              setNewOralTestLabels(newOralTestLabels.filter(l => l !== label));
-                            } else {
-                              setNewOralTestLabels([...newOralTestLabels, label]);
-                            }
-                          }}
-                          className={`px-3 py-1 rounded-full text-sm transition ${
-                            newOralTestLabels.includes(label)
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-primary-100 text-primary-800 hover:bg-primary-200'
-                          }`}
-                        >
-                          {label}
-                        </button>
+                      {groupLabelsByParent(course.availableLabels).map(group => (
+                        <React.Fragment key={group.parent ?? '__ungrouped'}>
+                          {group.parent && (
+                            <span className="text-xs font-medium text-text-disabled self-center ml-1 first:ml-0">{group.parent}/</span>
+                          )}
+                          {group.children.map(label => (
+                            <button
+                              key={label}
+                              type="button"
+                              onClick={() => {
+                                if (newOralTestLabels.includes(label)) {
+                                  setNewOralTestLabels(newOralTestLabels.filter(l => l !== label));
+                                } else {
+                                  setNewOralTestLabels([...newOralTestLabels, label]);
+                                }
+                              }}
+                              className={`px-3 py-1 rounded-full text-sm transition ${newOralTestLabels.includes(label)
+                                ? 'bg-primary-600 text-white'
+                                : 'bg-primary-100 text-primary-800 hover:bg-primary-200'
+                                }`}
+                            >
+                              {formatLabelDisplay(label)}
+                            </button>
+                          ))}
+                        </React.Fragment>
                       ))}
                     </div>
                   </div>
@@ -1085,25 +1092,31 @@ export default function CourseDetailPage() {
                       {t('course.themeLabels')} (optional)
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      {course.availableLabels.map(label => (
-                        <button
-                          key={label}
-                          type="button"
-                          onClick={() => {
-                            if (newOralTestLabels.includes(label)) {
-                              setNewOralTestLabels(newOralTestLabels.filter(l => l !== label));
-                            } else {
-                              setNewOralTestLabels([...newOralTestLabels, label]);
-                            }
-                          }}
-                          className={`px-3 py-1 rounded-full text-sm transition ${
-                            newOralTestLabels.includes(label)
-                              ? 'bg-primary-600 text-white'
-                              : 'bg-primary-100 text-primary-800 hover:bg-primary-200'
-                          }`}
-                        >
-                          {label}
-                        </button>
+                      {groupLabelsByParent(course.availableLabels).map(group => (
+                        <React.Fragment key={group.parent ?? '__ungrouped'}>
+                          {group.parent && (
+                            <span className="text-xs font-medium text-text-disabled self-center ml-1 first:ml-0">{group.parent}/</span>
+                          )}
+                          {group.children.map(label => (
+                            <button
+                              key={label}
+                              type="button"
+                              onClick={() => {
+                                if (newOralTestLabels.includes(label)) {
+                                  setNewOralTestLabels(newOralTestLabels.filter(l => l !== label));
+                                } else {
+                                  setNewOralTestLabels([...newOralTestLabels, label]);
+                                }
+                              }}
+                              className={`px-3 py-1 rounded-full text-sm transition ${newOralTestLabels.includes(label)
+                                ? 'bg-primary-600 text-white'
+                                : 'bg-primary-100 text-primary-800 hover:bg-primary-200'
+                                }`}
+                            >
+                              {formatLabelDisplay(label)}
+                            </button>
+                          ))}
+                        </React.Fragment>
                       ))}
                     </div>
                   </div>
