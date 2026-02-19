@@ -34,3 +34,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /testmappe
+
+# Tauri
+src-tauri/target/
+src-tauri/server/

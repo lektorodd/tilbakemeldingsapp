@@ -9,6 +9,20 @@ const execAsync = promisify(exec);
 
 const fontsDir = resolve(process.cwd(), 'fonts');
 
+// Find typst binary — check common paths first for .app compatibility
+function findTypst(): string {
+  const candidates = [
+    '/opt/homebrew/bin/typst',
+    '/usr/local/bin/typst',
+    '/usr/bin/typst',
+  ];
+  const fs = require('fs');
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  return 'typst'; // fallback to PATH
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { content, filename } = await request.json();
@@ -30,21 +44,15 @@ export async function POST(request: NextRequest) {
     // Write Typst content to temp file
     await writeFile(typPath, content, 'utf-8');
 
-    // Check if typst is installed
-    try {
-      await execAsync('which typst');
-    } catch (error) {
-      await unlink(typPath).catch(() => {});
-      return NextResponse.json(
-        { error: 'Typst CLI is not installed. Please install it first: brew install typst (macOS) or cargo install --git https://github.com/typst/typst (Linux)' },
-        { status: 500 }
-      );
-    }
+    // Find typst binary
+    const typstBin = findTypst();
 
     // Compile Typst file to PDF
     try {
-      const { stdout, stderr } = await execAsync(`typst compile --font-path "${fontsDir}" "${typPath}" "${pdfPath}"`, {
-        timeout: 30000, // 30 second timeout
+      const execEnv = { ...process.env, PATH: `/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH || ''}` };
+      const { stdout, stderr } = await execAsync(`"${typstBin}" compile --font-path "${fontsDir}" "${typPath}" "${pdfPath}"`, {
+        timeout: 30000,
+        env: execEnv,
       });
 
       if (stderr && !stderr.includes('compiled successfully')) {
@@ -55,8 +63,8 @@ export async function POST(request: NextRequest) {
       const pdfBuffer = await readFile(pdfPath);
 
       // Clean up temp files
-      await unlink(typPath).catch(() => {});
-      await unlink(pdfPath).catch(() => {});
+      await unlink(typPath).catch(() => { });
+      await unlink(pdfPath).catch(() => { });
 
       // Return PDF as blob
       return new NextResponse(pdfBuffer, {
@@ -68,8 +76,8 @@ export async function POST(request: NextRequest) {
       });
     } catch (compileError: any) {
       // Clean up temp files
-      await unlink(typPath).catch(() => {});
-      await unlink(pdfPath).catch(() => {});
+      await unlink(typPath).catch(() => { });
+      await unlink(pdfPath).catch(() => { });
 
       return NextResponse.json(
         {
