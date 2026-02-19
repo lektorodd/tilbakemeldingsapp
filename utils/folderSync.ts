@@ -16,6 +16,29 @@
 
 import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest } from '@/types';
 import { saveFolderHandle, loadFolderHandle, verifyFolderHandle, clearFolderHandle } from './folderDB';
+import {
+  shouldUseServerSync,
+  serverInitFolderSync,
+  serverChooseFolderAndConnect,
+  serverDisconnectFolder,
+  serverIsFolderConnected,
+  serverGetFolderName,
+  serverLoadSettingsFromFolder,
+  serverSaveSettingsToFolder,
+  serverLoadSnippetsFromFolder,
+  serverSaveSnippetsToFolder,
+  serverLoadCoursesFromFolder,
+  serverSaveAllCoursesToFolder,
+  serverSaveCourseToFolder,
+  serverDeleteCourseFromFolder,
+  AppSettings as ServerAppSettings,
+} from './folderSyncServer';
+
+// ==========================================
+// MODE DETECTION
+// ==========================================
+
+const useServer = typeof window !== 'undefined' && shouldUseServerSync();
 
 // ==========================================
 // MODULE STATE
@@ -35,6 +58,7 @@ let initPromise: Promise<boolean> | null = null;
  */
 export async function initFolderSync(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
+  if (useServer) return serverInitFolderSync();
   if (!('showDirectoryPicker' in window)) return false;
 
   // Deduplicate concurrent init calls
@@ -66,6 +90,7 @@ export async function initFolderSync(): Promise<boolean> {
  */
 export async function chooseFolderAndConnect(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
+  if (useServer) return serverChooseFolderAndConnect();
   if (!('showDirectoryPicker' in window)) return false;
 
   try {
@@ -99,6 +124,7 @@ export async function chooseFolderAndConnect(): Promise<boolean> {
  * Disconnect from the folder. Clears the saved handle.
  */
 export async function disconnectFolder(): Promise<void> {
+  if (useServer) return serverDisconnectFolder();
   activeDirHandle = null;
   await clearFolderHandle();
 }
@@ -107,6 +133,7 @@ export async function disconnectFolder(): Promise<void> {
  * Check if a folder is currently connected.
  */
 export function isFolderConnected(): boolean {
+  if (useServer) return serverIsFolderConnected();
   return activeDirHandle !== null;
 }
 
@@ -114,6 +141,7 @@ export function isFolderConnected(): boolean {
  * Get the name of the connected folder (for display).
  */
 export function getFolderName(): string | null {
+  if (useServer) return serverGetFolderName();
   return activeDirHandle?.name || null;
 }
 
@@ -131,6 +159,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 export async function loadSettingsFromFolder(): Promise<AppSettings | null> {
+  if (useServer) return serverLoadSettingsFromFolder();
   if (!activeDirHandle) return null;
   try {
     const fileHandle = await activeDirHandle.getFileHandle('settings.json');
@@ -143,6 +172,7 @@ export async function loadSettingsFromFolder(): Promise<AppSettings | null> {
 }
 
 export async function saveSettingsToFolder(settings: Partial<AppSettings>): Promise<void> {
+  if (useServer) return serverSaveSettingsToFolder(settings);
   if (!activeDirHandle) return;
   try {
     // Load existing settings to merge
@@ -162,6 +192,7 @@ export async function saveSettingsToFolder(settings: Partial<AppSettings>): Prom
 // ==========================================
 
 export async function loadSnippetsFromFolder(): Promise<FeedbackSnippet[] | null> {
+  if (useServer) return serverLoadSnippetsFromFolder();
   if (!activeDirHandle) return null;
   try {
     const fileHandle = await activeDirHandle.getFileHandle('snippets.json');
@@ -174,6 +205,7 @@ export async function loadSnippetsFromFolder(): Promise<FeedbackSnippet[] | null
 }
 
 export async function saveSnippetsToFolder(snippets: FeedbackSnippet[]): Promise<void> {
+  if (useServer) return serverSaveSnippetsToFolder(snippets);
   if (!activeDirHandle) return;
   try {
     const fileHandle = await activeDirHandle.getFileHandle('snippets.json', { create: true });
@@ -201,6 +233,7 @@ function sanitizeFileName(name: string): string {
  * Reads the folder structure and reconstructs complete Course objects.
  */
 export async function loadCoursesFromFolder(): Promise<Course[] | null> {
+  if (useServer) return serverLoadCoursesFromFolder();
   if (!activeDirHandle) return null;
 
   try {
@@ -238,6 +271,7 @@ export async function loadCoursesFromFolder(): Promise<Course[] | null> {
  * Overwrites the entire courses directory structure.
  */
 export async function saveAllCoursesToFolder(courses: Course[]): Promise<void> {
+  if (useServer) return serverSaveAllCoursesToFolder(courses);
   if (!activeDirHandle) return;
 
   try {
@@ -255,6 +289,7 @@ export async function saveAllCoursesToFolder(courses: Course[]): Promise<void> {
  * Save a single course to the folder.
  */
 export async function saveCourseToFolder(course: Course): Promise<void> {
+  if (useServer) return serverSaveCourseToFolder(course);
   if (!activeDirHandle) return;
 
   try {
@@ -269,6 +304,7 @@ export async function saveCourseToFolder(course: Course): Promise<void> {
  * Delete a course folder.
  */
 export async function deleteCourseFromFolder(courseName: string): Promise<void> {
+  if (useServer) return serverDeleteCourseFromFolder(courseName);
   if (!activeDirHandle) return;
 
   try {
