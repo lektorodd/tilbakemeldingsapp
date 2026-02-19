@@ -292,8 +292,8 @@ export default function OralAssessmentPage() {
                         key={student.id}
                         onClick={() => setSelectedStudent(student)}
                         className={`w-full text-left p-3 rounded-lg border transition-all ${isSelected
-                            ? 'bg-primary-100 border-primary-500 shadow-md'
-                            : 'bg-background border-border hover:border-primary-300 hover:bg-primary-50'
+                          ? 'bg-primary-100 border-primary-500 shadow-md'
+                          : 'bg-background border-border hover:border-primary-300 hover:bg-primary-50'
                           }`}
                       >
                         <div className="flex items-center justify-between mb-1">
@@ -377,7 +377,7 @@ export default function OralAssessmentPage() {
                     </button>
                     <button
                       onClick={handleGeneratePDF}
-                      className="flex items-center gap-2 px-3 py-2 bg-brand/80 text-white rounded-lg hover:bg-brand transition"
+                      className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
                       title={t('test.compileToPDF')}
                     >
                       <Download size={18} />

@@ -909,7 +909,7 @@ export default function TestFeedbackPage() {
                           </button>
                           <button
                             onClick={handleCompilePDF}
-                            className="flex items-center gap-2 px-3 py-2 bg-brand/80 text-white rounded-lg hover:bg-brand transition"
+                            className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
                             title={t('test.compileToPDF')}
                           >
                             <Download size={18} />

@@ -2,6 +2,13 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.7.1] — 2026-02-19
+
+### Fixed
+- **Download PDF button** — the download button next to Preview was invisible (only appeared on hover) due to an incompatible Tailwind opacity modifier on CSS-variable-based colors. Fixed on both written and oral test pages.
+
+---
+
 ## [0.6.1] — 2026-02-19
 
 ### Improved
