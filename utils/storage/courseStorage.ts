@@ -1458,6 +1458,189 @@ async function readFileFromHandle(fileHandle: FileSystemFileHandle): Promise<str
   return await file.text();
 }
 
+/**
+ * Server-backed folder import for Tauri (when showDirectoryPicker is unavailable).
+ * Uses /api/folder-sync to browse and read the folder structure.
+ */
+async function importFromFolderServer(): Promise<{
+  success: boolean;
+  courses: Course[];
+  errors: string[];
+}> {
+  const API = '/api/folder-sync';
+
+  try {
+    // Browse for folder
+    const browseRes = await fetch(`${API}?action=browse`);
+    const browseData = await browseRes.json();
+    if (browseData.cancelled) return { success: false, courses: [], errors: [] };
+    if (!browseData.path) return { success: false, courses: [], errors: ['Failed to select folder'] };
+
+    const basePath = browseData.path;
+    const importedCourses: Course[] = [];
+    const errors: string[] = [];
+
+    // Helper to read JSON from the chosen folder
+    async function readJson(relPath: string): Promise<any | null> {
+      try {
+        const res = await fetch(`${API}?action=read&path=${encodeURIComponent(relPath)}`);
+        if (!res.ok) return null;
+        return await res.json();
+      } catch { return null; }
+    }
+
+    async function listDir(relPath: string): Promise<{ name: string; isDirectory: boolean }[]> {
+      try {
+        const res = await fetch(`${API}?action=list&path=${encodeURIComponent(relPath)}`);
+        if (!res.ok) return [];
+        return await res.json();
+      } catch { return []; }
+    }
+
+    // Check if selected folder is itself a course folder
+    const courseInfo = await readJson('course-info.json');
+    if (courseInfo) {
+      // Import single course
+      const course = await importCourseFolderServer('', readJson, listDir);
+      if (course) importedCourses.push(course);
+    } else {
+      // It's a parent folder — iterate course subdirectories
+      const entries = await listDir('');
+      for (const entry of entries) {
+        if (!entry.isDirectory) {
+          // JSON file at top level?
+          if (entry.name.endsWith('.json')) {
+            const data = await readJson(entry.name);
+            if (Array.isArray(data)) {
+              importedCourses.push(...data);
+            } else if (data?.id && data?.name && data?.tests) {
+              importedCourses.push(data);
+            }
+          }
+          continue;
+        }
+        const course = await importCourseFolderServer(entry.name, readJson, listDir);
+        if (course) importedCourses.push(course);
+      }
+    }
+
+    // Disconnect the temp import folder (don't keep it as sync folder)
+    await fetch(`${API}?action=disconnect`);
+
+    return { success: importedCourses.length > 0, courses: importedCourses, errors };
+  } catch (error: unknown) {
+    return { success: false, courses: [], errors: [`${error}`] };
+  }
+}
+
+async function importCourseFolderServer(
+  basePath: string,
+  readJson: (p: string) => Promise<any | null>,
+  listDir: (p: string) => Promise<{ name: string; isDirectory: boolean }[]>
+): Promise<Course | null> {
+  const prefix = basePath ? `${basePath}/` : '';
+  const info = await readJson(`${prefix}course-info.json`);
+
+  let courseName = basePath || 'Unknown';
+  let courseId = '';
+  let courseDescription = '';
+  let students: CourseStudent[] = [];
+  let createdDate = new Date().toISOString();
+  let lastModified = new Date().toISOString();
+  let availableLabels: string[] = [];
+  let oralTests: OralTest[] = [];
+
+  if (info) {
+    courseId = info.id || '';
+    courseName = info.name || courseName;
+    courseDescription = info.description || '';
+    students = (info.students || []).map((s: CourseStudent) => ({
+      id: s.id || `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: s.name,
+      studentNumber: s.studentNumber,
+    }));
+    createdDate = info.createdDate || createdDate;
+    lastModified = info.lastModified || lastModified;
+    availableLabels = info.availableLabels || [];
+    oralTests = info.oralTests || [];
+  }
+
+  // Read test subfolders
+  const tests: CourseTest[] = [];
+  const entries = await listDir(basePath);
+  for (const entry of entries) {
+    if (!entry.isDirectory) continue;
+    const testPath = `${prefix}${entry.name}`;
+    const config = await readJson(`${testPath}/test-config.json`);
+    if (!config) continue;
+
+    const studentFeedbacks: CourseTest['studentFeedbacks'] = [];
+    const testEntries = await listDir(testPath);
+    for (const fe of testEntries) {
+      if (fe.isDirectory || fe.name === 'test-config.json' || !fe.name.endsWith('.json')) continue;
+      const data = await readJson(`${testPath}/${fe.name}`);
+      if (!data) continue;
+
+      let studentId = data.studentId || '';
+      if (!studentId && data.name) {
+        const matched = students.find(s => s.name.toLowerCase() === data.name.toLowerCase());
+        if (matched) {
+          studentId = matched.id;
+        } else {
+          const ns: CourseStudent = {
+            id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            name: data.name,
+            studentNumber: data.studentNumber,
+          };
+          students.push(ns);
+          studentId = ns.id;
+        }
+      }
+      if (studentId) {
+        studentFeedbacks.push({
+          studentId,
+          taskFeedbacks: data.taskFeedbacks || [],
+          individualComment: data.individualComment || '',
+          completedDate: data.completedDate,
+        });
+      }
+    }
+
+    const test: CourseTest = {
+      id: config.id || `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      name: config.name || entry.name,
+      description: config.description || '',
+      date: config.date || new Date().toISOString(),
+      tasks: config.tasks || [],
+      generalComment: config.generalComment || '',
+      studentFeedbacks,
+      createdDate: config.createdDate || new Date().toISOString(),
+      lastModified: config.lastModified || new Date().toISOString(),
+    };
+    if (config.hasTwoParts !== undefined) test.hasTwoParts = config.hasTwoParts;
+    if (config.part1TaskCount !== undefined) test.part1TaskCount = config.part1TaskCount;
+    if (config.part2TaskCount !== undefined) test.part2TaskCount = config.part2TaskCount;
+    if (config.restartNumberingInPart2 !== undefined) test.restartNumberingInPart2 = config.restartNumberingInPart2;
+    if (config.snippets !== undefined) test.snippets = config.snippets;
+
+    tests.push(test);
+  }
+
+  if (!courseId && tests.length === 0 && students.length === 0) return null;
+
+  return {
+    id: courseId || `course-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    name: courseName,
+    description: courseDescription,
+    students,
+    tests,
+    oralTests,
+    availableLabels,
+    createdDate,
+    lastModified,
+  };
+}
+
 export async function importFromFolder(): Promise<{
   success: boolean;
   courses: Course[];
@@ -1468,7 +1651,8 @@ export async function importFromFolder(): Promise<{
   }
 
   if (!('showDirectoryPicker' in window)) {
-    return { success: false, courses: [], errors: ['Folder import is not supported in this browser. Use Chrome or Edge.'] };
+    // Tauri / non-Chromium fallback: use server-side folder browse
+    return importFromFolderServer();
   }
 
   try {
