@@ -2,6 +2,21 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.8.0] — 2026-02-19
+
+### Added
+- **Desktop app** — MatteMonitor is now available as a native macOS `.app` via Tauri v2. Double-click to run, no terminal needed.
+- **Teal graduation cap app icon** — custom branded icon in the Dock.
+- **Version bump script** — `./bump.sh 0.7.0` updates all 3 config files in sync.
+
+### Fixed
+- **Folder sync in desktop app** — the folder picker and import-from-folder now work in Tauri via a server-backed fallback (the browser File System Access API is unavailable in WKWebView).
+- **PDF export in desktop app** — Typst binary is now resolved by absolute path instead of relying on shell PATH.
+- **GitHub link in desktop app** — external URLs now open in the default browser via server-side `open` command.
+- **Server cleanup** — the bundled Next.js server is properly killed when quitting the app (no orphaned processes).
+
+---
+
 ## [0.7.1] — 2026-02-19
 
 ### Fixed

@@ -1,4 +1,4 @@
-# MatteMonitor v0.7.1
+# MatteMonitor v0.8.0
 
 A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 
@@ -9,6 +9,17 @@ npm install
 npm run dev
 # Open http://localhost:3333
 ```
+
+## Desktop App (macOS)
+
+MatteMonitor is also available as a native macOS `.app` via [Tauri v2](https://tauri.app/):
+
+```bash
+npm run tauri build          # Build .app + .dmg
+npm run tauri dev            # Dev mode with native window
+```
+
+The `.app` is at `src-tauri/target/release/bundle/macos/MatteMonitor.app` (42 MB). Requires Node.js and Typst installed on the system.
 
 For PDF export, you also need [Typst](https://github.com/typst/typst/releases) installed:
 
