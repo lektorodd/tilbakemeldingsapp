@@ -39,6 +39,16 @@ export default function Navbar() {
               href="https://github.com/lektorodd/tilbakemeldingsapp"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => {
+                e.preventDefault();
+                const url = 'https://github.com/lektorodd/tilbakemeldingsapp';
+                // In Tauri, window.open may not work, so also try location-based approach
+                const w = window.open(url, '_blank');
+                if (!w) {
+                  // Fallback: use fetch to trigger server-side open
+                  fetch(`/api/open-url?url=${encodeURIComponent(url)}`).catch(() => { });
+                }
+              }}
               className="flex items-center gap-1.5 px-3 py-2 text-text-secondary hover:text-brand hover:bg-surface-alt rounded-lg transition-colors"
               title={t('common.github')}
             >
