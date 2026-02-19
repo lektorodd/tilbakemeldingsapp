@@ -2,6 +2,17 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.6.0] — 2026-02-19
+
+### Added
+- **Absent students** — mark students as not present on a per-test basis. Absent students are excluded from progress bars, analytics, heatmap, PDF export, and Excel export. Toggle absence via the person icon in the student list sidebar.
+- **Typst math snippets** — pre-defined math snippet buttons for quick insertion of common Typst expressions.
+
+### Changed
+- **Removed version badge** from the navbar header for a cleaner look.
+
+---
+
 ## [0.5.0] — 2026-02-18
 
 ### Added

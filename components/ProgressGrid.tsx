@@ -74,6 +74,7 @@ export default function ProgressGrid({
                     <tbody>
                         {students.map(student => {
                             const feedback = getStudentFeedback(courseId, test.id, student.id);
+                            const isAbsent = !!feedback?.absent;
                             const isCompleted = !!feedback?.completedDate;
                             const totalScore = feedback
                                 ? calculateStudentScore(test.tasks, feedback.taskFeedbacks)
@@ -84,50 +85,57 @@ export default function ProgressGrid({
                                 <tr
                                     key={student.id}
                                     className={`border-b border-border/50 cursor-pointer transition-colors hover:bg-surface-alt ${isSelected ? 'bg-rose-50 hover:bg-rose-100' : ''
-                                        }`}
+                                        } ${isAbsent ? 'opacity-50' : ''}`}
                                     onClick={() => onSelectStudent(student)}
                                 >
                                     <td className="px-3 py-1.5 whitespace-nowrap">
                                         <div className="flex items-center gap-1.5">
-                                            <span className={`font-medium ${isSelected ? 'text-brand' : 'text-text-primary'}`}>
+                                            <span className={`font-medium ${isAbsent ? 'line-through text-text-disabled' : isSelected ? 'text-brand' : 'text-text-primary'}`}>
                                                 {student.name}
                                             </span>
-                                            {isCompleted && <CheckCircle size={12} className="text-success flex-shrink-0" />}
+                                            {isAbsent && <span className="text-[10px] bg-gray-200 text-text-disabled px-1.5 py-0.5 rounded">{t('test.absent')}</span>}
+                                            {isCompleted && !isAbsent && <CheckCircle size={12} className="text-success flex-shrink-0" />}
                                         </div>
                                     </td>
-                                    {slots.map((slot, i) => {
-                                        const fb = feedback?.taskFeedbacks.find(
-                                            f => f.taskId === slot.taskId && f.subtaskId === slot.subtaskId
-                                        );
-                                        const points = fb?.points ?? null;
-                                        const hasComment = !!fb?.comment?.trim();
-                                        const isGraded = points !== null || hasComment;
-                                        const displayPoints = points ?? 0;
+                                    {isAbsent ? (
+                                        <td colSpan={slots.length} className="text-center px-1 py-1">
+                                            <span className="text-[10px] text-text-disabled italic">{t('test.absent')}</span>
+                                        </td>
+                                    ) : (
+                                        slots.map((slot, i) => {
+                                            const fb = feedback?.taskFeedbacks.find(
+                                                f => f.taskId === slot.taskId && f.subtaskId === slot.subtaskId
+                                            );
+                                            const points = fb?.points ?? null;
+                                            const hasComment = !!fb?.comment?.trim();
+                                            const isGraded = points !== null || hasComment;
+                                            const displayPoints = points ?? 0;
 
-                                        // Color based on score (0-6 scale)
-                                        let cellColor = 'bg-gray-100 text-text-disabled'; // not graded
-                                        if (isGraded) {
-                                            const ratio = displayPoints / MAX_POINTS;
-                                            if (ratio >= 0.83) cellColor = 'bg-emerald-100 text-emerald-700';       // 5-6
-                                            else if (ratio >= 0.5) cellColor = 'bg-amber-100 text-amber-700';        // 3-4
-                                            else if (ratio > 0) cellColor = 'bg-red-100 text-red-700';               // 1-2
-                                            else cellColor = hasComment ? 'bg-blue-100 text-blue-700' : 'bg-red-50 text-red-500'; // 0
-                                        }
+                                            // Color based on score (0-6 scale)
+                                            let cellColor = 'bg-gray-100 text-text-disabled'; // not graded
+                                            if (isGraded) {
+                                                const ratio = displayPoints / MAX_POINTS;
+                                                if (ratio >= 0.83) cellColor = 'bg-emerald-100 text-emerald-700';       // 5-6
+                                                else if (ratio >= 0.5) cellColor = 'bg-amber-100 text-amber-700';        // 3-4
+                                                else if (ratio > 0) cellColor = 'bg-red-100 text-red-700';               // 1-2
+                                                else cellColor = hasComment ? 'bg-blue-100 text-blue-700' : 'bg-red-50 text-red-500'; // 0
+                                            }
 
-                                        return (
-                                            <td key={i} className="text-center px-1 py-1">
-                                                <div
-                                                    className={`inline-flex items-center justify-center w-7 h-6 rounded text-[10px] font-semibold ${cellColor}`}
-                                                    title={`${slot.label}: ${displayPoints}/${MAX_POINTS}${hasComment ? ' 💬' : ''}`}
-                                                >
-                                                    {isGraded ? displayPoints : '·'}
-                                                </div>
-                                            </td>
-                                        );
-                                    })}
+                                            return (
+                                                <td key={i} className="text-center px-1 py-1">
+                                                    <div
+                                                        className={`inline-flex items-center justify-center w-7 h-6 rounded text-[10px] font-semibold ${cellColor}`}
+                                                        title={`${slot.label}: ${displayPoints}/${MAX_POINTS}${hasComment ? ' 💬' : ''}`}
+                                                    >
+                                                        {isGraded ? displayPoints : '·'}
+                                                    </div>
+                                                </td>
+                                            );
+                                        })
+                                    )}
                                     <td className="text-center px-3 py-1.5">
-                                        <span className="font-semibold text-text-primary tabular-nums">
-                                            {totalScore}
+                                        <span className={`font-semibold tabular-nums ${isAbsent ? 'text-text-disabled' : 'text-text-primary'}`}>
+                                            {isAbsent ? '—' : totalScore}
                                         </span>
                                     </td>
                                 </tr>

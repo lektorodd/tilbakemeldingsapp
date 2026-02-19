@@ -24,7 +24,7 @@ export default function SnippetPicker({
   const [isOpen, setIsOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newSnippetText, setNewSnippetText] = useState('');
-  const [filter, setFilter] = useState<'all' | 'standard' | 'encouragement' | 'error' | 'custom'>('all');
+  const [filter, setFilter] = useState<'all' | 'standard' | 'encouragement' | 'error' | 'custom' | 'math'>('all');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -64,6 +64,7 @@ export default function SnippetPicker({
       case 'encouragement': return 'bg-emerald-100 text-emerald-700';
       case 'error': return 'bg-rose-100 text-brand-hover';
       case 'custom': return 'bg-primary-100 text-primary-700';
+      case 'math': return 'bg-emerald-100 text-emerald-700';
       default: return 'bg-stone-100 text-stone-700';
     }
   };
@@ -101,35 +102,38 @@ export default function SnippetPicker({
             <div className="flex gap-1 flex-wrap">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${
-                  filter === 'all' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-primary-100'
-                }`}
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'all' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-primary-100'
+                  }`}
               >
                 Alle ({snippets.length})
               </button>
               <button
                 onClick={() => setFilter('standard')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${
-                  filter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface text-text-secondary hover:bg-stone-100'
-                }`}
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface text-text-secondary hover:bg-stone-100'
+                  }`}
               >
                 Standard
               </button>
               <button
                 onClick={() => setFilter('encouragement')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${
-                  filter === 'encouragement' ? 'bg-success text-white' : 'bg-surface text-text-secondary hover:bg-emerald-100'
-                }`}
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'encouragement' ? 'bg-success text-white' : 'bg-surface text-text-secondary hover:bg-emerald-100'
+                  }`}
               >
                 Oppmuntrande
               </button>
               <button
                 onClick={() => setFilter('error')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${
-                  filter === 'error' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-rose-100'
-                }`}
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'error' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-rose-100'
+                  }`}
               >
                 Feil
+              </button>
+              <button
+                onClick={() => setFilter('math')}
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'math' ? 'bg-emerald-600 text-white' : 'bg-surface text-text-secondary hover:bg-emerald-100'
+                  }`}
+              >
+                Typst-matte
               </button>
             </div>
           </div>

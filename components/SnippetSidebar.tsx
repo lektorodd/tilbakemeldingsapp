@@ -8,8 +8,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface SnippetSidebarProps {
   snippets: FeedbackSnippet[];
   activeSubtask: { taskId: string; subtaskId?: string } | null;
-  snippetFilter: 'all' | 'standard' | 'encouragement' | 'error' | 'custom';
-  onFilterChange: (filter: 'all' | 'standard' | 'encouragement' | 'error' | 'custom') => void;
+  snippetFilter: 'all' | 'standard' | 'encouragement' | 'error' | 'custom' | 'math';
+  onFilterChange: (filter: 'all' | 'standard' | 'encouragement' | 'error' | 'custom' | 'math') => void;
   onInsertSnippet: (text: string) => void;
   onAddSnippet: (text: string, category?: FeedbackSnippet['category']) => void;
   onDeleteSnippet: (id: string) => void;
@@ -34,6 +34,7 @@ export default function SnippetSidebar({
       case 'encouragement': return 'bg-emerald-100 text-emerald-700';
       case 'error': return 'bg-rose-100 text-rose-700';
       case 'custom': return 'bg-primary-100 text-primary-700';
+      case 'math': return 'bg-emerald-100 text-emerald-700';
       default: return 'bg-stone-100 text-stone-700';
     }
   };
@@ -66,35 +67,38 @@ export default function SnippetSidebar({
               <div className="flex gap-1 flex-wrap">
                 <button
                   onClick={() => onFilterChange('all')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${
-                    snippetFilter === 'all' ? 'bg-brand text-white' : 'bg-surface-alt text-text-secondary hover:bg-gray-200'
-                  }`}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'all' ? 'bg-brand text-white' : 'bg-surface-alt text-text-secondary hover:bg-gray-200'
+                    }`}
                 >
                   {t('common.all')} ({snippets.length})
                 </button>
                 <button
                   onClick={() => onFilterChange('standard')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${
-                    snippetFilter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-stone-100'
-                  }`}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-stone-100'
+                    }`}
                 >
                   Standard
                 </button>
                 <button
                   onClick={() => onFilterChange('encouragement')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${
-                    snippetFilter === 'encouragement' ? 'bg-success text-white' : 'bg-surface-alt text-text-secondary hover:bg-emerald-100'
-                  }`}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'encouragement' ? 'bg-success text-white' : 'bg-surface-alt text-text-secondary hover:bg-emerald-100'
+                    }`}
                 >
                   {t('snippets.encouragement') || 'Oppmuntrande'}
                 </button>
                 <button
                   onClick={() => onFilterChange('error')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${
-                    snippetFilter === 'error' ? 'bg-danger text-white' : 'bg-surface-alt text-text-secondary hover:bg-red-100'
-                  }`}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'error' ? 'bg-danger text-white' : 'bg-surface-alt text-text-secondary hover:bg-red-100'
+                    }`}
                 >
                   {t('snippets.error') || 'Feil'}
+                </button>
+                <button
+                  onClick={() => onFilterChange('math')}
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'math' ? 'bg-emerald-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-emerald-100'
+                    }`}
+                >
+                  {t('snippets.math') || 'Typst-matte'}
                 </button>
               </div>
             </>

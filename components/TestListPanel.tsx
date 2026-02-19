@@ -48,7 +48,7 @@ export default function TestListPanel({
           [...tests]
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map(test => {
-              const completedCount = test.studentFeedbacks.filter(f => f.completedDate).length;
+              const completedCount = test.studentFeedbacks.filter(f => f.completedDate && !f.absent).length;
               return (
                 <div
                   key={test.id}

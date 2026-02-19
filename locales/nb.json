@@ -24,7 +24,8 @@
     "error": "Feil",
     "noSnippets": "Ingen hurtigtekster å vise",
     "addPlaceholder": "Skriv inn ny hurtigtekst...",
-    "addNew": "Lag ny hurtigtekst"
+    "addNew": "Lag ny hurtigtekst",
+    "math": "Typst-matte"
   },
   "home": {
     "title": "Tilbakemeldingsverktøy for mattelærere",
@@ -300,7 +301,12 @@
     "addLabelInline": "Ny",
     "newLabelPlaceholder": "f.eks. logaritmer",
     "taskWeight": "Vekt",
-    "taskWeightDefault": "Standard: lik"
+    "taskWeightDefault": "Standard: lik",
+    "absent": "Fråverande",
+    "markAbsent": "Merk som fråverande",
+    "markPresent": "Merk som til stades",
+    "studentAbsent": "Denne eleven er registrert som fråverande og vil ikkje bli vurdert på denne prøven.",
+    "absentCount": "{count} fråverande"
   },
   "oral": {
     "title": "Muntlig vurdering",
@@ -374,6 +380,7 @@
     "completedTests": "Fullførte prøver",
     "progress": "Fremgang",
     "latestTest": "siste prøve",
+    "needMoreTests": "Treng 2+ fullførte prøvar",
     "performanceAcrossTests": "Prestasjoner på tvers av prøver",
     "performanceByTheme": "Prestasjoner per tema",
     "performanceByCategory": "Prestasjoner per kategori",

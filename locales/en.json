@@ -24,7 +24,8 @@
     "error": "Error",
     "noSnippets": "No snippets to show",
     "addPlaceholder": "Write new snippet...",
-    "addNew": "Create new snippet"
+    "addNew": "Create new snippet",
+    "math": "Typst math"
   },
   "home": {
     "title": "Feedback tool for math teachers",
@@ -300,7 +301,12 @@
     "addLabelInline": "New",
     "newLabelPlaceholder": "e.g., logarithms",
     "taskWeight": "Weight",
-    "taskWeightDefault": "Default: equal"
+    "taskWeightDefault": "Default: equal",
+    "absent": "Absent",
+    "markAbsent": "Mark as absent",
+    "markPresent": "Mark as present",
+    "studentAbsent": "This student is marked as absent and will not be graded for this test.",
+    "absentCount": "{count} absent"
   },
   "oral": {
     "title": "Oral Assessment",
@@ -374,6 +380,7 @@
     "completedTests": "Completed Tests",
     "progress": "Progress",
     "latestTest": "latest test",
+    "needMoreTests": "Need 2+ completed tests",
     "performanceAcrossTests": "Performance Across Tests",
     "performanceByTheme": "Performance by Theme",
     "performanceByCategory": "Performance by Category",

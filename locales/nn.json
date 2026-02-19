@@ -24,7 +24,8 @@
     "error": "Feil",
     "noSnippets": "Ingen snøggtekstar å vise",
     "addPlaceholder": "Skriv inn ny snøggtekst...",
-    "addNew": "Lag ny snøggtekst"
+    "addNew": "Lag ny snøggtekst",
+    "math": "Typst-matte"
   },
   "home": {
     "title": "Tilbakemeldingsverktøy for mattelærarar",
@@ -300,7 +301,12 @@
     "addLabelInline": "Ny",
     "newLabelPlaceholder": "t.d. logaritmar",
     "taskWeight": "Vekt",
-    "taskWeightDefault": "Standard: lik"
+    "taskWeightDefault": "Standard: lik",
+    "absent": "Fråverande",
+    "markAbsent": "Merk som fråverande",
+    "markPresent": "Merk som til stades",
+    "studentAbsent": "Denne eleven er registrert som fråverande og vil ikkje bli vurdert på denne prøven.",
+    "absentCount": "{count} fråverande"
   },
   "oral": {
     "title": "Munnleg vurdering",
@@ -374,6 +380,7 @@
     "completedTests": "Fullførte prøver",
     "progress": "Framgang",
     "latestTest": "siste prøve",
+    "needMoreTests": "Treng 2+ fullførte prøvar",
     "performanceAcrossTests": "Prestasjonar på tvers av prøver",
     "performanceByTheme": "Prestasjonar per tema",
     "performanceByCategory": "Prestasjonar per kategori",

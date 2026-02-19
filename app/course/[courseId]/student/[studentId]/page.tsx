@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getStudentDetailedAnalytics, loadCourse } from '@/utils/storage';
-import { ArrowLeft, TrendingUp, Target, Award, BarChart3, Tag, BookOpen, MessageSquare } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, Target, Award, BarChart3, Tag, BookOpen, MessageSquare, UserX } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -132,12 +132,66 @@ export default function StudentDashboardPage() {
               <TrendingUp size={20} className="text-warning" />
               <h3 className="font-semibold text-text-primary">{t('dashboard.progress')}</h3>
             </div>
-            <p className="text-3xl font-display font-bold text-warning">
-              {testPerformance.length > 0 && testPerformance[testPerformance.length - 1].score > 0
-                ? testPerformance[testPerformance.length - 1].score
-                : '-'}
-            </p>
-            <p className="text-sm text-text-secondary">{t('dashboard.latestTest')}</p>
+            {(() => {
+              const scores = testPerformance.filter(t => !t.absent && t.completed).map(t => t.score);
+              if (scores.length < 2) {
+                return (
+                  <>
+                    <p className="text-2xl font-display font-bold text-text-disabled">—</p>
+                    <p className="text-xs text-text-secondary">{t('dashboard.needMoreTests')}</p>
+                  </>
+                );
+              }
+
+              const delta = scores[scores.length - 1] - scores[scores.length - 2];
+              const isUp = delta > 0;
+              const isDown = delta < 0;
+
+              // Sparkline
+              const maxScore = 60;
+              const width = 120;
+              const height = 32;
+              const padding = 2;
+              const step = (width - padding * 2) / (scores.length - 1);
+              const points = scores.map((s, i) => {
+                const x = padding + i * step;
+                const y = height - padding - ((s / maxScore) * (height - padding * 2));
+                return `${x},${y}`;
+              }).join(' ');
+
+              return (
+                <div className="flex items-end gap-3">
+                  {/* Trend arrow + delta */}
+                  <div className="flex items-center gap-1">
+                    {isUp && <TrendingUp size={22} className="text-success" />}
+                    {isDown && <TrendingDown size={22} className="text-danger" />}
+                    {!isUp && !isDown && <Minus size={22} className="text-text-disabled" />}
+                    <span className={`text-xl font-bold font-display ${isUp ? 'text-success' : isDown ? 'text-danger' : 'text-text-disabled'
+                      }`}>
+                      {isUp ? '+' : ''}{delta}
+                    </span>
+                  </div>
+                  {/* Sparkline */}
+                  <svg width={width} height={height} className="flex-shrink-0">
+                    <polyline
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                      points={points}
+                      className="text-warning"
+                    />
+                    {/* Dot on latest */}
+                    {(() => {
+                      const lastX = padding + (scores.length - 1) * step;
+                      const lastY = height - padding - ((scores[scores.length - 1] / maxScore) * (height - padding * 2));
+                      return <circle cx={lastX} cy={lastY} r={3} className="fill-warning" />;
+                    })()}
+                  </svg>
+                </div>
+              );
+            })()}
           </div>
         </div>
 
@@ -151,89 +205,109 @@ export default function StudentDashboardPage() {
             <div className="space-y-3">
               {testPerformance.map(test => (
                 <div key={test.testId} className="flex gap-3">
-                  {/* Test card - 85% width */}
-                  <Link
-                    href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
-                    className="flex-[0.85] border border-border rounded-lg p-4 hover:border-rose-500 hover:shadow-sm transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold text-text-primary hover:text-brand transition-colors">{test.testName}</h4>
-                        <p className="text-xs text-text-disabled">
-                          {new Date(test.testDate).toLocaleDateString('nb-NO')}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className={`text-2xl font-bold ${getScoreColor(test.score)}`}>
-                          {test.score} / {test.maxScore}
-                        </p>
-                        {test.completed ? (
-                          <p className="text-xs text-success">{t('test.completed')}</p>
-                        ) : (
-                          <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
-                        )}
+                  {test.absent ? (
+                    /* Absent test card — full width, no histogram */
+                    <div className="flex-1 border border-border rounded-lg p-4 bg-gray-50 opacity-70">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold text-text-disabled line-through">{test.testName}</h4>
+                          <p className="text-xs text-text-disabled">
+                            {new Date(test.testDate).toLocaleDateString('nb-NO')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <UserX size={18} className="text-text-disabled" />
+                          <span className="text-sm font-medium text-text-disabled bg-gray-200 px-2 py-0.5 rounded">{t('test.absent')}</span>
+                        </div>
                       </div>
                     </div>
-
-                    {/* Progress bar */}
-                    <div className="mb-2">
-                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${test.score >= 50 ? 'bg-success' : test.score >= 35 ? 'bg-warning' : 'bg-danger'}`}
-                          style={{ width: `${(test.score / test.maxScore) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Attempt rate */}
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-text-secondary">{t('dashboard.tasksAttempted')}:</span>
-                      <span className="font-medium text-text-primary">
-                        {test.tasksAttempted} / {test.totalTasks} ({test.attemptPercentage.toFixed(0)}%)
-                      </span>
-                    </div>
-                  </Link>
-
-                  {/* Score distribution histogram box - 15% width */}
-                  <div className="flex-[0.15] border border-border rounded-lg p-2 bg-background">
-                    <div className="flex flex-col h-full justify-between">
-                      <div className="flex items-end gap-0.5 flex-1 mb-1" style={{ minHeight: '60px' }}>
-                        {(() => {
-                          // Use the same color as the progress bar for all histogram bars
-                          const barColor = test.score >= 50 ? 'bg-success' : test.score >= 35 ? 'bg-warning' : 'bg-danger';
-
-                          return [0, 1, 2, 3, 4, 5, 6].map(score => {
-                            const count = test.scoreDistribution[score] || 0;
-                            const maxCount = Math.max(...Object.values(test.scoreDistribution));
-                            const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
-
-                            return (
-                              <div
-                                key={score}
-                                className="flex-1 relative group h-full"
-                                title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
-                              >
-                                <div className="h-full flex flex-col justify-end">
-                                  <div
-                                    className={`${count > 0 ? barColor : 'bg-gray-300'} rounded-t transition-all`}
-                                    style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div>
-                      {/* Labels for histogram */}
-                      <div className="flex gap-0.5">
-                        {[0, 1, 2, 3, 4, 5, 6].map(score => (
-                          <div key={score} className="flex-1 text-center text-xs text-text-secondary">
-                            {score}
+                  ) : (
+                    <>
+                      {/* Test card - 85% width */}
+                      <Link
+                        href={`/course/${courseId}/test/${test.testId}?student=${studentId}`}
+                        className="flex-[0.85] border border-border rounded-lg p-4 hover:border-rose-500 hover:shadow-sm transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-text-primary hover:text-brand transition-colors">{test.testName}</h4>
+                            <p className="text-xs text-text-disabled">
+                              {new Date(test.testDate).toLocaleDateString('nb-NO')}
+                            </p>
                           </div>
-                        ))}
+                          <div className="text-right">
+                            <p className={`text-2xl font-bold ${getScoreColor(test.score)}`}>
+                              {test.score} / {test.maxScore}
+                            </p>
+                            {test.completed ? (
+                              <p className="text-xs text-success">{t('test.completed')}</p>
+                            ) : (
+                              <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Progress bar */}
+                        <div className="mb-2">
+                          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full ${test.score >= 50 ? 'bg-success' : test.score >= 35 ? 'bg-warning' : 'bg-danger'}`}
+                              style={{ width: `${(test.score / test.maxScore) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Attempt rate */}
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-text-secondary">{t('dashboard.tasksAttempted')}:</span>
+                          <span className="font-medium text-text-primary">
+                            {test.tasksAttempted} / {test.totalTasks} ({test.attemptPercentage.toFixed(0)}%)
+                          </span>
+                        </div>
+                      </Link>
+
+                      {/* Score distribution histogram box - 15% width */}
+                      <div className="flex-[0.15] border border-border rounded-lg p-2 bg-background">
+                        <div className="flex flex-col h-full justify-between">
+                          <div className="flex items-end gap-0.5 flex-1 mb-1" style={{ minHeight: '60px' }}>
+                            {(() => {
+                              // Use the same color as the progress bar for all histogram bars
+                              const barColor = test.score >= 50 ? 'bg-success' : test.score >= 35 ? 'bg-warning' : 'bg-danger';
+
+                              return [0, 1, 2, 3, 4, 5, 6].map(score => {
+                                const count = test.scoreDistribution[score] || 0;
+                                const maxCount = Math.max(...Object.values(test.scoreDistribution));
+                                const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
+
+                                return (
+                                  <div
+                                    key={score}
+                                    className="flex-1 relative group h-full"
+                                    title={`${count} task${count !== 1 ? 's' : ''} with ${score} points`}
+                                  >
+                                    <div className="h-full flex flex-col justify-end">
+                                      <div
+                                        className={`${count > 0 ? barColor : 'bg-gray-300'} rounded-t transition-all`}
+                                        style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              });
+                            })()}
+                          </div>
+                          {/* Labels for histogram */}
+                          <div className="flex gap-0.5">
+                            {[0, 1, 2, 3, 4, 5, 6].map(score => (
+                              <div key={score} className="flex-1 text-center text-xs text-text-secondary">
+                                {score}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -248,74 +322,74 @@ export default function StudentDashboardPage() {
           </div>
 
           {!oralPerformance || oralPerformance.length === 0 ? (
-              <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
-            ) : (
-              <div className="space-y-3">
-                {oralPerformance.map(oral => (
-                  <div key={oral.oralTestId} className="flex gap-3">
-                    {/* Oral test card - 50% width */}
-                    <Link
-                      href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
-                      className="flex-[0.50] border border-border rounded-lg p-4 hover:border-primary-500 hover:shadow-sm transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <h4 className="font-semibold text-text-primary hover:text-primary-600 transition-colors">{oral.oralTestName}</h4>
-                          <p className="text-xs text-text-disabled">
-                            {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className={`text-2xl font-bold ${getScoreColor(oral.score)}`}>
-                            {oral.score} / {oral.maxScore}
-                          </p>
-                          {oral.completed ? (
-                            <p className="text-xs text-success">{t('test.completed')}</p>
-                          ) : (
-                            <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
-                          )}
-                        </div>
+            <p className="text-text-disabled text-center py-8">{t('course.noOralTestsYet')}</p>
+          ) : (
+            <div className="space-y-3">
+              {oralPerformance.map(oral => (
+                <div key={oral.oralTestId} className="flex gap-3">
+                  {/* Oral test card - 50% width */}
+                  <Link
+                    href={`/course/${courseId}/oral/${oral.oralTestId}?student=${studentId}`}
+                    className="flex-[0.50] border border-border rounded-lg p-4 hover:border-primary-500 hover:shadow-sm transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h4 className="font-semibold text-text-primary hover:text-primary-600 transition-colors">{oral.oralTestName}</h4>
+                        <p className="text-xs text-text-disabled">
+                          {new Date(oral.oralTestDate).toLocaleDateString('nb-NO')}
+                        </p>
                       </div>
-
-                      {/* Progress bar */}
-                      <div className="mb-3">
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full ${oral.score >= 50 ? 'bg-primary-600' : oral.score >= 35 ? 'bg-primary-400' : 'bg-primary-300'}`}
-                            style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
-                          />
-                        </div>
+                      <div className="text-right">
+                        <p className={`text-2xl font-bold ${getScoreColor(oral.score)}`}>
+                          {oral.score} / {oral.maxScore}
+                        </p>
+                        {oral.completed ? (
+                          <p className="text-xs text-success">{t('test.completed')}</p>
+                        ) : (
+                          <p className="text-xs text-text-disabled">{t('test.notCompleted')}</p>
+                        )}
                       </div>
-
-                      {/* Legend for radar chart */}
-                      {oral.dimensions && oral.dimensions.length > 0 && (
-                        <div className="text-xs text-text-secondary space-y-0.5">
-                          <div><span className="text-base">🎯</span> {t('oral.dimension.strategy.label')}</div>
-                          <div><span className="text-base">💭</span> {t('oral.dimension.reasoning.label')}</div>
-                          <div><span className="text-base">📊</span> {t('oral.dimension.representations.label')}</div>
-                          <div><span className="text-base">⚙️</span> {t('oral.dimension.modeling.label')}</div>
-                          <div><span className="text-base">💬</span> {t('oral.dimension.communication.label')}</div>
-                          <div><span className="text-base">📚</span> {t('oral.dimension.subject_knowledge.label')}</div>
-                        </div>
-                      )}
-                    </Link>
-
-                    {/* Radar chart box - 50% width */}
-                    <div className="flex-[0.50] border border-border rounded-lg p-4 bg-background flex flex-col items-center justify-center">
-                      {oral.dimensions && oral.dimensions.length > 0 ? (
-                        <>
-                          <RadarChart dimensions={oral.dimensions} />
-                        </>
-                      ) : (
-                        <div className="text-center text-xs text-text-disabled p-4">
-                          {t('test.notCompleted')}
-                        </div>
-                      )}
                     </div>
+
+                    {/* Progress bar */}
+                    <div className="mb-3">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${oral.score >= 50 ? 'bg-primary-600' : oral.score >= 35 ? 'bg-primary-400' : 'bg-primary-300'}`}
+                          style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Legend for radar chart */}
+                    {oral.dimensions && oral.dimensions.length > 0 && (
+                      <div className="text-xs text-text-secondary space-y-0.5">
+                        <div><span className="text-base">🎯</span> {t('oral.dimension.strategy.label')}</div>
+                        <div><span className="text-base">💭</span> {t('oral.dimension.reasoning.label')}</div>
+                        <div><span className="text-base">📊</span> {t('oral.dimension.representations.label')}</div>
+                        <div><span className="text-base">⚙️</span> {t('oral.dimension.modeling.label')}</div>
+                        <div><span className="text-base">💬</span> {t('oral.dimension.communication.label')}</div>
+                        <div><span className="text-base">📚</span> {t('oral.dimension.subject_knowledge.label')}</div>
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Radar chart box - 50% width */}
+                  <div className="flex-[0.50] border border-border rounded-lg p-4 bg-background flex flex-col items-center justify-center">
+                    {oral.dimensions && oral.dimensions.length > 0 ? (
+                      <>
+                        <RadarChart dimensions={oral.dimensions} />
+                      </>
+                    ) : (
+                      <div className="text-center text-xs text-text-disabled p-4">
+                        {t('test.notCompleted')}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Performance by Theme Labels */}
@@ -345,10 +419,9 @@ export default function StudentDashboardPage() {
                   {/* Progress bar */}
                   <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${
-                        label.averageScore >= 5 ? 'bg-success' :
+                      className={`h-full ${label.averageScore >= 5 ? 'bg-success' :
                         label.averageScore >= 3.5 ? 'bg-warning' : 'bg-danger'
-                      }`}
+                        }`}
                       style={{ width: `${(label.averageScore / 6) * 100}%` }}
                     />
                   </div>
@@ -383,10 +456,9 @@ export default function StudentDashboardPage() {
                   {/* Progress bar */}
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
                     <div
-                      className={`h-full ${
-                        cat.averageScore >= 5 ? 'bg-success' :
+                      className={`h-full ${cat.averageScore >= 5 ? 'bg-success' :
                         cat.averageScore >= 3.5 ? 'bg-warning' : 'bg-danger'
-                      }`}
+                        }`}
                       style={{ width: `${(cat.averageScore / 6) * 100}%` }}
                     />
                   </div>
@@ -427,9 +499,8 @@ export default function StudentDashboardPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {partPerformance.map(part => (
-                <div key={part.part} className={`border-2 rounded-lg p-6 ${
-                  part.part === 1 ? 'border-orange-300 bg-orange-50' : 'border-blue-300 bg-blue-50'
-                }`}>
+                <div key={part.part} className={`border-2 rounded-lg p-6 ${part.part === 1 ? 'border-orange-300 bg-orange-50' : 'border-blue-300 bg-blue-50'
+                  }`}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <h3 className="text-lg font-semibold text-text-primary">{part.part === 1 ? t('dashboard.part1NoAids') : t('dashboard.part2AllAids')}</h3>
@@ -449,10 +520,9 @@ export default function StudentDashboardPage() {
                   {/* Progress bar */}
                   <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${
-                        part.averageScore >= 5 ? 'bg-success' :
+                      className={`h-full ${part.averageScore >= 5 ? 'bg-success' :
                         part.averageScore >= 3.5 ? 'bg-warning' : 'bg-danger'
-                      }`}
+                        }`}
                       style={{ width: `${(part.averageScore / 6) * 100}%` }}
                     />
                   </div>

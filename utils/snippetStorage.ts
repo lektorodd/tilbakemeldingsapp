@@ -65,6 +65,67 @@ const DEFAULT_SNIPPETS: FeedbackSnippet[] = [
     category: 'error',
     createdDate: new Date().toISOString(),
   },
+  // Default Typst math snippets
+  {
+    id: 'math-v2-1',
+    text: '$( ) / ( )$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-2',
+    text: '$sqrt(x)$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-3',
+    text: '$x^2$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-4',
+    text: '$lim_(x -> a) f(x)$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-5',
+    text: '$integral_a^b f(x) dif x$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-6',
+    text: '$sum_(i=1)^n i$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-7',
+    text: '$binom(n, k)$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-8',
+    text: '$cases(x &"if" x >= 0, -x &"if" x < 0)$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-9',
+    text: '$log_a (x)$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
+  {
+    id: 'math-v2-10',
+    text: '$=>$',
+    category: 'math',
+    createdDate: new Date().toISOString(),
+  },
 ];
 
 /**
@@ -80,7 +141,20 @@ export function loadGlobalSnippets(): FeedbackSnippet[] {
       saveGlobalSnippets(DEFAULT_SNIPPETS);
       return DEFAULT_SNIPPETS;
     }
-    return JSON.parse(stored);
+    const snippets: FeedbackSnippet[] = JSON.parse(stored);
+
+    // Migrate: add/update default math snippets
+    const hasV2Math = snippets.some(s => s.id?.startsWith('math-v2-'));
+    if (!hasV2Math) {
+      // Remove old v1 math snippets if present
+      const withoutOldMath = snippets.filter(s => !s.id?.startsWith('math-'));
+      const mathDefaults = DEFAULT_SNIPPETS.filter(s => s.category === 'math');
+      const merged = [...withoutOldMath, ...mathDefaults];
+      saveGlobalSnippets(merged);
+      return merged;
+    }
+
+    return snippets;
   } catch (error) {
     console.error('Failed to load global snippets:', error);
     return DEFAULT_SNIPPETS;

@@ -9,7 +9,7 @@ import DarkModeToggle from './DarkModeToggle';
 import { GraduationCap, HelpCircle, Github } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const APP_VERSION = '0.4.0';
+
 
 export default function Navbar() {
   const { t } = useLanguage();
@@ -20,7 +20,7 @@ export default function Navbar() {
     <nav className="bg-surface shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Left side - Logo/Home + Version */}
+          {/* Left side - Logo/Home */}
           <div className="flex items-center gap-2">
             <Link
               href="/courses"
@@ -29,9 +29,6 @@ export default function Navbar() {
               <GraduationCap size={20} />
               <span className="font-display font-semibold text-lg">{t('common.appName')}</span>
             </Link>
-            <span className="text-[10px] font-mono text-text-disabled bg-surface-alt px-1.5 py-0.5 rounded hidden sm:inline">
-              v{APP_VERSION}
-            </span>
           </div>
 
           {/* Right side - Sync + Dark Mode + GitHub + Help + Language */}

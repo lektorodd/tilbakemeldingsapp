@@ -58,7 +58,7 @@ export default function TaskGradingPage() {
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [showSnippetSidebar, setShowSnippetSidebar] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
-  const [snippetFilter, setSnippetFilter] = useState<'all' | 'standard' | 'encouragement' | 'error' | 'custom'>('all');
+  const [snippetFilter, setSnippetFilter] = useState<'all' | 'standard' | 'encouragement' | 'error' | 'custom' | 'math'>('all');
   const [allSnippets, setAllSnippets] = useState<FeedbackSnippet[]>([]);
 
   // In-memory feedback state: Map<studentId, TaskFeedback[]>
@@ -111,8 +111,21 @@ export default function TaskGradingPage() {
     setAllSnippets(getAllSnippetsForTest(loadedTest.snippets || []));
   }, [courseId, testId]);
 
-  const students = course?.students || [];
+  const allStudents = course?.students || [];
   const taskSlots = useMemo(() => test ? buildTaskSlots(test.tasks) : [], [test]);
+
+  // Compute absent student IDs from test feedback
+  const absentStudentIds = useMemo(() => {
+    const set = new Set<string>();
+    if (!test) return set;
+    test.studentFeedbacks.forEach(fb => {
+      if (fb.absent) set.add(fb.studentId);
+    });
+    return set;
+  }, [test]);
+
+  // Filter out absent students for grading
+  const students = useMemo(() => allStudents.filter(s => !absentStudentIds.has(s.id)), [allStudents, absentStudentIds]);
 
   // Build feedback map for current task
   const currentTaskFeedbackMap = useMemo(() => {
@@ -317,8 +330,9 @@ export default function TaskGradingPage() {
   }, [test]);
 
   // Grading progress
-  const completedCount = test?.studentFeedbacks.filter(f => f.completedDate).length || 0;
-  const totalCount = students.length;
+  const completedCount = test?.studentFeedbacks.filter(f => f.completedDate && !f.absent).length || 0;
+  const absentCount = test?.studentFeedbacks.filter(f => f.absent).length || 0;
+  const totalCount = allStudents.length;
 
   if (!course || !test) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
@@ -380,7 +394,7 @@ export default function TaskGradingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <GradingProgressBar completedCount={completedCount} totalCount={totalCount} />
+            <GradingProgressBar completedCount={completedCount} totalCount={totalCount} absentCount={absentCount} />
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer select-none">
                 <input

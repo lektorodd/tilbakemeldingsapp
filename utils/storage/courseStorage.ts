@@ -447,12 +447,13 @@ export function getTestResults(courseId: string, testId: string): TestResultsSum
 
   const studentResults = course.students.map(student => {
     const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
-    const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
+    const isAbsent = !!feedback?.absent;
+    const score = feedback && !isAbsent ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
 
     return {
       student,
       score,
-      completed: !!feedback?.completedDate,
+      completed: !!feedback?.completedDate && !isAbsent,
     };
   });
 
@@ -629,7 +630,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
   // Performance across tests
   const testPerformance = course.tests.map(test => {
     const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
-    if (!feedback) {
+    if (!feedback || feedback.absent) {
       return {
         testId: test.id,
         testName: test.name,
@@ -637,6 +638,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
         score: 0,
         maxScore: 60,
         completed: false,
+        absent: !!feedback?.absent,
         tasksAttempted: 0,
         totalTasks: countTasks(test.tasks),
         attemptPercentage: 0,
@@ -670,6 +672,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
       score: calculateStudentScore(test.tasks, feedback.taskFeedbacks),
       maxScore: 60,
       completed: !!feedback.completedDate,
+      absent: false,
       tasksAttempted,
       totalTasks,
       attemptPercentage,
@@ -686,7 +689,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
   course.tests.forEach(test => {
     const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
-    if (!feedback || !feedback.completedDate) return;
+    if (!feedback || !feedback.completedDate || feedback.absent) return;
 
     feedback.taskFeedbacks.forEach(taskFeedback => {
       const task = test.tasks.find(t => t.id === taskFeedback.taskId);
@@ -725,7 +728,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
   course.tests.forEach(test => {
     const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
-    if (!feedback || !feedback.completedDate) return;
+    if (!feedback || !feedback.completedDate || feedback.absent) return;
 
     feedback.taskFeedbacks.forEach(taskFeedback => {
       const task = test.tasks.find(t => t.id === taskFeedback.taskId);
@@ -766,7 +769,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
 
   course.tests.forEach(test => {
     const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
-    if (!feedback || !feedback.completedDate) return;
+    if (!feedback || !feedback.completedDate || feedback.absent) return;
 
     feedback.taskFeedbacks.forEach(taskFeedback => {
       const task = test.tasks.find(t => t.id === taskFeedback.taskId);
@@ -817,7 +820,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
   }).sort((a, b) => new Date(a.oralTestDate).getTime() - new Date(b.oralTestDate).getTime());
 
   // Overall stats (including oral assessments)
-  const completedTests = testPerformance.filter(t => t.completed);
+  const completedTests = testPerformance.filter(t => t.completed && !t.absent);
   const completedOralTests = oralPerformance.filter(o => o.completed);
 
   const totalCompletedAssessments = completedTests.length + completedOralTests.length;
@@ -830,8 +833,9 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     ? allScores.reduce((sum, score) => sum + score, 0) / totalCompletedAssessments
     : 0;
 
-  const averageAttemptRate = testPerformance.length > 0
-    ? testPerformance.reduce((sum, t) => sum + t.attemptPercentage, 0) / testPerformance.length
+  const nonAbsentTests = testPerformance.filter(t => !t.absent);
+  const averageAttemptRate = nonAbsentTests.length > 0
+    ? nonAbsentTests.reduce((sum, t) => sum + t.attemptPercentage, 0) / nonAbsentTests.length
     : 0;
 
   return {
@@ -861,8 +865,8 @@ export function getTestTaskAnalytics(courseId: string, testId: string): TaskAnal
   const test = course.tests.find(t => t.id === testId);
   if (!test) return [];
 
-  // Get completed feedback only
-  const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
+  // Get completed feedback only (exclude absent students)
+  const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate && !f.absent);
   const totalStudents = completedFeedbacks.length;
 
   if (totalStudents === 0) return [];
@@ -1018,7 +1022,7 @@ export function getClassProgressData(courseId: string): ClassProgressPoint[] {
     .slice()
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map(test => {
-      const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate);
+      const completedFeedbacks = test.studentFeedbacks.filter(f => f.completedDate && !f.absent);
       if (completedFeedbacks.length === 0) return null;
 
       // Average score across completed students

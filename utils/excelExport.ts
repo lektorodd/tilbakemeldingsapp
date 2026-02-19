@@ -49,7 +49,9 @@ function generateCourseCSV(course: Course): string {
 
     course.tests.forEach(test => {
       const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
-      if (feedback && feedback.completedDate) {
+      if (feedback?.absent) {
+        row.push('Absent');
+      } else if (feedback && feedback.completedDate) {
         const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
         row.push(score.toString());
         totalScore += score;
@@ -79,8 +81,12 @@ function generateCourseCSV(course: Course): string {
     if (test.description) {
       lines.push(`"Description:","${escapeCsv(test.description)}"`);
     }
-    const completedCount = test.studentFeedbacks.filter(f => f.completedDate).length;
-    lines.push(`"Students Completed:","${completedCount}/${course.students.length}"`);
+    const completedCount = test.studentFeedbacks.filter(f => f.completedDate && !f.absent).length;
+    const absentCount = test.studentFeedbacks.filter(f => f.absent).length;
+    lines.push(`"Students Completed:","${completedCount}/${course.students.length - absentCount}"`);
+    if (absentCount > 0) {
+      lines.push(`"Students Absent:","${absentCount}"`);
+    }
 
     if (test.generalComment) {
       lines.push(`"General Comment:","${escapeCsv(test.generalComment)}"`);
@@ -121,7 +127,10 @@ function generateCourseCSV(course: Course): string {
     course.students.forEach(student => {
       const feedback = test.studentFeedbacks.find(f => f.studentId === student.id);
 
-      if (feedback && feedback.completedDate) {
+      if (feedback?.absent) {
+        lines.push(`"${student.name} (${student.studentNumber || 'N/A'}) - Absent"`);
+        lines.push('');
+      } else if (feedback && feedback.completedDate) {
         const score = calculateStudentScore(test.tasks, feedback.taskFeedbacks);
         const percentage = (score / 60) * 100;
 

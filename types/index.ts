@@ -80,6 +80,7 @@ export interface CourseStudent {
 
 export interface TestFeedbackData {
   studentId: string;
+  absent?: boolean; // true = student was not present for this test
   taskFeedbacks: TaskFeedback[];
   individualComment: string;
   completedDate?: string;
@@ -89,7 +90,7 @@ export interface TestFeedbackData {
 export interface FeedbackSnippet {
   id: string;
   text: string;
-  category?: 'standard' | 'encouragement' | 'error' | 'custom';
+  category?: 'standard' | 'encouragement' | 'error' | 'custom' | 'math';
   createdDate: string;
 }
 
