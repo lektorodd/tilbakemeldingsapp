@@ -2,6 +2,15 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.6.1] — 2026-02-19
+
+### Improved
+- **Student dashboard** — absent tests now show a distinct grey "Absent" card instead of misleading "0/60".
+- **Progress card** — replaced static "latest score" with a sparkline chart + trend arrow (↗ +N / ↘ -N) across all completed tests.
+- **Task-grading layout** — student cards now use a two-column grid on wider screens for better use of space.
+
+---
+
 ## [0.6.0] — 2026-02-19
 
 ### Added
