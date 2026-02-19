@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 import { OralFeedbackDimension } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -9,8 +9,56 @@ interface RadarChartProps {
   maxValue?: number;
 }
 
-export default function RadarChart({ dimensions, width = 300, height = 250, maxValue = 6 }: RadarChartProps) {
+export interface RadarChartRef {
+  exportToPNG: () => Promise<string>;
+}
+
+const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, width = 300, height = 250, maxValue = 6 }, ref) => {
   const { t } = useLanguage();
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    exportToPNG: async (): Promise<string> => {
+      if (!svgRef.current) {
+        throw new Error('SVG ref not available');
+      }
+
+      return new Promise((resolve, reject) => {
+        const svg = svgRef.current!;
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        // Use 3x scale for high resolution export
+        const scale = 3;
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        ctx.scale(scale, scale);
+
+        const img = new Image();
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/png'));
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error('Failed to load SVG'));
+        };
+
+        img.src = url;
+      });
+    },
+  }));
 
   // Sort dimensions in a consistent order for the radar chart
   const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
@@ -55,7 +103,7 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
   });
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="mx-auto">
+    <svg ref={svgRef} width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="mx-auto">
       {/* Grid circles */}
       {gridLevels.map(level => (
         <circle
@@ -149,4 +197,8 @@ export default function RadarChart({ dimensions, width = 300, height = 250, maxV
       <text x={centerX} y={centerY - (6 / maxValue) * radius} fontSize="8" fill="#94A3B8" textAnchor="middle" dy="-2">6</text>
     </svg>
   );
-}
+});
+
+RadarChart.displayName = 'RadarChart';
+
+export default RadarChart;

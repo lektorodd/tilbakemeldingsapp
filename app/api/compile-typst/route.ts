@@ -25,7 +25,7 @@ function findTypst(): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { content, filename } = await request.json();
+    const { content, filename, chartImage } = await request.json();
 
     if (!content || !filename) {
       return NextResponse.json(
@@ -41,6 +41,14 @@ export async function POST(request: NextRequest) {
     const typPath = join(tempDir, typFilename);
     const pdfPath = join(tempDir, pdfFilename);
 
+    // Save chart image if provided
+    let chartImagePath: string | null = null;
+    if (chartImage) {
+      chartImagePath = join(tempDir, 'radar-chart.png');
+      const base64Data = chartImage.replace(/^data:image\/png;base64,/, '');
+      await writeFile(chartImagePath, Buffer.from(base64Data, 'base64'));
+    }
+
     // Write Typst content to temp file
     await writeFile(typPath, content, 'utf-8');
 
@@ -50,7 +58,7 @@ export async function POST(request: NextRequest) {
     // Compile Typst file to PDF
     try {
       const execEnv = { ...process.env, PATH: `/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH || ''}` };
-      const { stdout, stderr } = await execAsync(`"${typstBin}" compile --font-path "${fontsDir}" "${typPath}" "${pdfPath}"`, {
+      const { stdout, stderr } = await execAsync(`"${typstBin}" compile --root "${tempDir}" --font-path "${fontsDir}" "${typPath}" "${pdfPath}"`, {
         timeout: 30000,
         env: execEnv,
       });
@@ -65,6 +73,7 @@ export async function POST(request: NextRequest) {
       // Clean up temp files
       await unlink(typPath).catch(() => { });
       await unlink(pdfPath).catch(() => { });
+      if (chartImagePath) await unlink(chartImagePath).catch(() => { });
 
       // Return PDF as blob
       return new NextResponse(pdfBuffer, {
@@ -78,6 +87,7 @@ export async function POST(request: NextRequest) {
       // Clean up temp files
       await unlink(typPath).catch(() => { });
       await unlink(pdfPath).catch(() => { });
+      if (chartImagePath) await unlink(chartImagePath).catch(() => { });
 
       return NextResponse.json(
         {

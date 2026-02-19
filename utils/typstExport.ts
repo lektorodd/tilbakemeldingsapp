@@ -20,6 +20,7 @@ interface OralExportData {
   oralTestDate: string;
   oralFeedback: OralFeedbackData;
   language?: 'en' | 'nb' | 'nn';
+  hasChartImage?: boolean;
 }
 
 // Translation strings for Typst template
@@ -340,6 +341,7 @@ export function generateOralTypstDocument(data: OralExportData): string {
     oralTestDate,
     oralFeedback,
     language = 'nb',
+    hasChartImage = false,
   } = data;
 
   const t = oralTranslations[language];
@@ -380,7 +382,10 @@ ${dimensionRows}
   const sections: string[] = [];
 
   if (oralFeedback.dimensions.length > 0) {
-    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.dimensions}]]\\n  #v(0.6em)\\n  ${dimensionTable}\\n]`);
+    const radarChartBlock = hasChartImage
+      ? `\n  #v(0.6em)\n  #grid(\n    columns: (1fr, auto),\n    gutter: 1.5em,\n    [${dimensionTable}],\n    [\n      #align(center + horizon)[\n        #image("radar-chart.png", width: 180pt)\n      ]\n    ]\n  )`
+      : `\n  #v(0.6em)\n  ${dimensionTable}`;
+    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.dimensions}]]${radarChartBlock}\n]`);
   }
 
   if (oralFeedback.generalObservations?.trim()) {
@@ -496,7 +501,7 @@ export function downloadTypstFile(content: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export async function compileAndDownloadPDF(content: string, filename: string): Promise<boolean> {
+export async function compileAndDownloadPDF(content: string, filename: string, chartImage?: string): Promise<boolean> {
   try {
     const response = await fetch('/api/compile-typst', {
       method: 'POST',
@@ -506,6 +511,7 @@ export async function compileAndDownloadPDF(content: string, filename: string): 
       body: JSON.stringify({
         content,
         filename,
+        chartImage,
       }),
     });
 
@@ -540,7 +546,7 @@ export async function compileAndDownloadPDF(content: string, filename: string): 
   }
 }
 
-export async function compileAndGetPDFBlob(content: string, filename: string): Promise<Blob | null> {
+export async function compileAndGetPDFBlob(content: string, filename: string, chartImage?: string): Promise<Blob | null> {
   try {
     const response = await fetch('/api/compile-typst', {
       method: 'POST',
@@ -550,6 +556,7 @@ export async function compileAndGetPDFBlob(content: string, filename: string): P
       body: JSON.stringify({
         content,
         filename,
+        chartImage,
       }),
     });
 

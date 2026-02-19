@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Course, OralTest, CourseStudent, OralFeedbackData, OralFeedbackDimension, OralFeedbackDimensionType } from '@/types';
 import { loadCourse, updateOralAssessment, getOralAssessment, calculateOralScore } from '@/utils/storage';
 import { generateOralTypstDocument, downloadTypstFile, compileAndDownloadPDF, compileAndGetPDFBlob } from '@/utils/typstExport';
 import PdfPreviewModal from '@/components/PdfPreviewModal';
 import OralFeedbackForm from '@/components/OralFeedbackForm';
+import RadarChart, { RadarChartRef } from '@/components/RadarChart';
 import { ArrowLeft, Save, CheckCircle, Circle, MessageSquare, BarChart3, FileText, Download, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -26,6 +27,7 @@ export default function OralAssessmentPage() {
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<OralFeedbackData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const radarChartRef = useRef<RadarChartRef>(null);
 
   // PDF preview state
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
@@ -172,41 +174,65 @@ export default function OralAssessmentPage() {
   const handleGeneratePDF = async () => {
     if (!selectedStudent || !currentFeedback || !oralTest) return;
 
-    const typstContent = generateOralTypstDocument({
-      studentName: selectedStudent.name,
-      studentNumber: selectedStudent.studentNumber,
-      oralTestName: oralTest.name,
-      oralTestDate: oralTest.date,
-      oralFeedback: currentFeedback,
-      language,
-    });
+    try {
+      // Export radar chart as PNG
+      let chartImage: string | undefined;
+      if (radarChartRef.current && currentFeedback.dimensions.length > 0) {
+        chartImage = await radarChartRef.current.exportToPNG();
+      }
 
-    const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
-    const success = await compileAndDownloadPDF(typstContent, filename);
+      const typstContent = generateOralTypstDocument({
+        studentName: selectedStudent.name,
+        studentNumber: selectedStudent.studentNumber,
+        oralTestName: oralTest.name,
+        oralTestDate: oralTest.date,
+        oralFeedback: currentFeedback,
+        language,
+        hasChartImage: !!chartImage,
+      });
 
-    if (success) {
-      toast(t('test.pdfCompiledSuccess'), 'success');
+      const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
+      const success = await compileAndDownloadPDF(typstContent, filename, chartImage);
+
+      if (success) {
+        toast(t('test.pdfCompiledSuccess'), 'success');
+      }
+    } catch (error) {
+      console.error('Failed to generate PDF:', error);
+      toast('Failed to generate PDF. Please try again.', 'error');
     }
   };
 
   const handlePreviewPDF = async () => {
     if (!selectedStudent || !currentFeedback || !oralTest) return;
 
-    const typstContent = generateOralTypstDocument({
-      studentName: selectedStudent.name,
-      studentNumber: selectedStudent.studentNumber,
-      oralTestName: oralTest.name,
-      oralTestDate: oralTest.date,
-      oralFeedback: currentFeedback,
-      language,
-    });
+    try {
+      // Export radar chart as PNG
+      let chartImage: string | undefined;
+      if (radarChartRef.current && currentFeedback.dimensions.length > 0) {
+        chartImage = await radarChartRef.current.exportToPNG();
+      }
 
-    const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
-    const blob = await compileAndGetPDFBlob(typstContent, filename);
-    if (blob) {
-      const url = URL.createObjectURL(blob);
-      setPreviewPdfUrl(url);
-      setPreviewPdfFilename(filename);
+      const typstContent = generateOralTypstDocument({
+        studentName: selectedStudent.name,
+        studentNumber: selectedStudent.studentNumber,
+        oralTestName: oralTest.name,
+        oralTestDate: oralTest.date,
+        oralFeedback: currentFeedback,
+        language,
+        hasChartImage: !!chartImage,
+      });
+
+      const filename = `${oralTest.name}-${selectedStudent.name}.pdf`;
+      const blob = await compileAndGetPDFBlob(typstContent, filename, chartImage);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        setPreviewPdfUrl(url);
+        setPreviewPdfFilename(filename);
+      }
+    } catch (error) {
+      console.error('Failed to preview PDF:', error);
+      toast('Failed to preview PDF. Please try again.', 'error');
     }
   };
 
@@ -290,7 +316,7 @@ export default function OralAssessmentPage() {
                     return (
                       <button
                         key={student.id}
-                        onClick={() => setSelectedStudent(student)}
+                        onClick={() => router.push(`/course/${courseId}/oral/${oralTestId}?student=${student.id}`)}
                         className={`w-full text-left p-3 rounded-lg border transition-all ${isSelected
                           ? 'bg-primary-100 border-primary-500 shadow-md'
                           : 'bg-background border-border hover:border-primary-300 hover:bg-primary-50'
@@ -394,11 +420,17 @@ export default function OralAssessmentPage() {
                 </div>
 
                 {currentFeedback && (
-                  <OralFeedbackForm
-                    oralFeedback={currentFeedback}
-                    onOralFeedbackChange={handleOralFeedbackChange}
-                    studentName={selectedStudent.name}
-                  />
+                  <>
+                    <OralFeedbackForm
+                      oralFeedback={currentFeedback}
+                      onOralFeedbackChange={handleOralFeedbackChange}
+                      studentName={selectedStudent.name}
+                    />
+                    {/* Hidden radar chart for PDF export */}
+                    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+                      <RadarChart ref={radarChartRef} dimensions={currentFeedback.dimensions} />
+                    </div>
+                  </>
                 )}
               </div>
             )}
