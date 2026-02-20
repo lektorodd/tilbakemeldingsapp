@@ -1,6 +1,9 @@
 use std::process::{Command, Child};
 use std::sync::Mutex;
 use std::path::PathBuf;
+use std::net::TcpStream;
+use std::time::Duration;
+use std::thread;
 use tauri::Manager;
 
 // Hold the server child process so we can kill it on exit
@@ -59,6 +62,9 @@ pub fn run() {
                         Ok(child) => {
                             // Store the child process for cleanup on exit
                             *SERVER_PROCESS.lock().unwrap() = Some(child);
+
+                            // Wait for the server to be ready before the WebView loads
+                            wait_for_server("127.0.0.1", 3333, 30, 200);
                         }
                         Err(e) => {
                             eprintln!("Failed to start Next.js server: {}", e);
@@ -84,6 +90,22 @@ pub fn run() {
     });
 }
 
+/// Wait for the server to accept TCP connections on the given port.
+/// Retries up to `max_retries` times, sleeping `interval_ms` between attempts.
+fn wait_for_server(host: &str, port: u16, max_retries: u32, interval_ms: u64) {
+    for i in 0..max_retries {
+        if TcpStream::connect_timeout(
+            &format!("{}:{}", host, port).parse().unwrap(),
+            Duration::from_millis(100),
+        ).is_ok() {
+            println!("Server ready on port {} (attempt {})", port, i + 1);
+            return;
+        }
+        thread::sleep(Duration::from_millis(interval_ms));
+    }
+    eprintln!("Warning: server not ready after {} attempts, proceeding anyway", max_retries);
+}
+
 /// Find the node binary on the system
 fn find_node() -> PathBuf {
     let candidates = [
@@ -101,3 +123,4 @@ fn find_node() -> PathBuf {
 
     PathBuf::from("node")
 }
+
