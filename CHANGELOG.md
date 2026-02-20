@@ -2,6 +2,13 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.2] — 2026-02-20
+
+### Fixed
+- **Tauri app startup** — the desktop app now waits for the Next.js server to be fully ready before loading the page. Previously, CSS and JavaScript would fail to load on first launch due to a race condition between the server starting and the WebView navigating. Uses a two-layer fix: Rust-side TCP polling + iframe-based preloading in the splash page.
+
+---
+
 ## [0.9.1] — 2026-02-20
 
 ### Added
