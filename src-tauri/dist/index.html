@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MatteMonitor</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
       background: #fafafa;
@@ -15,9 +21,11 @@
       height: 100vh;
       color: #374151;
     }
+
     .loader {
       text-align: center;
     }
+
     .spinner {
       width: 40px;
       height: 40px;
@@ -27,13 +35,26 @@
       animation: spin 0.8s linear infinite;
       margin: 0 auto 16px;
     }
+
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
-    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    p { font-size: 14px; color: #9ca3af; }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #9ca3af;
+    }
   </style>
 </head>
+
 <body>
   <div class="loader">
     <div class="spinner"></div>
@@ -41,15 +62,45 @@
     <p>Startar opp...</p>
   </div>
   <script>
-    // Poll until the Next.js server is ready, then redirect
+    // Wait for the Next.js server to be fully ready before redirecting.
+    // Strategy: create a hidden iframe loading the target page.
+    // When the iframe fires 'load', the server has fully rendered the page
+    // (including CSS/JS references), so we can safely navigate.
     const PORT = 3333;
-    const url = `http://localhost:${PORT}/courses`;
+    const target = `http://localhost:${PORT}/courses`;
+    let ready = false;
+
+    // Create a hidden iframe to preload the page
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.onload = function () {
+      if (!ready && iframe.src === target) {
+        ready = true;
+        window.location.href = target;
+      }
+    };
+    document.body.appendChild(iframe);
+
+    // Start polling — set iframe src once TCP is open
     function check() {
-      fetch(url, { mode: 'no-cors' })
-        .then(() => { window.location.href = url; })
+      fetch(target, { mode: 'no-cors' })
+        .then(() => {
+          // Server is accepting connections — load the page in the iframe
+          if (!iframe.src || iframe.src === 'about:blank') {
+            iframe.src = target;
+          }
+        })
         .catch(() => setTimeout(check, 300));
     }
     check();
+
+    // Fallback: if iframe approach fails after 10s, just redirect
+    setTimeout(() => {
+      if (!ready) {
+        window.location.href = target;
+      }
+    }, 10000);
   </script>
 </body>
+
 </html>
