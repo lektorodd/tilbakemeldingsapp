@@ -193,7 +193,7 @@ export function generateTypstDocument(data: ExportData): string {
         if (feedback) {
           const taskLabel = escapeTypst(`${task.label}${subtask.label}`);
           const pts = feedback.points ?? 0;
-          const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
+          const comment = feedback.comment || '';
           taskRows.push(`  [#text(weight: "semibold")[${taskLabel}]], [#text(weight: "semibold", fill: ${pts >= 5 ? 'rgb("#16A34A")' : pts >= 3 ? 'rgb("#334155")' : 'rgb("#DC2626")'})[${pts}]], [${comment}],`);
         }
       });
@@ -202,7 +202,7 @@ export function generateTypstDocument(data: ExportData): string {
       if (feedback) {
         const taskLabel = escapeTypst(task.label);
         const pts = feedback.points ?? 0;
-        const comment = feedback.comment ? escapeTypst(feedback.comment) : '';
+        const comment = feedback.comment || '';
         taskRows.push(`  [#text(weight: "semibold")[${taskLabel}]], [#text(weight: "semibold", fill: ${pts >= 5 ? 'rgb("#16A34A")' : pts >= 3 ? 'rgb("#334155")' : 'rgb("#DC2626")'})[${pts}]], [${comment}],`);
       }
     }
@@ -230,7 +230,7 @@ ${taskRows.join('\n')}
   const sections: string[] = [];
 
   if (generalComment.trim()) {
-    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.generalFeedback}]]\n  #v(0.5em)\n  #text(fill: rgb("#334155"))[${escapeTypst(generalComment)}]\n]`);
+    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.generalFeedback}]]\n  #v(0.5em)\n  #text(fill: rgb("#334155"))[${generalComment}]\n]`);
   }
 
   if (taskRows.length > 0) {
@@ -238,7 +238,7 @@ ${taskRows.join('\n')}
   }
 
   if (individualComment.trim()) {
-    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.individualFeedback}]]\n  #v(0.5em)\n  #text(fill: rgb("#334155"))[${escapeTypst(individualComment)}]\n]`);
+    sections.push(`#block(width: 100%)[\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.individualFeedback}]]\n  #v(0.5em)\n  #text(fill: rgb("#334155"))[${individualComment}]\n]`);
   }
 
   const contentBody = sections.join('\n\n#v(1.2em)\n\n');
@@ -356,7 +356,7 @@ export function generateOralTypstDocument(data: OralExportData): string {
   const dimensionRows = oralFeedback.dimensions.map(dim => {
     const label = getDimensionLabel(dim.dimension);
     const pts = dim.points ?? 0;
-    const comment = dim.comment ? escapeTypst(dim.comment) : '';
+    const comment = dim.comment || '';
     return `  [${label}], [#text(weight: "semibold", fill: ${pts >= 5 ? 'rgb("#16A34A")' : pts >= 3 ? 'rgb("#334155")' : 'rgb("#DC2626")'})[${pts}]], [${comment}],`;
   }).join('\n');
 
@@ -389,11 +389,11 @@ ${dimensionRows}
   }
 
   if (oralFeedback.generalObservations?.trim()) {
-    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.generalObservations}]]\\n  #v(0.5em)\\n  #text(fill: rgb("#334155"))[${escapeTypst(oralFeedback.generalObservations)}]\\n]`);
+    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.generalObservations}]]\\n  #v(0.5em)\\n  #text(fill: rgb(\"#334155\"))[${oralFeedback.generalObservations}]\\n]`);
   }
 
   if (oralFeedback.taskReferences && oralFeedback.taskReferences.length > 0) {
-    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.taskReferences}]]\\n  #v(0.5em)\\n  #text(fill: rgb("#334155"))[${escapeTypst(oralFeedback.taskReferences.join(', '))}]\\n]`);
+    sections.push(`#block(width: 100%)[\\n  #block(inset: (left: 0.6em), stroke: (left: 2.5pt + rgb("#0D9488")))[#text(size: 13pt, weight: "bold", fill: rgb("#1E293B"))[${t.taskReferences}]]\\n  #v(0.5em)\\n  #text(fill: rgb(\"#334155\"))[${oralFeedback.taskReferences.join(', ')}]\\n]`);
   }
 
   const contentBody = sections.join('\n\n#v(1.2em)\n\n');

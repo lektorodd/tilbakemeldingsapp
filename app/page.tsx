@@ -11,10 +11,10 @@ export default function Home() {
   }, [router]);
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <main className="min-h-screen bg-surface flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-display font-bold text-gray-800">Loading...</h1>
-        <p className="text-gray-600 mt-2">Redirecting to courses...</p>
+        <h1 className="text-2xl font-display font-bold text-text-primary">Loading...</h1>
+        <p className="text-text-secondary mt-2">Redirecting to courses...</p>
       </div>
     </main>
   );

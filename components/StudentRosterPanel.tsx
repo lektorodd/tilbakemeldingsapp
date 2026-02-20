@@ -73,7 +73,7 @@ export default function StudentRosterPanel({
                 </Link>
                 <button
                   onClick={() => onDeleteStudent(student.id)}
-                  className="p-1.5 text-danger hover:bg-red-50 rounded transition-colors"
+                  className="p-1.5 text-danger hover:bg-danger-bg rounded transition-colors"
                   title={t('common.delete')}
                 >
                   <Trash2 size={15} />

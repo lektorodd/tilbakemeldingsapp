@@ -32,9 +32,9 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: (id: string) => void }) {
   const icons: Record<ToastType, React.ReactNode> = {
     success: <CheckCircle size={18} className="text-emerald-500 flex-shrink-0" />,
-    error: <AlertCircle size={18} className="text-red-500 flex-shrink-0" />,
+    error: <AlertCircle size={18} className="text-danger flex-shrink-0" />,
     warning: <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />,
-    info: <Info size={18} className="text-blue-500 flex-shrink-0" />,
+    info: <Info size={18} className="text-info flex-shrink-0" />,
   };
 
   const borderColors: Record<ToastType, string> = {
@@ -46,7 +46,7 @@ function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: (id: stri
 
   return (
     <div
-      className={`flex items-start gap-3 bg-white border border-gray-200 border-l-4 ${borderColors[t.type]} rounded-lg shadow-lg px-4 py-3 min-w-[300px] max-w-[440px] animate-slide-in`}
+      className={`flex items-start gap-3 bg-surface border border-border border-l-4 ${borderColors[t.type]} rounded-lg shadow-lg px-4 py-3 min-w-[300px] max-w-[440px] animate-slide-in`}
       role="alert"
     >
       {icons[t.type]}
@@ -86,7 +86,7 @@ function ConfirmModal({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2 bg-stone-200 text-text-secondary rounded-lg hover:bg-stone-300 transition"
+            className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
           >
             {state.cancelLabel || 'Cancel'}
           </button>

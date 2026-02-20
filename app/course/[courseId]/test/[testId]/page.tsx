@@ -13,7 +13,7 @@ import GradingProgressBar from '@/components/GradingProgressBar';
 import ProgressGrid from '@/components/ProgressGrid';
 import SnippetSidebar from '@/components/SnippetSidebar';
 import { useGradingShortcuts, TaskSlot } from '@/hooks/useGradingShortcuts';
-import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks, Eye, UserX, UserCheck } from 'lucide-react';
+import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks, Eye, UserX, UserCheck, Bold, Italic, Underline } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -53,6 +53,9 @@ export default function TestFeedbackPage() {
   const generalCommentRef = useRef<HTMLTextAreaElement>(null);
   const individualCommentRef = useRef<HTMLTextAreaElement>(null);
   const subtaskTextareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map());
+
+  // Track which textarea area was last focused for toolbar formatting
+  const lastFocusedArea = useRef<'general' | 'individual' | 'subtask'>('subtask');
 
   useEffect(() => {
     loadData();
@@ -363,6 +366,83 @@ export default function TestFeedbackPage() {
     setPreviewPdfUrl(null);
   };
 
+  // Wrap selected text with Typst formatting in any textarea
+  const wrapInTextarea = (prefix: string, suffix: string, textarea: HTMLTextAreaElement, updateFn: (newValue: string) => void) => {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = textarea.value;
+    const selected = currentValue.substring(start, end);
+
+    const wrapped = prefix + (selected || '...') + suffix;
+    const newValue = currentValue.substring(0, start) + wrapped + currentValue.substring(end);
+    updateFn(newValue);
+
+    setTimeout(() => {
+      textarea.focus();
+      if (selected) {
+        textarea.setSelectionRange(start + wrapped.length, start + wrapped.length);
+      } else {
+        textarea.setSelectionRange(start + prefix.length, start + prefix.length + 3);
+      }
+    }, 0);
+  };
+
+  // Wrap selected text with formatting (bold, italic, underline) for general/individual comments
+  const wrapSelection = (prefix: string, suffix: string, textareaRef: React.RefObject<HTMLTextAreaElement>, isGeneral: boolean) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const updateFn = (newValue: string) => {
+      if (isGeneral && test) {
+        handleTestChange({ ...test, generalComment: newValue });
+      } else if (!isGeneral && currentFeedback && selectedStudent) {
+        const updatedFeedback = { ...currentFeedback, individualComment: newValue };
+        updateStudentFeedback(courseId, testId, selectedStudent.id, updatedFeedback);
+        setCurrentFeedback(updatedFeedback);
+      }
+    };
+    wrapInTextarea(prefix, suffix, textarea, updateFn);
+  };
+
+  // Wrap selection in whichever textarea was last focused (for sticky toolbar)
+  const wrapActiveTextarea = (prefix: string, suffix: string) => {
+    if (lastFocusedArea.current === 'general') {
+      wrapSelection(prefix, suffix, generalCommentRef, true);
+    } else if (lastFocusedArea.current === 'individual') {
+      wrapSelection(prefix, suffix, individualCommentRef, false);
+    } else if (lastFocusedArea.current === 'subtask' && activeSubtask) {
+      const key = `${activeSubtask.taskId}-${activeSubtask.subtaskId || 'main'}`;
+      const textarea = subtaskTextareaRefs.current.get(key);
+      if (!textarea) return;
+      wrapInTextarea(prefix, suffix, textarea, (newValue) => {
+        handleUpdateFeedback(activeSubtask.taskId, activeSubtask.subtaskId, { comment: newValue });
+      });
+    }
+  };
+
+  // Insert link template in whichever textarea was last focused (for sticky toolbar)
+  const insertLinkInActiveTextarea = () => {
+    if (lastFocusedArea.current === 'general') {
+      insertLinkTemplate(generalCommentRef, true);
+    } else if (lastFocusedArea.current === 'individual') {
+      insertLinkTemplate(individualCommentRef, false);
+    } else if (lastFocusedArea.current === 'subtask' && activeSubtask) {
+      const key = `${activeSubtask.taskId}-${activeSubtask.subtaskId || 'main'}`;
+      const textarea = subtaskTextareaRefs.current.get(key);
+      if (!textarea) return;
+      const linkTemplate = '#link("https://example.com")[\n  See example.com\n]';
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const currentValue = textarea.value;
+      const newValue = currentValue.substring(0, start) + linkTemplate + currentValue.substring(end);
+      handleUpdateFeedback(activeSubtask.taskId, activeSubtask.subtaskId, { comment: newValue });
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + linkTemplate.length, start + linkTemplate.length);
+      }, 0);
+    }
+  };
+
   // Insert link template at cursor position
   const insertLinkTemplate = (textareaRef: React.RefObject<HTMLTextAreaElement>, isGeneral: boolean) => {
     const textarea = textareaRef.current;
@@ -546,6 +626,9 @@ export default function TestFeedbackPage() {
       // Escape from textarea already handled by hook (blur),
       // activeSubtask stays the same so points mode is restored
     },
+    onSwitchToTaskGrading: () => {
+      router.push(`/course/${courseId}/test/${testId}/task-grading`);
+    },
     enabled: !!selectedStudent,
   });
 
@@ -639,7 +722,7 @@ export default function TestFeedbackPage() {
             >
               <Save size={18} />
               {t('test.saveSettings')}
-              {hasUnsavedTestConfig && <span className="w-2 h-2 bg-white rounded-full" />}
+              {hasUnsavedTestConfig && <span className="w-2 h-2 bg-surface rounded-full" />}
             </button>
           </div>
 
@@ -667,6 +750,29 @@ export default function TestFeedbackPage() {
                   onAddSnippet={handleAddSnippet}
                   onDeleteSnippet={handleDeleteSnippet}
                 />
+                <div className="flex gap-0.5 border border-border rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => wrapSelection('*', '*', generalCommentRef, true)}
+                    className="flex items-center justify-center w-8 h-8 bg-surface hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Bold (*...*)"
+                  >
+                    <Bold size={15} />
+                  </button>
+                  <button
+                    onClick={() => wrapSelection('_', '_', generalCommentRef, true)}
+                    className="flex items-center justify-center w-8 h-8 bg-surface hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Italic (_..._)"
+                  >
+                    <Italic size={15} />
+                  </button>
+                  <button
+                    onClick={() => wrapSelection('#underline[', ']', generalCommentRef, true)}
+                    className="flex items-center justify-center w-8 h-8 bg-surface hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Underline (#underline[...])"
+                  >
+                    <Underline size={15} />
+                  </button>
+                </div>
                 <button
                   onClick={() => insertLinkTemplate(generalCommentRef, true)}
                   className="flex items-center gap-1 px-3 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
@@ -681,6 +787,7 @@ export default function TestFeedbackPage() {
               ref={generalCommentRef}
               value={test.generalComment}
               onChange={(e) => handleTestChange({ ...test, generalComment: e.target.value })}
+              onFocus={() => { lastFocusedArea.current = 'general'; }}
               rows={4}
               className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
               placeholder={t('test.generalCommentPlaceholder')}
@@ -711,40 +818,13 @@ export default function TestFeedbackPage() {
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('test.studentFeedback')}</h2>
               <p className="text-sm text-text-secondary">{t('test.studentFeedbackDesc')}</p>
             </div>
-            <div className="relative">
-              <button
-                onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-text-secondary bg-surface-alt border border-border rounded-lg hover:bg-gray-200 transition-colors"
-                title={t('test.keyboardShortcuts')}
-              >
-                <Keyboard size={16} />
-                {t('test.keyboardShortcuts')}
-              </button>
-              {showShortcutsHelp && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-surface border border-border rounded-lg shadow-lg p-4 z-40">
-                  <h4 className="font-semibold text-text-primary text-sm mb-3">{t('test.keyboardShortcuts')}</h4>
-                  <div className="space-y-1.5 text-xs text-text-secondary">
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">0-6</kbd><span>{t('test.shortcutSetPoints')}</span></div>
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Tab</kbd><span>{t('test.shortcutNextTask')}</span></div>
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Shift+Tab</kbd><span>{t('test.shortcutPrevTask')}</span></div>
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Enter</kbd><span>{t('test.shortcutFocusComment')}</span></div>
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Escape</kbd><span>{t('test.shortcutFocusPoints')}</span></div>
-                    <hr className="border-border my-1" />
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+&larr;/&uarr;</kbd><span>{t('test.shortcutPrevStudent')}</span></div>
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+&rarr;/&darr;</kbd><span>{t('test.shortcutNextStudent')}</span></div>
-                    <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+Enter</kbd><span>{t('test.shortcutToggleComplete')}</span></div>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Students list */}
-            <div className="lg:col-span-1">
+          <div className="flex gap-4">
+            {/* Students list — sticky left */}
+            <div className="w-64 flex-shrink-0 hidden lg:block">
               <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
                 <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
-
                 <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
                   {course.students.length === 0 ? (
                     <p className="text-sm text-text-disabled text-center py-4">{t('test.noStudentsInCourse')}</p>
@@ -754,46 +834,31 @@ export default function TestFeedbackPage() {
                       const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
                       const isCompleted = feedback?.completedDate;
                       const isAbsent = !!feedback?.absent;
-
                       return (
                         <div
                           key={student.id}
                           className={`p-3 border rounded-lg transition-colors ${selectedStudent?.id === student.id
                             ? 'border-rose-500 bg-rose-50'
                             : isAbsent
-                              ? 'border-border bg-gray-50 opacity-60'
+                              ? 'border-border bg-surface opacity-60'
                               : 'border-border hover:bg-surface-alt'
                             }`}
                         >
                           <div className="flex items-start justify-between">
-                            <div
-                              className="flex-1 cursor-pointer"
-                              onClick={() => setSelectedStudent(student)}
-                            >
+                            <div className="flex-1 cursor-pointer" onClick={() => setSelectedStudent(student)}>
                               <div className="flex items-center gap-2">
                                 <h4 className={`font-medium ${isAbsent ? 'line-through text-text-disabled' : 'text-text-primary'}`}>{student.name}</h4>
-                                {isAbsent && (
-                                  <span className="text-[10px] bg-gray-200 text-text-disabled px-1.5 py-0.5 rounded font-medium">{t('test.absent')}</span>
-                                )}
-                                {isCompleted && !isAbsent && (
-                                  <CheckCircle size={16} className="text-success" />
-                                )}
+                                {isAbsent && <span className="text-[10px] bg-surface-alt text-text-disabled px-1.5 py-0.5 rounded font-medium">{t('test.absent')}</span>}
+                                {isCompleted && !isAbsent && <CheckCircle size={16} className="text-success" />}
                               </div>
-                              {student.studentNumber && (
-                                <p className="text-xs text-text-disabled">#{student.studentNumber}</p>
-                              )}
-                              {!isAbsent && (
-                                <p className="text-sm font-semibold text-brand mt-1">
-                                  {score} / 60
-                                </p>
-                              )}
+                              {student.studentNumber && <p className="text-xs text-text-disabled">#{student.studentNumber}</p>}
+                              {!isAbsent && <p className="text-sm font-semibold text-brand mt-1">{score} / 60</p>}
                             </div>
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedStudent(student);
-                                  // Toggle absent after selecting student
                                   const fb = getStudentFeedback(courseId, testId, student.id);
                                   const updatedFb = {
                                     studentId: student.id,
@@ -805,7 +870,7 @@ export default function TestFeedbackPage() {
                                   updateStudentFeedback(courseId, testId, student.id, updatedFb);
                                   loadData();
                                 }}
-                                className={`p-1 rounded transition ${isAbsent ? 'text-success hover:bg-emerald-50' : 'text-text-disabled hover:bg-gray-100'}`}
+                                className={`p-1 rounded transition ${isAbsent ? 'text-success hover:bg-emerald-50' : 'text-text-disabled hover:bg-surface-alt'}`}
                                 title={isAbsent ? t('test.markPresent') : t('test.markAbsent')}
                               >
                                 {isAbsent ? <UserCheck size={16} /> : <UserX size={16} />}
@@ -828,8 +893,8 @@ export default function TestFeedbackPage() {
               </div>
             </div>
 
-            {/* Feedback form */}
-            <div className="lg:col-span-3">
+            {/* Feedback form — center */}
+            <div className="flex-1 min-w-0">
               {selectedStudent && currentFeedback ? (
                 currentFeedback.absent ? (
                   <div className="bg-surface rounded-lg shadow-sm p-12 flex items-center justify-center">
@@ -848,97 +913,33 @@ export default function TestFeedbackPage() {
                   </div>
                 ) :
                   <div className="bg-surface rounded-lg shadow-sm p-6">
-                    <div className="flex items-start justify-between mb-6">
-                      <div>
-                        {/* Student navigation */}
-                        <div className="flex items-center gap-2 mb-1">
-                          <button
-                            onClick={goToPreviousStudent}
-                            disabled={currentStudentIndex <= 0}
-                            className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
-                            title={t('test.previousStudent')}
-                          >
-                            <ChevronLeft size={18} />
-                          </button>
-                          <span className="text-sm text-text-disabled tabular-nums">
-                            {currentStudentIndex + 1} / {course.students.length}
-                          </span>
-                          <button
-                            onClick={goToNextStudent}
-                            disabled={currentStudentIndex >= course.students.length - 1}
-                            className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
-                            title={t('test.nextStudent')}
-                          >
-                            <ChevronRight size={18} />
-                          </button>
-                        </div>
+                    {/* Student info — compact row, sticky */}
+                    <div className="flex items-center gap-4 mb-6 sticky top-0 z-10 bg-surface -mx-6 px-6 py-3 border-b border-border">
+                      <div className="flex items-center gap-2">
+                        <button onClick={goToPreviousStudent} disabled={currentStudentIndex <= 0}
+                          className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
+                          title={t('test.previousStudent')}>
+                          <ChevronLeft size={18} />
+                        </button>
+                        <span className="text-sm text-text-disabled tabular-nums">{currentStudentIndex + 1} / {course.students.length}</span>
+                        <button onClick={goToNextStudent} disabled={currentStudentIndex >= course.students.length - 1}
+                          className="p-1.5 rounded-lg border border-border text-text-secondary hover:bg-surface-alt hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition"
+                          title={t('test.nextStudent')}>
+                          <ChevronRight size={18} />
+                        </button>
+                      </div>
+                      <div className="flex-1">
                         <h2 className="text-2xl font-display font-bold text-text-primary">{selectedStudent.name}</h2>
                         {selectedStudent.studentNumber && (
                           <p className="text-sm text-text-secondary">{t('test.studentNumber').replace('{number}', selectedStudent.studentNumber)}</p>
                         )}
-                        <p className="text-3xl font-display font-bold text-brand mt-2">{currentScore} / 60</p>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <ScoringGuide />
-                        <div className="flex gap-2">
-                          {currentFeedback.completedDate ? (
-                            <button
-                              onClick={handleUnmarkComplete}
-                              className="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200 transition-colors font-medium"
-                              title={t('test.clickToUnmarkComplete')}
-                            >
-                              <CheckCircle size={18} />
-                              {t('test.completedClickToUndo')}
-                            </button>
-                          ) : (
-                            <button
-                              onClick={handleMarkComplete}
-                              className="flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:hover:bg-emerald-700 transition"
-                            >
-                              <CheckCircle size={18} />
-                              {t('test.markComplete')}
-                            </button>
-                          )}
-                          <button
-                            onClick={handlePreviewPDF}
-                            className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
-                            title={t('test.previewPDF')}
-                          >
-                            <Eye size={18} />
-                            {t('test.previewPDF')}
-                          </button>
-                          <button
-                            onClick={handleCompilePDF}
-                            className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition"
-                            title={t('test.compileToPDF')}
-                          >
-                            <Download size={18} />
-                          </button>
-                          <button
-                            onClick={handleExportTypst}
-                            className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-                            title={t('test.downloadTypSource')}
-                          >
-                            <FileText size={18} />
-                            .typ
-                          </button>
-                        </div>
-                      </div>
+                      <p className="text-3xl font-display font-bold text-brand">{currentScore} / 60</p>
                     </div>
 
                     {/* Task Feedback */}
                     <div className="relative">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-text-primary">{t('test.taskFeedbackTitle')}</h3>
-                        <button
-                          onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
-                          className="flex items-center gap-2 px-3 py-2 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-sm"
-                          title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
-                        >
-                          {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
-                          {showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
-                        </button>
-                      </div>
+                      <h3 className="text-xl font-semibold text-text-primary mb-4">{t('test.taskFeedbackTitle')}</h3>
 
                       <div className="flex gap-4">
                         {/* Task list */}
@@ -952,7 +953,7 @@ export default function TestFeedbackPage() {
                                     {task.part && (
                                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
                                         ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                        : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                        : 'bg-info-bg text-info border border-info'
                                         }`}>
                                         {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
                                       </span>
@@ -1001,7 +1002,7 @@ export default function TestFeedbackPage() {
                                             onChange={(e) =>
                                               handleUpdateFeedback(task.id, subtask.id, { comment: e.target.value })
                                             }
-                                            onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: subtask.id })}
+                                            onFocus={() => { setActiveSubtask({ taskId: task.id, subtaskId: subtask.id }); lastFocusedArea.current = 'subtask'; }}
                                             rows={3}
                                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                             placeholder={t('test.commentPlaceholder1')}
@@ -1028,7 +1029,7 @@ export default function TestFeedbackPage() {
                                             {task.part && (
                                               <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
                                                 ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                                : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                                : 'bg-info-bg text-info border border-info'
                                                 }`}>
                                                 {task.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
                                               </span>
@@ -1066,7 +1067,7 @@ export default function TestFeedbackPage() {
                                             onChange={(e) =>
                                               handleUpdateFeedback(task.id, undefined, { comment: e.target.value })
                                             }
-                                            onFocus={() => setActiveSubtask({ taskId: task.id, subtaskId: undefined })}
+                                            onFocus={() => { setActiveSubtask({ taskId: task.id, subtaskId: undefined }); lastFocusedArea.current = 'subtask'; }}
                                             rows={3}
                                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                             placeholder={t('test.commentPlaceholder2')}
@@ -1102,27 +1103,18 @@ export default function TestFeedbackPage() {
                         <label className="block text-sm font-medium text-text-secondary">
                           {t('test.individualCommentLabel')}
                         </label>
-                        <div className="flex gap-2">
-                          <SnippetPicker
-                            snippets={allSnippets}
-                            onInsert={(text) => insertSnippet(text, individualCommentRef, false)}
-                            onAddSnippet={handleAddSnippet}
-                            onDeleteSnippet={handleDeleteSnippet}
-                          />
-                          <button
-                            onClick={() => insertLinkTemplate(individualCommentRef, false)}
-                            className="flex items-center gap-1 px-2 py-1 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors text-xs"
-                            title="Insert link template"
-                          >
-                            <Link2 size={14} />
-                            Insert Link
-                          </button>
-                        </div>
+                        <SnippetPicker
+                          snippets={allSnippets}
+                          onInsert={(text) => insertSnippet(text, individualCommentRef, false)}
+                          onAddSnippet={handleAddSnippet}
+                          onDeleteSnippet={handleDeleteSnippet}
+                        />
                       </div>
                       <textarea
                         ref={individualCommentRef}
                         value={currentFeedback.individualComment}
                         onChange={(e) => handleUpdateIndividualComment(e.target.value)}
+                        onFocus={() => { lastFocusedArea.current = 'individual'; }}
                         rows={4}
                         className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                         placeholder={t('test.individualCommentPlaceholder')}
@@ -1138,6 +1130,148 @@ export default function TestFeedbackPage() {
                 </div>
               )}
             </div>
+
+            {/* Sticky right toolbar */}
+            {selectedStudent && currentFeedback && !currentFeedback.absent && (
+              <div className="w-14 flex-shrink-0 hidden lg:block">
+                <div className="sticky top-4 bg-surface rounded-lg shadow-sm border border-border p-2 flex flex-col items-center gap-1">
+                  {/* Formatting buttons */}
+                  <span className="text-[9px] font-semibold text-text-disabled uppercase tracking-wider mb-0.5">Typst</span>
+                  <button
+                    onClick={() => wrapActiveTextarea('*', '*')}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Bold (*...*)"
+                  >
+                    <Bold size={16} />
+                  </button>
+                  <button
+                    onClick={() => wrapActiveTextarea('_', '_')}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Italic (_..._)"
+                  >
+                    <Italic size={16} />
+                  </button>
+                  <button
+                    onClick={() => wrapActiveTextarea('#underline[', ']')}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Underline (#underline[...])"
+                  >
+                    <Underline size={16} />
+                  </button>
+                  <button
+                    onClick={insertLinkInActiveTextarea}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title="Insert Link"
+                  >
+                    <Link2 size={16} />
+                  </button>
+
+                  <hr className="w-full border-border my-1" />
+
+                  {/* Actions */}
+                  <ScoringGuide variant="compact" />
+                  {currentFeedback.completedDate ? (
+                    <button
+                      onClick={handleUnmarkComplete}
+                      className="w-9 h-9 flex items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
+                      title={t('test.clickToUnmarkComplete')}
+                    >
+                      <CheckCircle size={16} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleMarkComplete}
+                      className="w-9 h-9 flex items-center justify-center rounded-lg bg-success text-white hover:bg-emerald-700 transition-colors"
+                      title={t('test.markComplete')}
+                    >
+                      <CheckCircle size={16} />
+                    </button>
+                  )}
+                  <button
+                    onClick={handleToggleAbsent}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-alt transition-colors text-text-secondary hover:text-text-primary"
+                    title={t('test.markAbsent')}
+                  >
+                    <UserX size={16} />
+                  </button>
+
+                  <hr className="w-full border-border my-1" />
+
+                  {/* Export */}
+                  <button
+                    onClick={handlePreviewPDF}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-brand text-white hover:bg-brand-hover transition-colors"
+                    title={t('test.previewPDF')}
+                  >
+                    <Eye size={16} />
+                  </button>
+                  <button
+                    onClick={handleCompilePDF}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-brand text-white hover:bg-brand-hover transition-colors"
+                    title={t('test.compileToPDF')}
+                  >
+                    <Download size={16} />
+                  </button>
+                  <button
+                    onClick={handleExportTypst}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-neutral-600 text-white hover:bg-neutral-700 transition-colors text-[10px] font-bold"
+                    title={t('test.downloadTypSource')}
+                  >
+                    .typ
+                  </button>
+
+                  <hr className="w-full border-border my-1" />
+
+                  {/* Task grading mode */}
+                  <Link
+                    href={`/course/${courseId}/test/${testId}/task-grading`}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-brand text-white hover:bg-brand-hover transition-colors"
+                    title={t('test.taskGrading')}
+                  >
+                    <ListChecks size={16} />
+                  </Link>
+
+                  <hr className="w-full border-border my-1" />
+
+                  {/* Snippets toggle */}
+                  <button
+                    onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${showSnippetSidebar ? 'bg-brand text-white' : 'hover:bg-surface-alt text-text-secondary hover:text-text-primary'}`}
+                    title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
+                  >
+                    {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+                  </button>
+
+                  {/* Keyboard shortcuts */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
+                      className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${showShortcutsHelp ? 'bg-brand text-white' : 'hover:bg-surface-alt text-text-secondary hover:text-text-primary'}`}
+                      title={t('test.keyboardShortcuts')}
+                    >
+                      <Keyboard size={16} />
+                    </button>
+                    {showShortcutsHelp && (
+                      <div className="absolute right-full mr-2 top-0 w-72 bg-surface border border-border rounded-lg shadow-lg p-4 z-40">
+                        <h4 className="font-semibold text-text-primary text-sm mb-3">{t('test.keyboardShortcuts')}</h4>
+                        <div className="space-y-1.5 text-xs text-text-secondary">
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">0-6</kbd><span>{t('test.shortcutSetPoints')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Tab</kbd><span>{t('test.shortcutNextTask')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Shift+Tab</kbd><span>{t('test.shortcutPrevTask')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Enter</kbd><span>{t('test.shortcutFocusComment')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Escape</kbd><span>{t('test.shortcutFocusPoints')}</span></div>
+                          <hr className="border-border my-1" />
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+&larr;/&uarr;</kbd><span>{t('test.shortcutPrevStudent')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+&rarr;/&darr;</kbd><span>{t('test.shortcutNextStudent')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+Enter</kbd><span>{t('test.shortcutToggleComplete')}</span></div>
+                          <div className="flex justify-between gap-4"><kbd className="px-1.5 py-0.5 bg-surface-alt border border-border rounded font-mono">Alt+T</kbd><span>{t('test.taskGrading')}</span></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1149,3 +1283,4 @@ export default function TestFeedbackPage() {
     </main>
   );
 }
+

@@ -74,13 +74,13 @@ export default function TestListPanel({
                     <div className="flex gap-1">
                       <button
                         onClick={() => onEditTest(test)}
-                        className="p-1 text-brand hover:bg-rose-50 rounded transition"
+                        className="p-1 text-brand hover:bg-surface-alt rounded transition"
                       >
                         <Edit size={14} />
                       </button>
                       <button
                         onClick={() => onDeleteTest(test.id)}
-                        className="p-1 text-danger hover:bg-red-50 rounded transition"
+                        className="p-1 text-danger hover:bg-danger-bg rounded transition"
                       >
                         <Trash2 size={14} />
                       </button>

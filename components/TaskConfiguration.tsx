@@ -250,7 +250,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 {task.part && (
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${task.part === 1
                     ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                    : 'bg-blue-100 text-blue-800 border border-blue-300'
+                    : 'bg-info-bg text-info border border-info'
                     }`}>
                     {task.part === 1 ? 'Part 1' : 'Part 2'}
                   </span>
@@ -292,7 +292,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
 
                 <button
                   onClick={() => removeTask(task.id)}
-                  className="ml-auto p-1.5 text-danger hover:bg-red-50 rounded transition"
+                  className="ml-auto p-1.5 text-danger hover:bg-danger-bg rounded transition"
                   title={t('test.removeTask')}
                 >
                   <Trash2 size={16} />
@@ -315,7 +315,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                             onClick={() => toggleTaskLabel(task.id, label)}
                             className={`px-2 py-0.5 rounded-full text-xs transition ${task.labels.includes(label)
                               ? 'bg-primary-600 text-white'
-                              : 'bg-surface text-text-secondary hover:bg-gray-300 border border-border'
+                              : 'bg-surface text-text-secondary hover:bg-surface-alt border border-border'
                               }`}
                           >
                             {formatLabelDisplay(label)}
@@ -405,7 +405,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
 
                         <button
                           onClick={() => removeSubtask(task.id, subtask.id)}
-                          className="ml-auto p-1 text-danger hover:bg-red-50 rounded transition"
+                          className="ml-auto p-1 text-danger hover:bg-danger-bg rounded transition"
                           title={t('test.removeSubtask')}
                         >
                           <X size={14} />
@@ -428,7 +428,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                                     onClick={() => toggleSubtaskLabel(task.id, subtask.id, label)}
                                     className={`px-2 py-0.5 rounded-full text-xs transition ${subtask.labels.includes(label)
                                       ? 'bg-primary-600 text-white'
-                                      : 'bg-white text-text-secondary hover:bg-gray-200 border border-border'
+                                      : 'bg-surface text-text-secondary hover:bg-surface-alt border border-border'
                                       }`}
                                   >
                                     {formatLabelDisplay(label)}

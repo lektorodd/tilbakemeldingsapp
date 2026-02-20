@@ -21,11 +21,11 @@ export default function BackupPanel({ backups, onRestore, onDelete }: BackupPane
 
   const getBackupLabelColor = (label?: string) => {
     switch (label) {
-      case 'before-delete': return 'bg-red-100 text-red-700';
-      case 'before-import': return 'bg-yellow-100 text-yellow-700';
+      case 'before-delete': return 'bg-danger-bg text-danger';
+      case 'before-import': return 'bg-warning-bg text-warning';
       case 'before-restore': return 'bg-orange-100 text-orange-700';
-      case 'manual': return 'bg-blue-100 text-blue-700';
-      default: return 'bg-gray-100 text-gray-600';
+      case 'manual': return 'bg-info-bg text-info';
+      default: return 'bg-surface-alt text-text-secondary';
     }
   };
 
@@ -74,7 +74,7 @@ export default function BackupPanel({ backups, onRestore, onDelete }: BackupPane
                 </button>
                 <button
                   onClick={() => onDelete(backup.id)}
-                  className="p-1.5 text-danger hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-1.5 text-danger hover:bg-danger-bg rounded-lg transition-colors"
                 >
                   <Trash2 size={14} />
                 </button>

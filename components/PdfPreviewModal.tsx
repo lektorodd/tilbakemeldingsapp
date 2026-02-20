@@ -67,7 +67,7 @@ export default function PdfPreviewModal({ pdfUrl, filename, onClose }: PdfPrevie
                         </button>
                         <button
                             onClick={onClose}
-                            className="p-1.5 rounded-lg text-text-secondary hover:bg-gray-200 hover:text-text-primary transition-colors"
+                            className="p-1.5 rounded-lg text-text-secondary hover:bg-surface-alt hover:text-text-primary transition-colors"
                             title={t('test.closePDFPreview')}
                         >
                             <X size={20} />
@@ -76,7 +76,7 @@ export default function PdfPreviewModal({ pdfUrl, filename, onClose }: PdfPrevie
                 </div>
 
                 {/* PDF Viewer */}
-                <div className="flex-1 bg-gray-800">
+                <div className="flex-1 bg-neutral-800">
                     <iframe
                         src={pdfUrl}
                         className="w-full h-full border-0"

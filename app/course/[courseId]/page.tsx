@@ -417,7 +417,7 @@ export default function CourseDetailPage() {
               </div>
               <button
                 onClick={handleEditCourse}
-                className="p-2 text-brand hover:bg-rose-50 rounded transition"
+                className="p-2 text-brand hover:bg-surface-alt rounded transition"
                 title="Edit course details"
               >
                 <Edit size={20} />
@@ -551,7 +551,7 @@ export default function CourseDetailPage() {
                     setNewStudentName('');
                     setNewStudentNumber('');
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>
@@ -597,7 +597,7 @@ export default function CourseDetailPage() {
                     setShowBulkAddStudentModal(false);
                     setBulkStudentText('');
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>
@@ -765,7 +765,7 @@ export default function CourseDetailPage() {
                     setNewTestPart2Count('2');
                     setNewTestRestartNumbering(false);
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>
@@ -890,7 +890,7 @@ export default function CourseDetailPage() {
                     setNewOralTestTopics('');
                     setNewOralTestLabels([]);
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>
@@ -942,7 +942,7 @@ export default function CourseDetailPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowEditCourseModal(false)}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>
@@ -1009,7 +1009,7 @@ export default function CourseDetailPage() {
                     setShowEditTestModal(false);
                     setEditingTest(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>
@@ -1129,7 +1129,7 @@ export default function CourseDetailPage() {
                     setShowEditOralTestModal(false);
                     setEditingOralTest(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
                 >
                   {t('common.cancel')}
                 </button>

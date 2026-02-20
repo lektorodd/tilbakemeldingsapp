@@ -60,12 +60,12 @@ export default function SnippetPicker({
 
   const getCategoryColor = (category?: string) => {
     switch (category) {
-      case 'standard': return 'bg-stone-100 text-stone-700';
+      case 'standard': return 'bg-surface-alt text-text-secondary';
       case 'encouragement': return 'bg-emerald-100 text-emerald-700';
       case 'error': return 'bg-rose-100 text-brand-hover';
       case 'custom': return 'bg-primary-100 text-primary-700';
       case 'math': return 'bg-emerald-100 text-emerald-700';
-      default: return 'bg-stone-100 text-stone-700';
+      default: return 'bg-surface-alt text-text-secondary';
     }
   };
 
@@ -109,28 +109,28 @@ export default function SnippetPicker({
               </button>
               <button
                 onClick={() => setFilter('standard')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface text-text-secondary hover:bg-stone-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'standard' ? 'bg-neutral-600 text-white' : 'bg-surface text-text-secondary hover:bg-surface-alt'
                   }`}
               >
                 Standard
               </button>
               <button
                 onClick={() => setFilter('encouragement')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'encouragement' ? 'bg-success text-white' : 'bg-surface text-text-secondary hover:bg-emerald-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'encouragement' ? 'bg-success text-white' : 'bg-surface text-text-secondary hover:bg-surface-alt'
                   }`}
               >
                 Oppmuntrande
               </button>
               <button
                 onClick={() => setFilter('error')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'error' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-rose-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'error' ? 'bg-brand text-white' : 'bg-surface text-text-secondary hover:bg-surface-alt'
                   }`}
               >
                 Feil
               </button>
               <button
                 onClick={() => setFilter('math')}
-                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'math' ? 'bg-emerald-600 text-white' : 'bg-surface text-text-secondary hover:bg-emerald-100'
+                className={`px-2 py-1 text-xs rounded transition-colors ${filter === 'math' ? 'bg-emerald-600 text-white' : 'bg-surface text-text-secondary hover:bg-surface-alt'
                   }`}
               >
                 Typst-matte
@@ -163,7 +163,7 @@ export default function SnippetPicker({
                     {onDeleteSnippet && snippet.category === 'custom' && (
                       <button
                         onClick={() => onDeleteSnippet(snippet.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-danger hover:bg-red-50 rounded transition"
+                        className="opacity-0 group-hover:opacity-100 p-1 text-danger hover:bg-danger-bg rounded transition"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -176,7 +176,7 @@ export default function SnippetPicker({
 
           {/* Add new snippet form */}
           {onAddSnippet && (
-            <div className="p-3 border-t border-border bg-stone-50">
+            <div className="p-3 border-t border-border bg-surface-alt">
               {showAddForm ? (
                 <div className="space-y-2">
                   <input
@@ -203,7 +203,7 @@ export default function SnippetPicker({
                         setShowAddForm(false);
                         setNewSnippetText('');
                       }}
-                      className="px-3 py-1.5 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition-colors text-sm"
+                      className="px-3 py-1.5 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition-colors text-sm"
                     >
                       Avbryt
                     </button>

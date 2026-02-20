@@ -5,7 +5,7 @@ import { HelpCircle, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ScoringGuideProps {
-  variant?: 'button' | 'inline';
+  variant?: 'button' | 'inline' | 'compact';
 }
 
 export default function ScoringGuide({ variant = 'button' }: ScoringGuideProps) {
@@ -22,8 +22,8 @@ export default function ScoringGuide({ variant = 'button' }: ScoringGuideProps) 
 
   if (variant === 'inline') {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+      <div className="bg-info-bg border border-info rounded-lg p-4">
+        <h3 className="font-semibold text-info mb-3 flex items-center gap-2">
           <HelpCircle size={20} />
           {t('dashboard.scoringGuide')}
         </h3>
@@ -33,7 +33,7 @@ export default function ScoringGuide({ variant = 'button' }: ScoringGuideProps) 
               <span className={`px-2 py-1 rounded font-bold min-w-[32px] text-center ${getScoreColor(score)}`}>
                 {score}
               </span>
-              <span className="text-blue-900 flex-1">
+              <span className="text-text-primary flex-1">
                 {t(`dashboard.score${score}`)}
               </span>
             </div>
@@ -47,11 +47,14 @@ export default function ScoringGuide({ variant = 'button' }: ScoringGuideProps) 
     <>
       <button
         onClick={() => setShowGuide(!showGuide)}
-        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
+        className={variant === 'compact'
+          ? 'w-9 h-9 flex items-center justify-center rounded-lg bg-info-bg text-info hover:bg-surface-alt transition'
+          : 'inline-flex items-center gap-1 px-3 py-1.5 bg-info-bg text-info rounded-lg hover:bg-surface-alt transition text-sm font-medium'
+        }
         title={t('dashboard.scoringGuide')}
       >
         <HelpCircle size={16} />
-        {t('dashboard.scoringGuide')}
+        {variant !== 'compact' && t('dashboard.scoringGuide')}
       </button>
 
       {showGuide && (
@@ -59,12 +62,12 @@ export default function ScoringGuide({ variant = 'button' }: ScoringGuideProps) 
           <div className="bg-surface rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-display font-bold text-text-primary flex items-center gap-2">
-                <HelpCircle size={24} className="text-blue-600" />
+                <HelpCircle size={24} className="text-info" />
                 {t('dashboard.scoringGuide')}
               </h2>
               <button
                 onClick={() => setShowGuide(false)}
-                className="p-1 hover:bg-gray-100 rounded transition"
+                className="p-1 hover:bg-surface-alt rounded transition"
               >
                 <X size={24} />
               </button>

@@ -54,8 +54,8 @@ export default function StudentDashboardPage() {
   const getScoreBgColor = (score: number): string => {
     const percentage = (score / 60) * 100;
     if (percentage >= 83) return 'bg-emerald-100';
-    if (percentage >= 58) return 'bg-yellow-100';
-    return 'bg-red-100';
+    if (percentage >= 58) return 'bg-warning-bg';
+    return 'bg-danger-bg';
   };
 
   return (
@@ -207,7 +207,7 @@ export default function StudentDashboardPage() {
                 <div key={test.testId} className="flex gap-3">
                   {test.absent ? (
                     /* Absent test card — full width, no histogram */
-                    <div className="flex-1 border border-border rounded-lg p-4 bg-gray-50 opacity-70">
+                    <div className="flex-1 border border-border rounded-lg p-4 bg-surface opacity-70">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="font-semibold text-text-disabled line-through">{test.testName}</h4>
@@ -217,7 +217,7 @@ export default function StudentDashboardPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <UserX size={18} className="text-text-disabled" />
-                          <span className="text-sm font-medium text-text-disabled bg-gray-200 px-2 py-0.5 rounded">{t('test.absent')}</span>
+                          <span className="text-sm font-medium text-text-disabled bg-surface-alt px-2 py-0.5 rounded">{t('test.absent')}</span>
                         </div>
                       </div>
                     </div>
@@ -249,7 +249,7 @@ export default function StudentDashboardPage() {
 
                         {/* Progress bar */}
                         <div className="mb-2">
-                          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="h-2 bg-surface-alt rounded-full overflow-hidden">
                             <div
                               className={`h-full ${test.score >= 50 ? 'bg-success' : test.score >= 35 ? 'bg-warning' : 'bg-danger'}`}
                               style={{ width: `${(test.score / test.maxScore) * 100}%` }}
@@ -287,7 +287,7 @@ export default function StudentDashboardPage() {
                                   >
                                     <div className="h-full flex flex-col justify-end">
                                       <div
-                                        className={`${count > 0 ? barColor : 'bg-gray-300'} rounded-t transition-all`}
+                                        className={`${count > 0 ? barColor : 'bg-surface-alt'} rounded-t transition-all`}
                                         style={{ height: count > 0 ? `${heightPercent}%` : '2px' }}
                                       />
                                     </div>
@@ -353,7 +353,7 @@ export default function StudentDashboardPage() {
 
                     {/* Progress bar */}
                     <div className="mb-3">
-                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-2 bg-surface-alt rounded-full overflow-hidden">
                         <div
                           className={`h-full ${oral.score >= 50 ? 'bg-primary-600' : oral.score >= 35 ? 'bg-primary-400' : 'bg-primary-300'}`}
                           style={{ width: `${(oral.score / oral.maxScore) * 100}%` }}
@@ -417,7 +417,7 @@ export default function StudentDashboardPage() {
                   <p className="text-xs text-text-secondary">{label.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
-                  <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="mt-2 h-1.5 bg-surface-alt rounded-full overflow-hidden">
                     <div
                       className={`h-full ${label.averageScore >= 5 ? 'bg-success' :
                         label.averageScore >= 3.5 ? 'bg-warning' : 'bg-danger'
@@ -454,7 +454,7 @@ export default function StudentDashboardPage() {
                   <p className="text-xs text-text-secondary mb-2">{cat.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                  <div className="h-2 bg-surface-alt rounded-full overflow-hidden mb-2">
                     <div
                       className={`h-full ${cat.averageScore >= 5 ? 'bg-success' :
                         cat.averageScore >= 3.5 ? 'bg-warning' : 'bg-danger'
@@ -472,9 +472,9 @@ export default function StudentDashboardPage() {
             </div>
 
             {/* Category explanation from national exam guidelines */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-              <p className="font-semibold text-blue-900 mb-2">{t('dashboard.helpCategory')}</p>
-              <div className="space-y-2 text-blue-800">
+            <div className="bg-info-bg border border-info rounded-lg p-4 text-sm">
+              <p className="font-semibold text-info mb-2">{t('dashboard.helpCategory')}</p>
+              <div className="space-y-2 text-info">
                 <div>
                   <strong>{t('dashboard.category1Name')}:</strong> {t('dashboard.category1Description')}
                 </div>
@@ -499,7 +499,7 @@ export default function StudentDashboardPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {partPerformance.map(part => (
-                <div key={part.part} className={`border-2 rounded-lg p-6 ${part.part === 1 ? 'border-orange-300 bg-orange-50' : 'border-blue-300 bg-blue-50'
+                <div key={part.part} className={`border-2 rounded-lg p-6 ${part.part === 1 ? 'border-orange-300 bg-orange-50' : 'border-info bg-info-bg'
                   }`}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
@@ -518,7 +518,7 @@ export default function StudentDashboardPage() {
                   <p className="text-sm text-text-secondary mb-3">{part.taskCount} {t('dashboard.tasks')}</p>
 
                   {/* Progress bar */}
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-3 bg-surface-alt rounded-full overflow-hidden">
                     <div
                       className={`h-full ${part.averageScore >= 5 ? 'bg-success' :
                         part.averageScore >= 3.5 ? 'bg-warning' : 'bg-danger'
@@ -554,8 +554,8 @@ export default function StudentDashboardPage() {
         )}
 
         {/* Help Section */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">{t('dashboard.helpTitle')}</h3>
+        <div className="mt-6 bg-info-bg border border-info rounded-lg p-4">
+          <h3 className="font-semibold text-info mb-2">{t('dashboard.helpTitle')}</h3>
           <ul className="text-sm text-rose-800 space-y-1">
             <li>• {t('dashboard.helpAttemptRate')}</li>
             <li>• {t('dashboard.helpTheme')}</li>

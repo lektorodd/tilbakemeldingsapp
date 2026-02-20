@@ -94,6 +94,19 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
+  input,
+  select,
+  textarea {
+    @apply bg-surface text-text-primary;
+    color-scheme: light;
+  }
+
+  .dark input,
+  .dark select,
+  .dark textarea {
+    color-scheme: dark;
+  }
+
   h1,
   h2,
   h3,

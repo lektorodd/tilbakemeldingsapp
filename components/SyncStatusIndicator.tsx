@@ -20,9 +20,9 @@ export default function SyncStatusIndicator() {
 
     const getColor = () => {
         if (!folderConnected) return 'text-amber-500';
-        if (status === 'syncing') return 'text-blue-500';
+        if (status === 'syncing') return 'text-info';
         if (status === 'saved') return 'text-emerald-500';
-        if (status === 'error') return 'text-red-500';
+        if (status === 'error') return 'text-danger';
         return 'text-emerald-500';
     };
 

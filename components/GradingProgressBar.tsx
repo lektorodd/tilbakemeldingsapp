@@ -34,13 +34,13 @@ export default function GradingProgressBar({ completedCount, totalCount, absentC
           </span>
         </div>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2.5">
+      <div className="w-full bg-surface-alt rounded-full h-2.5">
         <div
           className={`h-2.5 rounded-full transition-all duration-300 ${percentage === 100
-              ? 'bg-success'
-              : percentage >= 50
-                ? 'bg-brand'
-                : 'bg-amber-500'
+            ? 'bg-success'
+            : percentage >= 50
+              ? 'bg-brand'
+              : 'bg-amber-500'
             }`}
           style={{ width: `${percentage}%` }}
         />

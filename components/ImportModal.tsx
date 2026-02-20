@@ -40,7 +40,7 @@ export default function ImportModal({
                 </div>
               )}
               {importResult.merged > 0 && (
-                <div className="flex items-center gap-2 text-blue-600">
+                <div className="flex items-center gap-2 text-info">
                   <RotateCcw size={18} />
                   <span>{t('backup.mergedCount').replace('{count}', String(importResult.merged))}</span>
                 </div>
@@ -52,9 +52,9 @@ export default function ImportModal({
                 </div>
               )}
               {importResult.errors.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-sm font-medium text-red-700 mb-1">{t('backup.importErrors')}:</p>
-                  <ul className="text-xs text-red-600 list-disc list-inside">
+                <div className="bg-danger-bg border border-danger rounded-lg p-3">
+                  <p className="text-sm font-medium text-danger mb-1">{t('backup.importErrors')}:</p>
+                  <ul className="text-xs text-danger list-disc list-inside">
                     {importResult.errors.map((err, i) => (
                       <li key={i}>{err}</li>
                     ))}
@@ -82,11 +82,11 @@ export default function ImportModal({
                   c.id === course.id || c.name.toLowerCase() === course.name?.toLowerCase()
                 );
                 return (
-                  <div key={i} className={`p-3 rounded-lg border ${existing ? 'border-yellow-300 bg-yellow-50' : 'border-border bg-background'}`}>
+                  <div key={i} className={`p-3 rounded-lg border ${existing ? 'border-warning bg-warning-bg' : 'border-border bg-background'}`}>
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-text-primary">{course.name || `Course ${i + 1}`}</span>
                       {existing && (
-                        <span className="text-xs px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full">{t('backup.duplicate')}</span>
+                        <span className="text-xs px-2 py-0.5 bg-warning-bg text-warning rounded-full">{t('backup.duplicate')}</span>
                       )}
                     </div>
                     <p className="text-xs text-text-secondary mt-1">
@@ -98,8 +98,8 @@ export default function ImportModal({
             </div>
 
             {importPreview.some(c => existingCourses.find(ec => ec.id === c.id || ec.name?.toLowerCase() === c.name?.toLowerCase())) && (
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm font-medium text-yellow-800 mb-2">{t('backup.duplicateHandling')}</p>
+              <div className="mb-4 p-3 bg-warning-bg border border-warning rounded-lg">
+                <p className="text-sm font-medium text-warning mb-2">{t('backup.duplicateHandling')}</p>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="radio" name="mergeMode" checked={importMergeMode === 'skip'} onChange={() => onMergeModeChange('skip')} />
@@ -117,8 +117,8 @@ export default function ImportModal({
               </div>
             )}
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-xs text-blue-700">
+            <div className="bg-info-bg border border-info rounded-lg p-3 mb-4">
+              <p className="text-xs text-info">
                 <Shield size={14} className="inline mr-1" />
                 {t('backup.safetyNote')}
               </p>
@@ -127,7 +127,7 @@ export default function ImportModal({
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-border transition-colors font-medium"
               >
                 {t('common.cancel')}
               </button>

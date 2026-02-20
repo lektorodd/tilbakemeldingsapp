@@ -17,7 +17,17 @@ import {
   Lightbulb,
   MousePointerClick,
   Github,
-  User
+  User,
+  Keyboard,
+  FolderSync,
+  Moon,
+  UserX,
+  Tag,
+  ListChecks,
+  Mic,
+  Weight,
+  Grid3X3,
+  Zap,
 } from 'lucide-react';
 
 export default function HelpPage() {
@@ -50,19 +60,31 @@ export default function HelpPage() {
               <GraduationCap size={18} />
               <span className="text-sm font-medium">{t('help.workflow')}</span>
             </a>
-            <a href="#quick-grading" className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
-              <MousePointerClick size={18} />
-              <span className="text-sm font-medium">{t('help.quickGrading')}</span>
+            <a href="#shortcuts" className="flex items-center gap-2 p-3 bg-info-bg text-info rounded-lg hover:bg-info-bg transition-colors">
+              <Keyboard size={18} />
+              <span className="text-sm font-medium">{t('help.shortcutsQuickLink')}</span>
             </a>
-            <a href="#export" className="flex items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
-              <Download size={18} />
-              <span className="text-sm font-medium">{t('help.exportQuickLink')}</span>
+            <a href="#grading-modes" className="flex items-center gap-2 p-3 bg-rose-50 text-brand-hover rounded-lg hover:bg-rose-100 transition-colors">
+              <Zap size={18} />
+              <span className="text-sm font-medium">{t('help.gradingModes')}</span>
             </a>
-            <a href="#grading" className="flex items-center gap-2 p-3 bg-rose-50 text-brand-hover rounded-lg hover:bg-rose-100 transition-colors">
+            <a href="#grading" className="flex items-center gap-2 p-3 bg-warning-bg text-warning rounded-lg hover:bg-warning-bg transition-colors">
               <Calculator size={18} />
               <span className="text-sm font-medium">{t('help.gradingSystem')}</span>
             </a>
-            <a href="#typst" className="flex items-center gap-2 p-3 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors">
+            <a href="#data-safety" className="flex items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+              <FolderSync size={18} />
+              <span className="text-sm font-medium">{t('help.dataSafety')}</span>
+            </a>
+            <a href="#task-config" className="flex items-center gap-2 p-3 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors">
+              <ListChecks size={18} />
+              <span className="text-sm font-medium">{t('help.taskConfig')}</span>
+            </a>
+            <a href="#export" className="flex items-center gap-2 p-3 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors">
+              <Download size={18} />
+              <span className="text-sm font-medium">{t('help.exportQuickLink')}</span>
+            </a>
+            <a href="#typst" className="flex items-center gap-2 p-3 bg-surface-alt text-text-secondary rounded-lg hover:bg-surface-alt transition-colors">
               <FileText size={18} />
               <span className="text-sm font-medium">{t('help.typstMath')}</span>
             </a>
@@ -70,18 +92,22 @@ export default function HelpPage() {
               <BookmarkPlus size={18} />
               <span className="text-sm font-medium">{t('help.snippets')}</span>
             </a>
-            <a href="#analytics" className="flex items-center gap-2 p-3 bg-stone-50 text-stone-700 rounded-lg hover:bg-stone-100 transition-colors">
+            <a href="#analytics" className="flex items-center gap-2 p-3 bg-info-bg text-info rounded-lg hover:bg-info-bg transition-colors">
               <BarChart3 size={18} />
               <span className="text-sm font-medium">{t('help.analytics')}</span>
             </a>
-            <a href="#tips" className="flex items-center gap-2 p-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors">
+            <a href="#oral" className="flex items-center gap-2 p-3 bg-rose-50 text-brand-hover rounded-lg hover:bg-rose-100 transition-colors">
+              <Mic size={18} />
+              <span className="text-sm font-medium">{t('help.oralQuickLink')}</span>
+            </a>
+            <a href="#tips" className="flex items-center gap-2 p-3 bg-warning-bg text-warning rounded-lg hover:bg-warning-bg transition-colors">
               <Lightbulb size={18} />
               <span className="text-sm font-medium">{t('help.tips')}</span>
             </a>
           </div>
         </div>
 
-        {/* Basic Workflow */}
+        {/* ──────────────────────── 1. Basic Workflow ──────────────────────── */}
         <div id="workflow" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <GraduationCap size={24} className="text-brand" />
@@ -109,49 +135,111 @@ export default function HelpPage() {
               <p className="text-sm text-text-secondary">{t('help.step4Desc')}</p>
             </div>
 
-            <div className="border-l-4 border-stone-600 pl-4">
+            <div className="border-l-4 border-text-secondary pl-4">
               <h3 className="font-semibold text-text-primary mb-2">5. {t('help.step5Title')}</h3>
               <p className="text-sm text-text-secondary">{t('help.step5Desc')}</p>
             </div>
           </div>
         </div>
 
-        {/* Quick Point Selection */}
-        <div id="quick-grading" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+        {/* ──────────────────────── 2. Keyboard Shortcuts ──────────────────────── */}
+        <div id="shortcuts" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <MousePointerClick size={24} className="text-blue-600" />
-            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.quickGradingTitle')}</h2>
+            <Keyboard size={24} className="text-info" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.shortcutsTitle')}</h2>
+          </div>
+
+          <p className="text-text-secondary mb-4">{t('help.shortcutsDesc')}</p>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-surface-alt">
+                <tr>
+                  <th className="px-3 py-2 text-left font-medium text-text-secondary">{t('help.shortcutKey')}</th>
+                  <th className="px-3 py-2 text-left font-medium text-text-secondary">{t('help.shortcutAction')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">0</kbd> – <kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">6</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutSetPoints')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Tab</kbd> / <kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Shift+Tab</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutNavTask')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Enter</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutEnterComment')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Escape</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutEscape')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Alt+→</kbd> / <kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Alt+↓</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutNextStudent')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Alt+←</kbd> / <kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Alt+↑</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutPrevStudent')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Alt+Enter</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutToggleComplete')}</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2"><kbd className="bg-surface-alt px-2 py-0.5 rounded text-xs font-mono border border-border">Alt+T</kbd></td>
+                  <td className="px-3 py-2 text-text-secondary">{t('help.shortcutTaskGrading')}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 bg-info-bg border border-info rounded-lg p-4">
+            <p className="text-sm text-info">{t('help.shortcutsTip')}</p>
+          </div>
+        </div>
+
+        {/* ──────────────────────── 3. Grading Modes ──────────────────────── */}
+        <div id="grading-modes" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Zap size={24} className="text-brand" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.gradingModes')}</h2>
           </div>
 
           <div className="space-y-4">
-            <p className="text-text-secondary">
-              {t('help.quickGradingDesc')}
-            </p>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-3">{t('help.quickGradingHowTo')}</h3>
-              <ol className="space-y-2 text-sm text-blue-800">
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">1.</span>
-                  <span>{t('help.quickGradingStep1')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">2.</span>
-                  <span>{t('help.quickGradingStep2')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">3.</span>
-                  <span>{t('help.quickGradingStep3')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">4.</span>
-                  <span>{t('help.quickGradingStep4')}</span>
-                </li>
-              </ol>
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <User size={18} className="text-brand" />
+                <h3 className="font-semibold text-text-primary">{t('help.studentModeTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.studentModeDesc')}</p>
             </div>
 
             <div className="border border-border rounded-lg p-4">
-              <h3 className="font-semibold text-text-primary mb-2">{t('help.quickGradingVisualization')}</h3>
+              <div className="flex items-center gap-2 mb-2">
+                <ListChecks size={18} className="text-primary-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.taskModeTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.taskModeDesc')}</p>
+            </div>
+
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Grid3X3 size={18} className="text-emerald-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.progressGridTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.progressGridDesc')}</p>
+            </div>
+
+            {/* Quick grading sub-section */}
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <MousePointerClick size={18} className="text-amber-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.quickGradingTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary mb-3">{t('help.quickGradingDesc')}</p>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-sm text-text-secondary">{t('test.pointsLabel')}</span>
                 <div className="flex gap-1">
@@ -159,11 +247,10 @@ export default function HelpPage() {
                     <button
                       key={p}
                       disabled
-                      className={`w-9 h-9 rounded-lg font-semibold transition-all ${
-                        p === 4
+                      className={`w-9 h-9 rounded-lg font-semibold transition-all ${p === 4
                           ? 'bg-brand text-white shadow-md scale-110'
                           : 'bg-surface border border-border text-text-secondary'
-                      }`}
+                        }`}
                     >
                       {p}
                     </button>
@@ -171,121 +258,12 @@ export default function HelpPage() {
                 </div>
                 <span className="text-sm text-text-secondary">/ 6</span>
               </div>
-              <p className="text-xs text-text-secondary mt-2">
-                {t('help.quickGradingExample')}
-              </p>
-            </div>
-
-            <div className="bg-background border border-border rounded-lg p-4">
-              <h3 className="font-semibold text-text-primary mb-2">{t('help.quickGradingBenefits')}</h3>
-              <ul className="text-sm text-text-secondary space-y-1">
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.quickGradingBenefit1')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.quickGradingBenefit2')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.quickGradingBenefit3')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.quickGradingBenefit4')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.quickGradingBenefit5')}</li>
-              </ul>
+              <p className="text-xs text-text-secondary">{t('help.quickGradingExample')}</p>
             </div>
           </div>
         </div>
 
-        {/* CSV/Excel Export */}
-        <div id="export" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Download size={24} className="text-success" />
-            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.exportTitle')}</h2>
-          </div>
-
-          <div className="space-y-4">
-            <p className="text-text-secondary">
-              {t('help.exportDesc')}
-            </p>
-
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h3 className="font-semibold text-green-900 mb-3">{t('help.exportHowTo')}</h3>
-              <ol className="space-y-2 text-sm text-green-800">
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">1.</span>
-                  <span>{t('help.exportStep1')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">2.</span>
-                  <span>{t('help.exportStep2')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">3.</span>
-                  <span>{t('help.exportStep3')} <code className="bg-green-100 px-1 rounded">{t('help.exportStep3File')}</code></span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">4.</span>
-                  <span>{t('help.exportStep4')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">5.</span>
-                  <span>{t('help.exportStep5')}</span>
-                </li>
-              </ol>
-            </div>
-
-            <div className="border border-border rounded-lg p-4">
-              <h3 className="font-semibold text-text-primary mb-3">{t('help.exportContents')}</h3>
-
-              <div className="space-y-3 text-sm">
-                <div className="border-l-4 border-primary-600 pl-3">
-                  <h4 className="font-semibold text-text-primary mb-1">{t('help.exportContent1Title')}</h4>
-                  <p className="text-text-secondary">
-                    {t('help.exportContent1Desc')}
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-emerald-600 pl-3">
-                  <h4 className="font-semibold text-text-primary mb-1">{t('help.exportContent2Title')}</h4>
-                  <p className="text-text-secondary">
-                    {t('help.exportContent2Desc')}
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-amber-600 pl-3">
-                  <h4 className="font-semibold text-text-primary mb-1">{t('help.exportContent3Title')}</h4>
-                  <p className="text-text-secondary">
-                    {t('help.exportContent3Desc')}
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-rose-600 pl-3">
-                  <h4 className="font-semibold text-text-primary mb-1">{t('help.exportContent4Title')}</h4>
-                  <p className="text-text-secondary">
-                    {t('help.exportContent4Desc')}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-background border border-border rounded-lg p-4">
-              <h3 className="font-semibold text-text-primary mb-2">{t('help.exportUseCases')}</h3>
-              <ul className="text-sm text-text-secondary space-y-1">
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.exportUseCase1')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.exportUseCase2')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.exportUseCase3')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.exportUseCase4')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.exportUseCase5')}</li>
-                <li><CheckCircle size={14} className="inline text-success mr-1" /> {t('help.exportUseCase6')}</li>
-              </ul>
-            </div>
-
-            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-              <h3 className="font-semibold text-primary-900 mb-2">{t('help.exportTipsTitle')}</h3>
-              <ul className="text-sm text-primary-800 space-y-1">
-                <li>• {t('help.exportTip1')}</li>
-                <li>• {t('help.exportTip2')}</li>
-                <li>• {t('help.exportTip3')}</li>
-                <li>• {t('help.exportTip4')}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Grading System */}
+        {/* ──────────────────────── 4. Grading System ──────────────────────── */}
         <div id="grading" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Calculator size={24} className="text-brand" />
@@ -306,7 +284,7 @@ export default function HelpPage() {
               <h3 className="font-semibold text-text-primary mb-2">{t('help.examples')}</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
-                  <thead className="bg-stone-100">
+                  <thead className="bg-surface-alt">
                     <tr>
                       <th className="px-3 py-2 text-left font-medium text-text-secondary">{t('help.taskScores')}</th>
                       <th className="px-3 py-2 text-left font-medium text-text-secondary">{t('help.average')}</th>
@@ -314,7 +292,7 @@ export default function HelpPage() {
                       <th className="px-3 py-2 text-left font-medium text-text-secondary">{t('help.percentage')}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-stone-200">
+                  <tbody className="divide-y divide-border">
                     <tr className="hover:bg-emerald-50">
                       <td className="px-3 py-2">6, 6, 6</td>
                       <td className="px-3 py-2">6.0</td>
@@ -327,13 +305,13 @@ export default function HelpPage() {
                       <td className="px-3 py-2 font-semibold">50/60</td>
                       <td className="px-3 py-2">83%</td>
                     </tr>
-                    <tr className="hover:bg-yellow-50">
+                    <tr className="hover:bg-warning-bg">
                       <td className="px-3 py-2">3, 4, 4, 5</td>
                       <td className="px-3 py-2">4.0</td>
                       <td className="px-3 py-2 font-semibold">40/60</td>
                       <td className="px-3 py-2">67%</td>
                     </tr>
-                    <tr className="hover:bg-red-50">
+                    <tr className="hover:bg-danger-bg">
                       <td className="px-3 py-2">2, 3, 3, 4</td>
                       <td className="px-3 py-2">3.0</td>
                       <td className="px-3 py-2 font-semibold">30/60</td>
@@ -356,7 +334,116 @@ export default function HelpPage() {
           </div>
         </div>
 
-        {/* Typst Math */}
+        {/* ──────────────────────── 5. Data Safety & Folder Sync ──────────────────────── */}
+        <div id="data-safety" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <FolderSync size={24} className="text-success" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.dataSafety')}</h2>
+          </div>
+
+          <p className="text-text-secondary mb-4">{t('help.dataSafetyDesc')}</p>
+
+          <div className="space-y-4">
+            <div className="border-l-4 border-emerald-600 pl-4">
+              <h3 className="font-semibold text-text-primary mb-1">{t('help.folderSyncTitle')}</h3>
+              <p className="text-sm text-text-secondary">{t('help.folderSyncDesc')}</p>
+            </div>
+
+            <div className="border-l-4 border-primary-600 pl-4">
+              <h3 className="font-semibold text-text-primary mb-1">{t('help.autoBackupTitle')}</h3>
+              <p className="text-sm text-text-secondary">{t('help.autoBackupDesc')}</p>
+            </div>
+
+            <div className="border-l-4 border-amber-600 pl-4">
+              <h3 className="font-semibold text-text-primary mb-1">{t('help.jsonExportTitle')}</h3>
+              <p className="text-sm text-text-secondary">{t('help.jsonExportDesc')}</p>
+            </div>
+
+            <div className="border-l-4 border-text-secondary pl-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Moon size={16} className="text-text-secondary" />
+                <h3 className="font-semibold text-text-primary">{t('help.darkModeTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.darkModeDesc')}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ──────────────────────── 6. Task Configuration ──────────────────────── */}
+        <div id="task-config" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ListChecks size={24} className="text-emerald-600" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.taskConfig')}</h2>
+          </div>
+
+          <p className="text-text-secondary mb-4">{t('help.taskConfigDesc')}</p>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Weight size={16} className="text-amber-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.weightTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.weightDesc')}</p>
+            </div>
+
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Tag size={16} className="text-primary-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.labelsTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.labelsDesc')}</p>
+            </div>
+
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <UserX size={16} className="text-rose-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.absentTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.absentDesc')}</p>
+            </div>
+
+            <div className="border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText size={16} className="text-emerald-600" />
+                <h3 className="font-semibold text-text-primary">{t('help.twoPartTitle')}</h3>
+              </div>
+              <p className="text-sm text-text-secondary">{t('help.twoPartDesc')}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ──────────────────────── 7. Export ──────────────────────── */}
+        <div id="export" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Download size={24} className="text-success" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.exportTitle')}</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="border-l-4 border-primary-600 pl-4">
+              <h3 className="font-semibold text-text-primary mb-1">{t('help.pdfExportTitle')}</h3>
+              <p className="text-sm text-text-secondary">{t('help.pdfExportDesc')}</p>
+            </div>
+
+            <div className="border-l-4 border-emerald-600 pl-4">
+              <h3 className="font-semibold text-text-primary mb-1">{t('help.csvExportTitle')}</h3>
+              <p className="text-sm text-text-secondary">{t('help.csvExportDesc')}</p>
+            </div>
+
+            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+              <h3 className="font-semibold text-primary-900 mb-2">{t('help.exportContents')}</h3>
+              <ul className="text-sm text-primary-800 space-y-1">
+                <li>• {t('help.exportContent1Desc')}</li>
+                <li>• {t('help.exportContent2Desc')}</li>
+                <li>• {t('help.exportContent3Desc')}</li>
+                <li>• {t('help.exportContent4Desc')}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* ──────────────────────── 8. Typst Math ──────────────────────── */}
         <div id="typst" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <FileText size={24} className="text-success" />
@@ -367,40 +454,40 @@ export default function HelpPage() {
 
           <div className="space-y-3">
             <div className="border border-border rounded-lg overflow-hidden">
-              <div className="bg-stone-100 px-4 py-2 flex items-center justify-between">
+              <div className="bg-surface-alt px-4 py-2 flex items-center justify-between">
                 <span className="font-medium text-text-secondary">{t('help.basicMath')}</span>
               </div>
               <div className="p-4 space-y-2 text-sm">
                 <div className="grid grid-cols-2 gap-2">
-                  <code className="bg-stone-50 px-2 py-1 rounded">$x^2 + y^2 = r^2$</code>
+                  <code className="bg-surface-alt px-2 py-1 rounded">$x^2 + y^2 = r^2$</code>
                   <span className="text-text-secondary">x² + y² = r²</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <code className="bg-stone-50 px-2 py-1 rounded">$frac(a, b)$</code>
+                  <code className="bg-surface-alt px-2 py-1 rounded">$frac(a, b)$</code>
                   <span className="text-text-secondary">a/b (fraction)</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <code className="bg-stone-50 px-2 py-1 rounded">$sqrt(x)$</code>
+                  <code className="bg-surface-alt px-2 py-1 rounded">$sqrt(x)$</code>
                   <span className="text-text-secondary">&radic;x</span>
                 </div>
               </div>
             </div>
 
             <div className="border border-border rounded-lg overflow-hidden">
-              <div className="bg-stone-100 px-4 py-2">
+              <div className="bg-surface-alt px-4 py-2">
                 <span className="font-medium text-text-secondary">{t('help.advancedMath')}</span>
               </div>
               <div className="p-4 space-y-2 text-sm">
                 <div className="grid grid-cols-2 gap-2">
-                  <code className="bg-stone-50 px-2 py-1 rounded">$log_2(x)$</code>
+                  <code className="bg-surface-alt px-2 py-1 rounded">$log_2(x)$</code>
                   <span className="text-text-secondary">log&#8322;(x)</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <code className="bg-stone-50 px-2 py-1 rounded">$integral x^2 d x$</code>
+                  <code className="bg-surface-alt px-2 py-1 rounded">$integral x^2 d x$</code>
                   <span className="text-text-secondary">&int;x² dx</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <code className="bg-stone-50 px-2 py-1 rounded">$sum_(i=1)^n i$</code>
+                  <code className="bg-surface-alt px-2 py-1 rounded">$sum_(i=1)^n i$</code>
                   <span className="text-text-secondary">&Sigma;&#7522;&#8321;&#8319; i</span>
                 </div>
               </div>
@@ -413,7 +500,7 @@ export default function HelpPage() {
           </div>
         </div>
 
-        {/* Snippets */}
+        {/* ──────────────────────── 9. Snippets ──────────────────────── */}
         <div id="snippets" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <BookmarkPlus size={24} className="text-amber-600" />
@@ -451,10 +538,10 @@ export default function HelpPage() {
           </div>
         </div>
 
-        {/* Analytics */}
+        {/* ──────────────────────── 10. Analytics ──────────────────────── */}
         <div id="analytics" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 size={24} className="text-stone-600" />
+            <BarChart3 size={24} className="text-text-secondary" />
             <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.analytics')}</h2>
           </div>
 
@@ -467,6 +554,11 @@ export default function HelpPage() {
             <div>
               <h3 className="font-semibold text-text-primary mb-2">{t('help.categoryPerformance')}</h3>
               <p className="text-sm text-text-secondary">{t('help.categoryPerformanceDesc')}</p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-text-primary mb-2">{t('help.classProgressTitle')}</h3>
+              <p className="text-sm text-text-secondary">{t('help.classProgressDesc')}</p>
             </div>
 
             <div>
@@ -494,7 +586,33 @@ export default function HelpPage() {
           </div>
         </div>
 
-        {/* Tips & Best Practices */}
+        {/* ──────────────────────── 11. Oral Assessments ──────────────────────── */}
+        <div id="oral" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Mic size={24} className="text-brand" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('help.oralTitle')}</h2>
+          </div>
+
+          <p className="text-text-secondary mb-4">{t('help.oralDesc')}</p>
+
+          <div className="space-y-3">
+            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
+              <h3 className="font-semibold text-primary-900 mb-2">{t('help.oralDimensions')}</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm text-primary-800">
+                <div>• {t('oral.dimension.strategy.label')}</div>
+                <div>• {t('oral.dimension.reasoning.label')}</div>
+                <div>• {t('oral.dimension.representations.label')}</div>
+                <div>• {t('oral.dimension.modeling.label')}</div>
+                <div>• {t('oral.dimension.communication.label')}</div>
+                <div>• {t('oral.dimension.subject_knowledge.label')}</div>
+              </div>
+            </div>
+
+            <p className="text-sm text-text-secondary">{t('help.oralScoring')}</p>
+          </div>
+        </div>
+
+        {/* ──────────────────────── 12. Tips & Best Practices ──────────────────────── */}
         <div id="tips" className="bg-surface rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Lightbulb size={24} className="text-warning" />
@@ -522,12 +640,12 @@ export default function HelpPage() {
               <p className="text-sm text-text-secondary">{t('help.tip4Desc')}</p>
             </div>
 
-            <div className="border-l-4 border-stone-600 pl-4">
+            <div className="border-l-4 border-text-secondary pl-4">
               <h3 className="font-semibold text-text-primary mb-1">{t('help.tip5Title')}</h3>
               <p className="text-sm text-text-secondary">{t('help.tip5Desc')}</p>
             </div>
 
-            <div className="border-l-4 border-yellow-600 pl-4">
+            <div className="border-l-4 border-warning pl-4">
               <h3 className="font-semibold text-text-primary mb-1">{t('help.tip6Title')}</h3>
               <p className="text-sm text-text-secondary">{t('help.tip6Desc')}</p>
             </div>

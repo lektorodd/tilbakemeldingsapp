@@ -72,7 +72,7 @@ export default function TaskSidebar({ tasks, activeTaskSlot, onSelectTask, taskS
             return (
               <div key={`part-${item.partNumber}`} className="px-3 py-2 mt-2 first:mt-0">
                 <span className={`text-xs font-semibold uppercase tracking-wider ${
-                  item.partNumber === 1 ? 'text-orange-600' : 'text-blue-600'
+                  item.partNumber === 1 ? 'text-orange-600' : 'text-info'
                 }`}>
                   {item.partNumber === 1 ? t('test.part1NoAids') : t('test.part2AllAids')}
                 </span>

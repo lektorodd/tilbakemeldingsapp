@@ -85,7 +85,7 @@ export default function OralTestListPanel({
                       </button>
                       <button
                         onClick={() => onDeleteOralTest(oralTest.id)}
-                        className="p-1 text-danger hover:bg-red-50 rounded transition"
+                        className="p-1 text-danger hover:bg-danger-bg rounded transition"
                       >
                         <Trash2 size={14} />
                       </button>

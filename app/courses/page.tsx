@@ -361,9 +361,12 @@ export default function CoursesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {courses.map(course => {
               const completedCount = course.tests.reduce((sum, test) =>
-                sum + test.studentFeedbacks.filter(f => f.completedDate).length, 0
+                sum + test.studentFeedbacks.filter(f => f.completedDate && !f.absent).length, 0
               );
-              const totalPossible = course.students.length * course.tests.length;
+              const absentCount = course.tests.reduce((sum, test) =>
+                sum + test.studentFeedbacks.filter(f => f.absent).length, 0
+              );
+              const totalPossible = course.students.length * course.tests.length - absentCount;
               const progressPercent = totalPossible > 0 ? Math.round((completedCount / totalPossible) * 100) : 0;
 
               return (
@@ -380,7 +383,7 @@ export default function CoursesPage() {
                     </div>
                     <button
                       onClick={() => handleDeleteCourse(course.id)}
-                      className="p-2 text-danger hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                      className="p-2 text-danger hover:bg-danger-bg dark:hover:bg-red-950/30 rounded-lg transition-colors"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -503,8 +506,8 @@ export default function CoursesPage() {
                       <p className="text-xs text-text-secondary">{t('backup.autoBackupDesc')}</p>
                     </div>
                   </div>
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${autoBackupEnabled ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
-                    <span className={`w-2 h-2 rounded-full ${autoBackupEnabled ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${autoBackupEnabled ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-surface-alt dark:bg-neutral-800 text-text-secondary dark:text-text-disabled'}`}>
+                    <span className={`w-2 h-2 rounded-full ${autoBackupEnabled ? 'bg-green-500' : 'bg-text-disabled'}`}></span>
                     {autoBackupEnabled ? t('backup.active') : t('backup.inactive')}
                   </span>
                 </div>
@@ -534,14 +537,14 @@ export default function CoursesPage() {
                   </button>
                   <button
                     onClick={handleManualBackup}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-info text-white rounded-lg hover:bg-info transition-colors text-sm"
                   >
                     <Shield size={16} />
                     {t('backup.createManual')}
                   </button>
                   <button
                     onClick={() => { setBackups(listBackups()); setShowBackupPanel(!showBackupPanel); }}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors text-sm"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-surface-alt dark:hover:bg-neutral-700 transition-colors text-sm"
                   >
                     <History size={16} />
                     {t('backup.viewBackups')}
@@ -556,7 +559,7 @@ export default function CoursesPage() {
                   </button>
                   <Link
                     href="/archive"
-                    className="flex items-center gap-2 px-3 py-1.5 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors text-sm"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-surface-alt dark:hover:bg-neutral-700 transition-colors text-sm"
                   >
                     <FolderOpen size={16} />
                     {t('course.oldArchive')}
@@ -628,11 +631,11 @@ export default function CoursesPage() {
                     sum + (test.studentFeedbacks?.filter(f => f.completedDate)?.length || 0), 0) || 0;
                   const existing = courses.find(c => c.name.toLowerCase() === course.name?.toLowerCase());
                   return (
-                    <div key={i} className={`p-3 rounded-lg border ${existing ? 'border-yellow-300 bg-yellow-50' : 'border-border bg-background'}`}>
+                    <div key={i} className={`p-3 rounded-lg border ${existing ? 'border-warning bg-warning-bg' : 'border-border bg-background'}`}>
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-text-primary">{course.name}</span>
                         {existing && (
-                          <span className="text-xs px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full">{t('backup.duplicate')}</span>
+                          <span className="text-xs px-2 py-0.5 bg-warning-bg text-warning rounded-full">{t('backup.duplicate')}</span>
                         )}
                       </div>
                       <p className="text-xs text-text-secondary mt-1">
@@ -644,9 +647,9 @@ export default function CoursesPage() {
               </div>
 
               {folderImportErrors.length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm font-medium text-yellow-800 mb-1">{t('backup.partialErrors')}:</p>
-                  <ul className="text-xs text-yellow-700 list-disc list-inside">
+                <div className="bg-warning-bg border border-warning rounded-lg p-3 mb-4">
+                  <p className="text-sm font-medium text-warning mb-1">{t('backup.partialErrors')}:</p>
+                  <ul className="text-xs text-warning list-disc list-inside">
                     {folderImportErrors.map((err, i) => (
                       <li key={i}>{err}</li>
                     ))}
@@ -656,8 +659,8 @@ export default function CoursesPage() {
 
               {/* Duplicate handling */}
               {folderImportCourses.some(c => courses.find(ec => ec.name?.toLowerCase() === c.name?.toLowerCase())) && (
-                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm font-medium text-yellow-800 mb-2">{t('backup.duplicateHandling')}</p>
+                <div className="mb-4 p-3 bg-warning-bg border border-warning rounded-lg">
+                  <p className="text-sm font-medium text-warning mb-2">{t('backup.duplicateHandling')}</p>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="radio" name="folderMergeMode" checked={importMergeMode === 'skip'} onChange={() => setImportMergeMode('skip')} />
@@ -675,8 +678,8 @@ export default function CoursesPage() {
                 </div>
               )}
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                <p className="text-xs text-blue-700">
+              <div className="bg-info-bg border border-info rounded-lg p-3 mb-4">
+                <p className="text-xs text-info">
                   <Shield size={14} className="inline mr-1" />
                   {t('backup.safetyNote')}
                 </p>
@@ -685,7 +688,7 @@ export default function CoursesPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => { setShowImportFolderPreview(false); setFolderImportCourses([]); }}
-                  className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-surface-alt transition-colors font-medium"
                 >
                   {t('common.cancel')}
                 </button>

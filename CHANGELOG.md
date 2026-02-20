@@ -2,6 +2,27 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.0] — 2026-02-20
+
+### Added
+- **Formatting toolbar** — bold, italic, underline, and link buttons in a sticky sidebar on the grading page. Works on any active comment field (general, individual, or per-task).
+- **Keyboard shortcut: Alt+T** — switch between student grading and task grading modes without the mouse.
+- **Keyboard shortcut: Alt+← / Alt+→** — navigate between tasks in task grading mode.
+- **Comprehensive help page** — fully rewritten with sections for keyboard shortcuts, grading modes, task configuration, data safety, export, oral assessments, and more.
+- **ScoringGuide compact variant** — smaller button for tight toolbar layouts.
+- **Snippet picker in toolbar** — toggle the snippet panel from the sticky right toolbar.
+
+### Fixed
+- **Dark mode** — replaced 30+ hardcoded Tailwind color classes (e.g. `bg-gray-100`, `text-red-700`, `bg-blue-50`) with semantic CSS variables (`bg-surface-alt`, `text-danger`, `bg-info-bg`) across all components and pages. Form controls (`input`, `select`, `textarea`) now respect `color-scheme` in dark mode.
+- **Typst PDF export** — removed double-escaping of comment text in both written and oral exports. Comments containing Typst markup (bold, italic, math, links) now render correctly in the PDF.
+- **Sticky student info bar** — the student header in the grading page is now sticky so you always see whose feedback you're editing.
+
+### Changed
+- Help page quick-link bar reorganized with new topic pills (Shortcuts, Grading Modes, Data & Sync, Task Setup, Export, Oral Assessment).
+- Updated i18n strings (en, nb, nn) with ~40 new keys for the expanded help page and toolbar.
+
+---
+
 ## [0.8.0] — 2026-02-19
 
 ### Added

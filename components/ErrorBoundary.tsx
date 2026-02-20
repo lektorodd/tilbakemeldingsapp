@@ -38,7 +38,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
-          <div className="bg-surface rounded-lg shadow-lg border border-red-200 p-8 max-w-lg w-full text-center">
+          <div className="bg-surface rounded-lg shadow-lg border border-danger p-8 max-w-lg w-full text-center">
             <AlertTriangle size={48} className="mx-auto mb-4 text-danger" />
             <h1 className="text-2xl font-display font-bold text-text-primary mb-2">
               Something went wrong
@@ -47,11 +47,11 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
               An unexpected error occurred. Your data is safe in local storage.
             </p>
             {this.state.error && (
-              <details className="text-left mb-6 bg-red-50 border border-red-200 rounded-lg p-3">
-                <summary className="text-sm font-medium text-red-800 cursor-pointer">
+              <details className="text-left mb-6 bg-danger-bg border border-danger rounded-lg p-3">
+                <summary className="text-sm font-medium text-danger cursor-pointer">
                   Error details
                 </summary>
-                <pre className="mt-2 text-xs text-red-700 whitespace-pre-wrap break-words font-mono">
+                <pre className="mt-2 text-xs text-danger whitespace-pre-wrap break-words font-mono">
                   {this.state.error.message}
                 </pre>
               </details>
@@ -66,7 +66,7 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
               </button>
               <button
                 onClick={this.handleReload}
-                className="px-5 py-2.5 bg-stone-200 text-text-secondary rounded-lg hover:bg-stone-300 transition"
+                className="px-5 py-2.5 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
               >
                 Reload Page
               </button>

@@ -72,7 +72,7 @@ export default function TaskStudentList({
               onClick={() => onSetActiveStudent(index)}
               className={`border rounded-lg p-4 transition-all cursor-pointer ${isActive
                 ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
-                : 'border-border bg-surface-alt hover:border-gray-300'
+                : 'border-border bg-surface-alt hover:border-brand/30'
                 }`}
             >
               <div className="flex items-center justify-between mb-3">

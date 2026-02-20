@@ -12,7 +12,7 @@ export default function LanguageSelector() {
         onClick={() => setLanguage('en')}
         className={`px-2.5 py-1.5 rounded-md transition-colors ${
           language === 'en'
-            ? 'text-brand bg-blue-50 font-semibold'
+            ? 'text-brand bg-info-bg font-semibold'
             : 'text-text-disabled hover:text-text-secondary hover:bg-surface-alt'
         }`}
       >
@@ -23,7 +23,7 @@ export default function LanguageSelector() {
         onClick={() => setLanguage('nb')}
         className={`px-2.5 py-1.5 rounded-md transition-colors ${
           language === 'nb'
-            ? 'text-brand bg-blue-50 font-semibold'
+            ? 'text-brand bg-info-bg font-semibold'
             : 'text-text-disabled hover:text-text-secondary hover:bg-surface-alt'
         }`}
       >
@@ -34,7 +34,7 @@ export default function LanguageSelector() {
         onClick={() => setLanguage('nn')}
         className={`px-2.5 py-1.5 rounded-md transition-colors ${
           language === 'nn'
-            ? 'text-brand bg-blue-50 font-semibold'
+            ? 'text-brand bg-info-bg font-semibold'
             : 'text-text-disabled hover:text-text-secondary hover:bg-surface-alt'
         }`}
       >

@@ -109,7 +109,7 @@ export default function TestAnalyticsPage() {
       case 1: return 'bg-emerald-100 text-emerald-800';
       case 2: return 'bg-amber-100 text-amber-800';
       case 3: return 'bg-rose-100 text-rose-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-surface-alt text-text-primary';
     }
   };
 
@@ -128,7 +128,7 @@ export default function TestAnalyticsPage() {
     if (score >= 3) return 'text-amber-600 font-semibold';
     if (score >= 2) return 'text-orange-600';
     if (score >= 1) return 'text-rose-600';
-    return 'text-gray-500';
+    return 'text-text-disabled';
   };
 
   const toggleTaskExpand = (ta: TaskAnalytics) => {
@@ -324,7 +324,7 @@ export default function TestAnalyticsPage() {
                         onClick={() => toggleParentLabels(group.parent!)}
                         className={`px-2 py-0.5 rounded text-xs font-medium transition ${group.children.every(l => selectedLabels.includes(l))
                           ? 'bg-brand/20 text-brand border border-brand'
-                          : 'bg-gray-50 text-text-disabled hover:bg-gray-100 border border-transparent'
+                          : 'bg-surface text-text-disabled hover:bg-surface-alt border border-transparent'
                           }`}
                       >
                         {group.parent}/
@@ -336,7 +336,7 @@ export default function TestAnalyticsPage() {
                         onClick={() => toggleLabel(label)}
                         className={`px-3 py-1 rounded-full text-sm transition ${selectedLabels.includes(label)
                           ? 'bg-brand text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-surface-alt text-text-secondary hover:bg-surface-alt'
                           }`}
                       >
                         {formatLabelDisplay(label)}
@@ -361,7 +361,7 @@ export default function TestAnalyticsPage() {
         <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-border">
+              <thead className="bg-surface border-b border-border">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.task')}</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.category')}</th>
@@ -397,7 +397,7 @@ export default function TestAnalyticsPage() {
                               {ta.part && (
                                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${ta.part === 1
                                   ? 'bg-orange-100 text-orange-800 border border-orange-300'
-                                  : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                  : 'bg-info-bg text-info border border-info'
                                   }`}>
                                   {ta.part === 1 ? `${t('test.part')} 1` : `${t('test.part')} 2`}
                                 </span>
@@ -447,7 +447,7 @@ export default function TestAnalyticsPage() {
                         </tr>
                         {isExpanded && (
                           <tr>
-                            <td colSpan={6} className="px-4 py-4 bg-gray-50 border-t border-border">
+                            <td colSpan={6} className="px-4 py-4 bg-surface border-t border-border">
                               <div className="max-h-80 overflow-y-auto">
                                 <table className="w-full text-sm">
                                   <thead>

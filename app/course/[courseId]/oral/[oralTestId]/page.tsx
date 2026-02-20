@@ -410,7 +410,7 @@ export default function OralAssessmentPage() {
                     </button>
                     <button
                       onClick={handleDownloadTypst}
-                      className="flex items-center gap-2 px-4 py-2 bg-stone-500 text-white rounded-lg hover:bg-stone-600 transition"
+                      className="flex items-center gap-2 px-4 py-2 bg-neutral-500 text-white rounded-lg hover:bg-neutral-600 transition"
                       title={t('test.downloadTypSource')}
                     >
                       <Download size={18} />

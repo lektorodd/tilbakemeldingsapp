@@ -30,12 +30,12 @@ export default function SnippetSidebar({
 
   const getCategoryColor = (category?: string) => {
     switch (category) {
-      case 'standard': return 'bg-stone-100 text-stone-700';
+      case 'standard': return 'bg-surface-alt text-text-secondary';
       case 'encouragement': return 'bg-emerald-100 text-emerald-700';
       case 'error': return 'bg-rose-100 text-rose-700';
       case 'custom': return 'bg-primary-100 text-primary-700';
       case 'math': return 'bg-emerald-100 text-emerald-700';
-      default: return 'bg-stone-100 text-stone-700';
+      default: return 'bg-surface-alt text-text-secondary';
     }
   };
 
@@ -67,35 +67,35 @@ export default function SnippetSidebar({
               <div className="flex gap-1 flex-wrap">
                 <button
                   onClick={() => onFilterChange('all')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'all' ? 'bg-brand text-white' : 'bg-surface-alt text-text-secondary hover:bg-gray-200'
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'all' ? 'bg-brand text-white' : 'bg-surface-alt text-text-secondary hover:bg-surface-alt'
                     }`}
                 >
                   {t('common.all')} ({snippets.length})
                 </button>
                 <button
                   onClick={() => onFilterChange('standard')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'standard' ? 'bg-stone-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-stone-100'
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'standard' ? 'bg-neutral-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-surface-alt'
                     }`}
                 >
                   Standard
                 </button>
                 <button
                   onClick={() => onFilterChange('encouragement')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'encouragement' ? 'bg-success text-white' : 'bg-surface-alt text-text-secondary hover:bg-emerald-100'
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'encouragement' ? 'bg-success text-white' : 'bg-surface-alt text-text-secondary hover:bg-surface-alt'
                     }`}
                 >
                   {t('snippets.encouragement') || 'Oppmuntrande'}
                 </button>
                 <button
                   onClick={() => onFilterChange('error')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'error' ? 'bg-danger text-white' : 'bg-surface-alt text-text-secondary hover:bg-red-100'
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'error' ? 'bg-danger text-white' : 'bg-surface-alt text-text-secondary hover:bg-surface-alt'
                     }`}
                 >
                   {t('snippets.error') || 'Feil'}
                 </button>
                 <button
                   onClick={() => onFilterChange('math')}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'math' ? 'bg-emerald-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-emerald-100'
+                  className={`px-2 py-1 text-xs rounded transition-colors ${snippetFilter === 'math' ? 'bg-emerald-600 text-white' : 'bg-surface-alt text-text-secondary hover:bg-surface-alt'
                     }`}
                 >
                   {t('snippets.math') || 'Typst-matte'}
@@ -134,7 +134,7 @@ export default function SnippetSidebar({
                   {snippet.category === 'custom' && (
                     <button
                       onClick={() => onDeleteSnippet(snippet.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-danger hover:bg-red-50 rounded transition-opacity"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-danger hover:bg-danger-bg rounded transition-opacity"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -147,7 +147,7 @@ export default function SnippetSidebar({
 
         {/* Add new snippet form */}
         {activeSubtask && (
-          <div className="p-3 border-t border-border bg-stone-50 flex-shrink-0">
+          <div className="p-3 border-t border-border bg-surface-alt flex-shrink-0">
             {showAddForm ? (
               <div className="space-y-2">
                 <input
@@ -171,7 +171,7 @@ export default function SnippetSidebar({
                   </button>
                   <button
                     onClick={() => { setShowAddForm(false); setNewText(''); }}
-                    className="px-3 py-1.5 bg-stone-300 text-text-secondary rounded-lg hover:bg-stone-400 transition-colors text-sm"
+                    className="px-3 py-1.5 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition-colors text-sm"
                   >
                     {t('common.cancel')}
                   </button>

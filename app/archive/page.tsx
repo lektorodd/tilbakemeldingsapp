@@ -116,7 +116,7 @@ export default function ArchivePage() {
             </label>
             <button
               onClick={handleClearArchive}
-              className="flex items-center gap-2 px-4 py-2 bg-danger text-white rounded-lg hover:bg-red-700 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-danger text-white rounded-lg hover:bg-danger transition"
             >
               <Trash2 size={18} />
               Clear All
@@ -125,7 +125,7 @@ export default function ArchivePage() {
         </div>
 
         {archive.length === 0 ? (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <div className="bg-warning-bg border border-warning rounded-lg p-6 text-center">
             <AlertCircle className="mx-auto mb-4 text-warning" size={48} />
             <h3 className="text-xl font-semibold text-text-primary mb-2">No archived feedback yet</h3>
             <p className="text-text-secondary">Start by creating and saving feedback from the main page.</p>
@@ -183,7 +183,7 @@ export default function ArchivePage() {
                   <div
                     key={feedback.id}
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${selectedFeedback?.id === feedback.id
-                        ? 'border-blue-500 bg-blue-50'
+                        ? 'border-info bg-info-bg'
                         : 'border-border hover:bg-background'
                       }`}
                   >
@@ -204,7 +204,7 @@ export default function ArchivePage() {
                       </div>
                       <button
                         onClick={() => handleDelete(feedback.id)}
-                        className="p-1 text-danger hover:bg-red-50 rounded transition"
+                        className="p-1 text-danger hover:bg-danger-bg rounded transition"
                       >
                         <Trash2 size={16} />
                       </button>

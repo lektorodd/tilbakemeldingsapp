@@ -90,7 +90,7 @@ export default function LabelManager({ labels, onLabelsChange }: LabelManagerPro
               setShowAddLabel(false);
               setNewLabel('');
             }}
-            className="px-3 py-1.5 bg-gray-300 text-text-secondary rounded-lg hover:bg-gray-400 transition-colors text-sm"
+            className="px-3 py-1.5 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition-colors text-sm"
           >
             {t('course.cancelButton')}
           </button>

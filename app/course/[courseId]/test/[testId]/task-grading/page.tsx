@@ -294,6 +294,11 @@ export default function TaskGradingPage() {
     onPreviousTask: handlePrevTask,
     onFocusComment: handleFocusComment,
     onFocusPoints: handleFocusPoints,
+    onNextTaskSlot: handleNextTask,
+    onPrevTaskSlot: handlePrevTask,
+    onSwitchToTaskGrading: () => {
+      router.push(`/course/${courseId}/test/${testId}`);
+    },
     enabled: true,
   });
 
@@ -416,10 +421,12 @@ export default function TaskGradingPage() {
         <div className="bg-surface border-b border-border px-4 py-3">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div><kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">0-6</kbd> {t('test.shortcutSetPoints')}</div>
-              <div><kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">Tab</kbd> / <kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">Shift+Tab</kbd> {t('test.shortcutNextTask')}/{t('test.shortcutPrevTask')}</div>
-              <div><kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">Alt+↓</kbd> / <kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">Alt+↑</kbd> {t('test.shortcutNextStudent')}/{t('test.shortcutPrevStudent')}</div>
-              <div><kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">Enter</kbd> {t('test.shortcutFocusComment')} · <kbd className="px-1.5 py-0.5 bg-gray-100 border rounded text-xs">Esc</kbd> {t('test.shortcutFocusPoints')}</div>
+              <div><kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">0-6</kbd> {t('test.shortcutSetPoints')}</div>
+              <div><kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Tab</kbd> / <kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Shift+Tab</kbd> {t('test.shortcutNextTask')}/{t('test.shortcutPrevTask')}</div>
+              <div><kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Alt+↓</kbd> / <kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Alt+↑</kbd> {t('test.shortcutNextStudent')}/{t('test.shortcutPrevStudent')}</div>
+              <div><kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Alt+→</kbd> / <kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Alt+←</kbd> {t('test.shortcutNextTask')}/{t('test.shortcutPrevTask')}</div>
+              <div><kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Enter</kbd> {t('test.shortcutFocusComment')} · <kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Esc</kbd> {t('test.shortcutFocusPoints')}</div>
+              <div><kbd className="px-1.5 py-0.5 bg-surface-alt border rounded text-xs">Alt+T</kbd> {t('test.backToStudentGrading')}</div>
             </div>
           </div>
         </div>

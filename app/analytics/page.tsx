@@ -39,9 +39,9 @@ export default function AnalyticsPage() {
 
   const getDifficultyColor = (avgPoints: number, maxPoints: number): string => {
     const percentage = (avgPoints / maxPoints) * 100;
-    if (percentage < 40) return 'text-red-600 bg-red-50';
+    if (percentage < 40) return 'text-danger bg-danger-bg';
     if (percentage < 60) return 'text-orange-600 bg-orange-50';
-    if (percentage < 80) return 'text-yellow-600 bg-yellow-50';
+    if (percentage < 80) return 'text-warning bg-warning-bg';
     return 'text-green-600 bg-green-50';
   };
 
@@ -54,42 +54,42 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-surface py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Link
               href="/archive"
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4"
+              className="inline-flex items-center gap-2 text-info hover:text-info mb-4"
             >
               <ArrowLeft size={20} />
               Back to Archive
             </Link>
-            <h1 className="text-4xl font-bold text-gray-900">Analytics & Statistics</h1>
-            <p className="text-gray-600 mt-2">Analyze task difficulty and student progress</p>
+            <h1 className="text-4xl font-bold text-text-primary">Analytics & Statistics</h1>
+            <p className="text-text-secondary mt-2">Analyze task difficulty and student progress</p>
           </div>
         </div>
 
         {archive.length === 0 ? (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <BarChart3 className="mx-auto mb-4 text-yellow-600" size={48} />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No data available</h3>
-            <p className="text-gray-600">Save some feedback to see analytics.</p>
+          <div className="bg-warning-bg border border-warning rounded-lg p-6 text-center">
+            <BarChart3 className="mx-auto mb-4 text-warning" size={48} />
+            <h3 className="text-xl font-semibold text-text-primary mb-2">No data available</h3>
+            <p className="text-text-secondary">Save some feedback to see analytics.</p>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Task Difficulty Analysis */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-surface rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <BarChart3 size={28} className="text-primary-600" />
-                  <h2 className="text-2xl font-display font-bold text-gray-800">Task Difficulty Analysis</h2>
+                  <h2 className="text-2xl font-display font-bold text-text-primary">Task Difficulty Analysis</h2>
                 </div>
                 <div>
                   <select
                     value={selectedTest}
                     onChange={(e) => setSelectedTest(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="">All Tests</option>
                     {testNames.map(name => (
@@ -100,45 +100,45 @@ export default function AnalyticsPage() {
               </div>
 
               {taskStats.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">No task data available</p>
+                <p className="text-text-disabled text-center py-8">No task data available</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-100">
+                    <thead className="bg-surface-alt">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Task</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Avg Points</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Max Points</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Success Rate</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Submissions</th>
-                        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Difficulty</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Distribution (0-6)</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-text-secondary">Task</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Avg Points</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Max Points</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Success Rate</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Submissions</th>
+                        <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Difficulty</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-text-secondary">Distribution (0-6)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {taskStats.map(stat => {
                         const successRate = ((stat.averagePoints / stat.maxPoints) * 100).toFixed(1);
                         return (
-                          <tr key={`${stat.taskId}-${stat.subtaskId || 'main'}`} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 font-medium text-gray-800">{stat.taskLabel}</td>
-                            <td className="px-4 py-3 text-center font-semibold text-blue-600">
+                          <tr key={`${stat.taskId}-${stat.subtaskId || 'main'}`} className="hover:bg-surface">
+                            <td className="px-4 py-3 font-medium text-text-primary">{stat.taskLabel}</td>
+                            <td className="px-4 py-3 text-center font-semibold text-info">
                               {stat.averagePoints.toFixed(2)}
                             </td>
-                            <td className="px-4 py-3 text-center text-gray-700">{stat.maxPoints}</td>
+                            <td className="px-4 py-3 text-center text-text-secondary">{stat.maxPoints}</td>
                             <td className="px-4 py-3 text-center">
                               <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(stat.averagePoints, stat.maxPoints)}`}>
                                 {successRate}%
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-center text-gray-700">{stat.totalSubmissions}</td>
+                            <td className="px-4 py-3 text-center text-text-secondary">{stat.totalSubmissions}</td>
                             <td className="px-4 py-3 text-center">
                               <div className="flex items-center justify-center gap-1">
                                 {parseFloat(successRate) < 60 ? (
-                                  <TrendingDown size={18} className="text-red-600" />
+                                  <TrendingDown size={18} className="text-danger" />
                                 ) : (
                                   <TrendingUp size={18} className="text-green-600" />
                                 )}
-                                <span className="text-sm font-medium text-gray-700">
+                                <span className="text-sm font-medium text-text-secondary">
                                   {getDifficultyLabel(stat.averagePoints, stat.maxPoints)}
                                 </span>
                               </div>
@@ -152,16 +152,16 @@ export default function AnalyticsPage() {
                                     title={`${points} points: ${count} students`}
                                   >
                                     <div
-                                      className="w-8 h-12 bg-blue-200 rounded-t relative overflow-hidden"
+                                      className="w-8 h-12 bg-info-bg rounded-t relative overflow-hidden"
                                     >
                                       <div
-                                        className="absolute bottom-0 w-full bg-blue-600 transition-all"
+                                        className="absolute bottom-0 w-full bg-info transition-all"
                                         style={{
                                           height: `${stat.totalSubmissions > 0 ? (count / stat.totalSubmissions) * 100 : 0}%`,
                                         }}
                                       />
                                     </div>
-                                    <div className="text-xs text-center text-gray-600 mt-1">{points}</div>
+                                    <div className="text-xs text-center text-text-secondary mt-1">{points}</div>
                                   </div>
                                 ))}
                               </div>
@@ -174,9 +174,9 @@ export default function AnalyticsPage() {
                 </div>
               )}
 
-              <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-900 mb-2">How to read this:</h4>
-                <ul className="text-sm text-blue-800 space-y-1">
+              <div className="mt-6 bg-info-bg border border-info rounded-lg p-4">
+                <h4 className="font-semibold text-info mb-2">How to read this:</h4>
+                <ul className="text-sm text-info space-y-1">
                   <li>• <strong>Very Hard</strong>: Average score below 40% - students struggle with this task</li>
                   <li>• <strong>Hard</strong>: Average score 40-60% - challenging task</li>
                   <li>• <strong>Moderate</strong>: Average score 60-80% - reasonable difficulty</li>
@@ -187,17 +187,17 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Student Progress Tracking */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-surface rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <Users size={28} className="text-green-600" />
-                  <h2 className="text-2xl font-display font-bold text-gray-800">Student Progress Tracking</h2>
+                  <h2 className="text-2xl font-display font-bold text-text-primary">Student Progress Tracking</h2>
                 </div>
                 <div>
                   <select
                     value={selectedStudent}
                     onChange={(e) => setSelectedStudent(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-focus"
                   >
                     <option value="">Select a student...</option>
                     {studentNames.map(name => (
@@ -214,9 +214,9 @@ export default function AnalyticsPage() {
                       <h3 className="text-sm font-medium text-green-800 mb-1">Total Tests</h3>
                       <p className="text-3xl font-display font-bold text-green-600">{studentData.totalTests}</p>
                     </div>
-                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                      <h3 className="text-sm font-medium text-blue-800 mb-1">Average Score</h3>
-                      <p className="text-3xl font-display font-bold text-blue-600">
+                    <div className="bg-info-bg rounded-lg p-4 border border-info">
+                      <h3 className="text-sm font-medium text-info mb-1">Average Score</h3>
+                      <p className="text-3xl font-display font-bold text-info">
                         {studentData.averageScore.toFixed(1)}%
                       </p>
                     </div>
@@ -233,15 +233,15 @@ export default function AnalyticsPage() {
                   </div>
 
                   <div className="overflow-x-auto">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Test History</h3>
+                    <h3 className="text-lg font-semibold text-text-primary mb-4">Test History</h3>
                     <table className="w-full">
-                      <thead className="bg-gray-100">
+                      <thead className="bg-surface-alt">
                         <tr>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Test Name</th>
-                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Points</th>
-                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Percentage</th>
-                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">Trend</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-text-secondary">Date</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-text-secondary">Test Name</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Points</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Percentage</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-text-secondary">Trend</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
@@ -258,16 +258,16 @@ export default function AnalyticsPage() {
                           }
 
                           return (
-                            <tr key={feedback.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-gray-700">
+                            <tr key={feedback.id} className="hover:bg-surface">
+                              <td className="px-4 py-3 text-text-secondary">
                                 {new Date(feedback.date).toLocaleDateString('nb-NO', {
                                   year: 'numeric',
                                   month: 'short',
                                   day: 'numeric',
                                 })}
                               </td>
-                              <td className="px-4 py-3 font-medium text-gray-800">{feedback.testName}</td>
-                              <td className="px-4 py-3 text-center font-semibold text-blue-600">
+                              <td className="px-4 py-3 font-medium text-text-primary">{feedback.testName}</td>
+                              <td className="px-4 py-3 text-center font-semibold text-info">
                                 {feedback.totalPoints}/{feedback.maxPoints}
                               </td>
                               <td className="px-4 py-3 text-center">
@@ -275,8 +275,8 @@ export default function AnalyticsPage() {
                                   percentage >= 80
                                     ? 'bg-green-100 text-green-800'
                                     : percentage >= 60
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
+                                    ? 'bg-warning-bg text-warning'
+                                    : 'bg-danger-bg text-danger'
                                 }`}>
                                   {percentage.toFixed(1)}%
                                 </span>
@@ -286,9 +286,9 @@ export default function AnalyticsPage() {
                                   <TrendingUp size={20} className="inline text-green-600" />
                                 )}
                                 {trend === 'down' && (
-                                  <TrendingDown size={20} className="inline text-red-600" />
+                                  <TrendingDown size={20} className="inline text-danger" />
                                 )}
-                                {trend === null && <span className="text-gray-400">-</span>}
+                                {trend === null && <span className="text-text-disabled">-</span>}
                               </td>
                             </tr>
                           );
@@ -298,7 +298,7 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-text-disabled">
                   <Users size={48} className="mx-auto mb-4 opacity-50" />
                   <p>Select a student to view their progress</p>
                 </div>

@@ -50,7 +50,7 @@ export default function CreateCourseModal({ onClose, onCreate }: CreateCourseMod
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-gray-200 transition-colors font-medium"
+            className="flex-1 px-4 py-2 bg-surface-alt text-text-primary border border-border rounded-lg hover:bg-border transition-colors font-medium"
           >
             {t('common.cancel')}
           </button>

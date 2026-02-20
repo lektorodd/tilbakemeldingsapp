@@ -14,6 +14,9 @@ interface UseGradingShortcutsOptions {
   onPreviousTask?: () => void;
   onFocusComment?: () => void;
   onFocusPoints?: () => void;
+  onSwitchToTaskGrading?: () => void;
+  onNextTaskSlot?: () => void;
+  onPrevTaskSlot?: () => void;
   enabled?: boolean;
 }
 
@@ -36,6 +39,9 @@ export function useGradingShortcuts({
   onPreviousTask,
   onFocusComment,
   onFocusPoints,
+  onSwitchToTaskGrading,
+  onNextTaskSlot,
+  onPrevTaskSlot,
   enabled = true,
 }: UseGradingShortcutsOptions) {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -49,12 +55,32 @@ export function useGradingShortcuts({
 
     // Alt+key combinations (work everywhere)
     if (e.altKey && !e.ctrlKey && !e.metaKey) {
-      if ((e.key === 'ArrowRight' || e.key === 'ArrowDown') && onNextStudent) {
+      if ((e.key === 'ArrowRight') && onNextTaskSlot) {
+        e.preventDefault();
+        onNextTaskSlot();
+        return;
+      }
+      if ((e.key === 'ArrowLeft') && onPrevTaskSlot) {
+        e.preventDefault();
+        onPrevTaskSlot();
+        return;
+      }
+      if ((e.key === 'ArrowRight' || e.key === 'ArrowDown') && !onNextTaskSlot && onNextStudent) {
         e.preventDefault();
         onNextStudent();
         return;
       }
-      if ((e.key === 'ArrowLeft' || e.key === 'ArrowUp') && onPreviousStudent) {
+      if ((e.key === 'ArrowLeft' || e.key === 'ArrowUp') && !onPrevTaskSlot && onPreviousStudent) {
+        e.preventDefault();
+        onPreviousStudent();
+        return;
+      }
+      if ((e.key === 'ArrowDown') && onNextStudent) {
+        e.preventDefault();
+        onNextStudent();
+        return;
+      }
+      if ((e.key === 'ArrowUp') && onPreviousStudent) {
         e.preventDefault();
         onPreviousStudent();
         return;
@@ -62,6 +88,11 @@ export function useGradingShortcuts({
       if (e.key === 'Enter' && onToggleComplete) {
         e.preventDefault();
         onToggleComplete();
+        return;
+      }
+      if (e.code === 'KeyT' && onSwitchToTaskGrading) {
+        e.preventDefault();
+        onSwitchToTaskGrading();
         return;
       }
     }
@@ -107,7 +138,7 @@ export function useGradingShortcuts({
       onFocusComment();
       return;
     }
-  }, [enabled, onSetPoints, onNextStudent, onPreviousStudent, onToggleComplete, onNextTask, onPreviousTask, onFocusComment, onFocusPoints]);
+  }, [enabled, onSetPoints, onNextStudent, onPreviousStudent, onToggleComplete, onNextTask, onPreviousTask, onFocusComment, onFocusPoints, onSwitchToTaskGrading, onNextTaskSlot, onPrevTaskSlot]);
 
   useEffect(() => {
     if (!enabled) return;

@@ -93,7 +93,7 @@ export default function ProgressGrid({
                                             <span className={`font-medium ${isAbsent ? 'line-through text-text-disabled' : isSelected ? 'text-brand' : 'text-text-primary'}`}>
                                                 {student.name}
                                             </span>
-                                            {isAbsent && <span className="text-[10px] bg-gray-200 text-text-disabled px-1.5 py-0.5 rounded">{t('test.absent')}</span>}
+                                            {isAbsent && <span className="text-[10px] bg-surface-alt text-text-disabled px-1.5 py-0.5 rounded">{t('test.absent')}</span>}
                                             {isCompleted && !isAbsent && <CheckCircle size={12} className="text-success flex-shrink-0" />}
                                         </div>
                                     </td>
@@ -112,13 +112,13 @@ export default function ProgressGrid({
                                             const displayPoints = points ?? 0;
 
                                             // Color based on score (0-6 scale)
-                                            let cellColor = 'bg-gray-100 text-text-disabled'; // not graded
+                                            let cellColor = 'bg-surface-alt text-text-disabled'; // not graded
                                             if (isGraded) {
                                                 const ratio = displayPoints / MAX_POINTS;
                                                 if (ratio >= 0.83) cellColor = 'bg-emerald-100 text-emerald-700';       // 5-6
                                                 else if (ratio >= 0.5) cellColor = 'bg-amber-100 text-amber-700';        // 3-4
-                                                else if (ratio > 0) cellColor = 'bg-red-100 text-red-700';               // 1-2
-                                                else cellColor = hasComment ? 'bg-blue-100 text-blue-700' : 'bg-red-50 text-red-500'; // 0
+                                                else if (ratio > 0) cellColor = 'bg-danger-bg text-danger';               // 1-2
+                                                else cellColor = hasComment ? 'bg-info-bg text-info' : 'bg-danger-bg text-danger'; // 0
                                             }
 
                                             return (

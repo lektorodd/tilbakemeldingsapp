@@ -50,8 +50,8 @@ export default function CourseAnalyticsPage() {
 
   const getScoreBgColor = (score: number): string => {
     if (score >= 5) return 'bg-green-100';
-    if (score >= 3.5) return 'bg-yellow-100';
-    return 'bg-red-100';
+    if (score >= 3.5) return 'bg-warning-bg';
+    return 'bg-danger-bg';
   };
 
   if (!course) {
@@ -246,10 +246,10 @@ export default function CourseAnalyticsPage() {
                             </div>
 
                             {/* Progress bar */}
-                            <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
+                            <div className="mt-2 h-2 bg-surface-alt rounded-full overflow-hidden">
                               <div
                                 className={`h-full ${getScoreBgColor(lp.averageScore)} border-r-4 ${lp.averageScore >= 5 ? 'border-emerald-600' :
-                                  lp.averageScore >= 3.5 ? 'border-amber-600' : 'border-red-600'
+                                  lp.averageScore >= 3.5 ? 'border-amber-600' : 'border-danger'
                                   }`}
                                 style={{ width: `${(lp.averageScore / 6) * 100}%` }}
                               />
@@ -283,7 +283,7 @@ export default function CourseAnalyticsPage() {
                               <span>{t('analytics.tasksCompleted').replace('{count}', ss.completedTasks.toString())}</span>
                             </div>
                             {/* Progress bar */}
-                            <div className="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
+                            <div className="mt-2 h-1.5 bg-surface-alt rounded-full overflow-hidden">
                               <div
                                 className={`h-full ${ss.averageScore >= 5 ? 'bg-success' :
                                   ss.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-danger'
@@ -346,7 +346,7 @@ export default function CourseAnalyticsPage() {
                   </div>
 
                   {/* Progress bar */}
-                  <div className="mt-3 h-3 bg-stone-200 rounded-full overflow-hidden mb-2">
+                  <div className="mt-3 h-3 bg-surface-alt rounded-full overflow-hidden mb-2">
                     <div
                       className={`h-full ${cp.averageScore >= 5 ? 'bg-success' :
                         cp.averageScore >= 3.5 ? 'bg-amber-600' : 'bg-danger'
@@ -364,9 +364,9 @@ export default function CourseAnalyticsPage() {
             </div>
 
             {/* Category explanation from national exam guidelines */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-              <p className="font-semibold text-blue-900 mb-2">{t('dashboard.helpCategory')}</p>
-              <div className="space-y-2 text-blue-800">
+            <div className="bg-info-bg border border-info rounded-lg p-4 text-sm">
+              <p className="font-semibold text-info mb-2">{t('dashboard.helpCategory')}</p>
+              <div className="space-y-2 text-info">
                 <div>
                   <strong>{t('dashboard.category1Name')}:</strong> {t('dashboard.category1Description')}
                 </div>
