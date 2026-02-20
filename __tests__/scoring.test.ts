@@ -53,9 +53,10 @@ describe('calculateStudentScore', () => {
       makeFeedback('t2', 4, 's2a'),
       makeFeedback('t2', 2, 's2b'),
     ];
-    // With weighted scoring: Task 1 avg = 6 (weight 1), Task 2 avg = (4+2)/2 = 3 (weight 1)
-    // Weighted avg: (6*1 + 3*1) / (1+1) = 4.5, *10 = 45 (rounded)
-    expect(calculateStudentScore(tasks, feedbacks)).toBe(45);
+    // With auto-weighting: Task 1 (no subtasks) weight=1, Task 2 (2 subtasks) weight=2
+    // Task 1 avg = 6, Task 2 avg = (4+2)/2 = 3
+    // Weighted avg: (6*1 + 3*2) / (1+2) = 12/3 = 4, *10 = 40
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(40);
   });
 
   it('handles zero scores', () => {
@@ -91,10 +92,31 @@ describe('calculateStudentScore', () => {
       makeFeedback('t1', 6, 's1b'),
       makeFeedback('t2', 2),
     ];
+    // Task 1 has explicit weight=3 with 2 subtasks, Task 2 has explicit weight=1 standalone
+    // Explicit weights override auto-weighting
     // Task 1 avg: (4+6)/2 = 5, weighted: 5*3 = 15
     // Task 2 avg: 2, weighted: 2*1 = 2
     // Total: (15+2) / (3+1) = 17/4 = 4.25, *10 = 43 (rounded)
     expect(calculateStudentScore(tasks, feedbacks)).toBe(43);
+  });
+
+  it('auto-weights tasks by subtask count when no explicit weight', () => {
+    // Task 1 has no subtasks (auto-weight=1)
+    // Task 2 has 3 subtasks (auto-weight=3)
+    const tasks = [
+      makeTask('t1', '1'),
+      makeTask('t2', '2', [{ id: 's2a', label: 'a' }, { id: 's2b', label: 'b' }, { id: 's2c', label: 'c' }]),
+    ];
+    const feedbacks = [
+      makeFeedback('t1', 6),
+      makeFeedback('t2', 6, 's2a'),
+      makeFeedback('t2', 3, 's2b'),
+      makeFeedback('t2', 0, 's2c'),
+    ];
+    // Task 1: 6 (weight 1)
+    // Task 2: avg (6+3+0)/3 = 3 (weight 3)
+    // Weighted avg: (6*1 + 3*3) / (1+3) = 15/4 = 3.75, *10 = 38 (rounded)
+    expect(calculateStudentScore(tasks, feedbacks)).toBe(38);
   });
 
   it('handles mixed weighted/unweighted tasks', () => {
@@ -154,6 +176,32 @@ describe('calculateOralScore', () => {
     };
     // Average: (3+4+5)/3 = 4, *10 = 40
     expect(calculateOralScore(data)).toBe(40);
+  });
+
+  it('uses weighted average when weights are set', () => {
+    const data: OralFeedbackData = {
+      studentId: 's1',
+      dimensions: [
+        { dimension: 'strategy', points: 6, comment: '', weight: 2 },
+        { dimension: 'reasoning', points: 3, comment: '', weight: 1 },
+      ],
+      generalObservations: '',
+    };
+    // Weighted avg: (6*2 + 3*1) / (2+1) = 15/3 = 5, *10 = 50
+    expect(calculateOralScore(data)).toBe(50);
+  });
+
+  it('defaults missing weights to 1', () => {
+    const data: OralFeedbackData = {
+      studentId: 's1',
+      dimensions: [
+        { dimension: 'strategy', points: 6, comment: '', weight: 3 },
+        { dimension: 'reasoning', points: 0, comment: '' }, // no weight = 1
+      ],
+      generalObservations: '',
+    };
+    // Weighted avg: (6*3 + 0*1) / (3+1) = 18/4 = 4.5, *10 = 45 (rounded)
+    expect(calculateOralScore(data)).toBe(45);
   });
 });
 

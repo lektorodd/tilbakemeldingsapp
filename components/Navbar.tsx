@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import LanguageSelector from './LanguageSelector';
 import SyncStatusIndicator from './SyncStatusIndicator';
 import DarkModeToggle from './DarkModeToggle';
-import { GraduationCap, HelpCircle, Github } from 'lucide-react';
+import { GraduationCap, HelpCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 
@@ -31,30 +31,10 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right side - Sync + Dark Mode + GitHub + Help + Language */}
+          {/* Right side - Sync + Dark Mode + Help + Language */}
           <div className="flex items-center gap-1 sm:gap-2">
             <SyncStatusIndicator />
             <DarkModeToggle />
-            <a
-              href="https://github.com/lektorodd/tilbakemeldingsapp"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                e.preventDefault();
-                const url = 'https://github.com/lektorodd/tilbakemeldingsapp';
-                // In Tauri, window.open may not work, so also try location-based approach
-                const w = window.open(url, '_blank');
-                if (!w) {
-                  // Fallback: use fetch to trigger server-side open
-                  fetch(`/api/open-url?url=${encodeURIComponent(url)}`).catch(() => { });
-                }
-              }}
-              className="flex items-center gap-1.5 px-3 py-2 text-text-secondary hover:text-brand hover:bg-surface-alt rounded-lg transition-colors"
-              title={t('common.github')}
-            >
-              <Github size={18} />
-              <span className="hidden sm:inline text-sm font-medium">{t('common.github')}</span>
-            </a>
             <Link
               href="/help"
               className="flex items-center gap-1.5 px-3 py-2 text-text-secondary hover:text-brand hover:bg-surface-alt rounded-lg transition-colors"
@@ -70,3 +50,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

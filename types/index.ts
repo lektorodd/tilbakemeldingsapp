@@ -214,6 +214,7 @@ export interface OralFeedbackDimension {
   dimension: OralFeedbackDimensionType;
   points: number; // 0-6
   comment: string; // Additional notes on this dimension
+  weight?: number; // Optional weight for this dimension (default: 1). Higher weight = more influence on final score.
 }
 
 export interface OralFeedbackData {

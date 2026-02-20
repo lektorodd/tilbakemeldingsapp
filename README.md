@@ -1,4 +1,4 @@
-# MatteMonitor v0.9.0
+# MatteMonitor v0.9.1
 
 A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 
@@ -37,6 +37,7 @@ cargo install --git https://github.com/typst/typst
 
 **Grading & Feedback**
 - Score tasks 0–6 points with automatic total (0–60 scale)
+- Subtask auto-weighting — tasks with subtasks are weighted proportionally so each subtask counts equally
 - Write comments with Typst math notation (`$x^2 + y^2 = r^2$`)
 - Reusable snippet library for common feedback phrases
 - Formatting toolbar — bold, italic, underline, and link buttons for Typst markup
@@ -50,6 +51,7 @@ cargo install --git https://github.com/typst/typst
 
 **Oral Assessments**
 - Grade across six LK20 curriculum dimensions (strategy, reasoning, representations, modeling, communication, subject knowledge)
+- Dimension weighting — assign custom weights to focus assessments on specific dimensions
 - Track duration and link to specific topics
 
 **Analytics**

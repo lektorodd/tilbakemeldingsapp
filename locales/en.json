@@ -318,6 +318,8 @@
     "minutes": "minutes",
     "dimensionsTitle": "Assessment Dimensions (LK20)",
     "points": "Points",
+    "weight": "Weight",
+    "weightTooltip": "Higher weight = more influence on the final score. Default: 1 (equal)",
     "rubricGuide": "Show rubric guide",
     "dimensionComment": "Comment for this dimension",
     "dimensionCommentPlaceholder": "Notes on observations...",

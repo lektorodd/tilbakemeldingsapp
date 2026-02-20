@@ -26,11 +26,18 @@ export default function OralFeedbackForm({
 }: OralFeedbackFormProps) {
   const { t } = useLanguage();
 
-  // Calculate score from dimensions (0-60 scale)
+  // Calculate score from dimensions (0-60 scale) using weighted average
   const calculateScore = () => {
     if (oralFeedback.dimensions.length === 0) return 0;
-    const totalPoints = oralFeedback.dimensions.reduce((sum, dim) => sum + dim.points, 0);
-    const averagePoints = totalPoints / oralFeedback.dimensions.length;
+    let totalWeighted = 0;
+    let totalWeight = 0;
+    oralFeedback.dimensions.forEach(dim => {
+      const w = dim.weight ?? 1;
+      totalWeighted += dim.points * w;
+      totalWeight += w;
+    });
+    if (totalWeight === 0) return 0;
+    const averagePoints = totalWeighted / totalWeight;
     return Math.round(averagePoints * 10);
   };
 
@@ -144,6 +151,17 @@ export default function OralFeedbackForm({
                     <p className="text-sm text-text-secondary mt-1">{info.description}</p>
                   </div>
                   <div className="flex items-center gap-2 ml-4">
+                    <div className="flex items-center gap-1">
+                      <label className="text-xs text-text-disabled" title={t('oral.weightTooltip')}>{t('oral.weight')}:</label>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={dimension.weight ?? 1}
+                        onChange={(e) => updateDimension(dimensionType, { weight: Math.max(1, Number(e.target.value) || 1) })}
+                        className="w-12 px-1 py-0.5 border border-border rounded text-center text-xs focus:outline-none focus:ring-1 focus:ring-focus text-text-primary bg-surface"
+                      />
+                    </div>
                     <label className="text-sm text-text-secondary">{t('oral.points')}:</label>
                     <div className="flex gap-1">
                       {[0, 1, 2, 3, 4, 5, 6].map(p => (
@@ -151,11 +169,10 @@ export default function OralFeedbackForm({
                           key={p}
                           type="button"
                           onClick={() => updateDimension(dimensionType, { points: p })}
-                          className={`w-8 h-8 rounded-lg font-semibold text-sm transition-all ${
-                            dimension.points === p
+                          className={`w-8 h-8 rounded-lg font-semibold text-sm transition-all ${dimension.points === p
                               ? 'bg-primary-600 text-white shadow-md scale-110'
                               : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-primary-400'
-                          }`}
+                            }`}
                         >
                           {p}
                         </button>

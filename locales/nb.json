@@ -318,6 +318,8 @@
     "minutes": "minutter",
     "dimensionsTitle": "Vurderingsdimensjoner (LK20)",
     "points": "Poeng",
+    "weight": "Vekt",
+    "weightTooltip": "Høyere vekt = større innflytelse på sluttresultatet. Standard: 1 (lik)",
     "rubricGuide": "Vis kriterieveiledning",
     "dimensionComment": "Kommentar for denne dimensjonen",
     "dimensionCommentPlaceholder": "Notater om observasjoner...",

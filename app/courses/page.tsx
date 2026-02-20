@@ -30,7 +30,7 @@ import { migrateSnippetsToFolder } from '@/utils/snippetStorage';
 import {
   Plus, Trash2, Users, FileText, Settings, Download, FolderOpen,
   Upload, Shield, Clock, RotateCcw, AlertTriangle, ChevronDown,
-  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff, X
+  ChevronUp, FolderInput, FileUp, History, Cloud, CloudOff, X, Github
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -702,6 +702,26 @@ export default function CoursesPage() {
             </div>
           </div>
         )}
+        {/* Footer with GitHub link */}
+        <footer className="mt-12 py-6 border-t border-border text-center">
+          <a
+            href="https://github.com/lektorodd/tilbakemeldingsapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              const url = 'https://github.com/lektorodd/tilbakemeldingsapp';
+              const w = window.open(url, '_blank');
+              if (!w) {
+                fetch(`/api/open-url?url=${encodeURIComponent(url)}`).catch(() => { });
+              }
+            }}
+            className="inline-flex items-center gap-2 text-text-disabled hover:text-text-secondary transition-colors text-sm"
+          >
+            <Github size={16} />
+            <span>lektorodd</span>
+          </a>
+        </footer>
       </div>
     </main>
   );

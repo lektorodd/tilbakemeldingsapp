@@ -344,8 +344,17 @@ export function deleteOralAssessment(courseId: string, oralTestId: string, stude
 export function calculateOralScore(oralFeedback: OralFeedbackData): number {
   if (oralFeedback.dimensions.length === 0) return 0;
 
-  const totalPoints = oralFeedback.dimensions.reduce((sum, dim) => sum + dim.points, 0);
-  const averagePoints = totalPoints / oralFeedback.dimensions.length;
+  // Weighted average: Σ(points × weight) / Σ(weight)
+  let totalWeighted = 0;
+  let totalWeight = 0;
+  oralFeedback.dimensions.forEach(dim => {
+    const w = dim.weight ?? 1;
+    totalWeighted += dim.points * w;
+    totalWeight += w;
+  });
+
+  if (totalWeight === 0) return 0;
+  const averagePoints = totalWeighted / totalWeight;
   return Math.round(averagePoints * 10);
 }
 
@@ -357,7 +366,10 @@ export function calculateStudentScore(tasks: Task[], feedbacks: TaskFeedback[]):
   let totalWeight = 0;
 
   tasks.forEach(task => {
-    const weight = task.weight ?? 1;
+    // Auto-weight: when no explicit weight, tasks with subtasks count
+    // proportionally so each subtask counts equally across the test.
+    // e.g. {1, 2a, 2b} → task 1 weight=1, task 2 weight=2
+    const weight = task.weight ?? (task.hasSubtasks && task.subtasks.length > 0 ? task.subtasks.length : 1);
 
     if (task.hasSubtasks && task.subtasks.length > 0) {
       // Average the subtask scores for this task
@@ -406,7 +418,8 @@ export function getStudentProgress(courseId: string, studentId: string): Student
 
   const testResults: StudentTestResult[] = course.tests.map(test => {
     const feedback = test.studentFeedbacks.find(f => f.studentId === studentId);
-    const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
+    const isAbsent = !!feedback?.absent;
+    const score = feedback && !isAbsent ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
     const percentage = (score / 60) * 100;
 
     return {
@@ -416,7 +429,7 @@ export function getStudentProgress(courseId: string, studentId: string): Student
       score,
       maxScore: 60,
       percentage,
-      completed: !!feedback?.completedDate,
+      completed: !!feedback?.completedDate && !isAbsent,
     };
   }).sort((a, b) => new Date(a.testDate).getTime() - new Date(b.testDate).getTime());
 

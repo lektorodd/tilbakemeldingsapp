@@ -2,6 +2,21 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.1] — 2026-02-20
+
+### Added
+- **Oral dimension weighting** — assign custom weights (default 1) to each of the six LK20 dimensions. Score is now a weighted average, allowing assessments to focus on specific competence areas.
+- **Subtask auto-weighting** — tasks with subtasks are now automatically weighted by their subtask count when no explicit weight is set. For example, in `{1, 2a, 2b}`, task 2 gets weight 2 so each subtask counts equally.
+- **Footer with GitHub link** — added a subtle footer on the courses page with GitHub icon + "lektorodd" link.
+
+### Fixed
+- **Absent student scoring** — `getStudentProgress` now correctly excludes absent students from score calculations and marks them as not completed. Previously, absent students with a `completedDate` could appear in progress averages.
+
+### Changed
+- **Cleaner navbar** — removed GitHub link from the navigation bar to reduce clutter.
+
+---
+
 ## [0.9.0] — 2026-02-20
 
 ### Added
