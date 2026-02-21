@@ -74,6 +74,9 @@ export {
     safeDeleteCourse,
     safeDeleteTest,
     safeDeleteStudent,
+
+    // Anonymization
+    anonymizeCourse,
 } from './courseStorage';
 
 // Re-export types/interfaces

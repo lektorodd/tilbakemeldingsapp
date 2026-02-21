@@ -2,6 +2,18 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.3] — 2026-02-21
+
+### Added
+- **Settings dropdown** — gear icon in the navbar with toggles to show/hide topic labels and difficulty categories across the entire app. Preferences are persisted via `PreferencesContext` and synced to folder storage.
+- **Course anonymization** — one-click anonymization replaces all student names with generic labels (Student 1, Student 2, …) and strips all comments that may contain identifying information. Scores and analytics data are preserved. An automatic backup is created beforehand.
+- **Score distribution bars** — the test analytics table now includes a visual distribution column showing color-coded bars for each task's score breakdown (green ≥ 5, amber 3–4, red ≤ 2).
+
+### Changed
+- Labels and categories are now conditionally rendered based on user preferences across course detail, course analytics, test analytics, and task configuration pages.
+
+---
+
 ## [0.9.2] — 2026-02-20
 
 ### Fixed

@@ -159,7 +159,12 @@
     "labelsHelpText": "Labels help you track student performance across themes. Use / to group, e.g. \"probability/basics\" and \"probability/simulation\".",
     "labelAlreadyExists": "This label already exists!",
     "removeLabelConfirm": "Remove label \"{label}\"? This will not remove it from existing tasks.",
-    "labelPlaceholder": "e.g. probability/basics"
+    "labelPlaceholder": "e.g. probability/basics",
+    "anonymize": "Anonymize Course",
+    "anonymizeConfirmTitle": "Anonymize this course?",
+    "anonymizeConfirmMessage": "This will permanently replace all student names with generic labels (Student 1, Student 2, ...) and remove all comments that may contain identifying information. Scores and analytics data will be preserved.\n\nA backup is automatically created before anonymization.",
+    "anonymizeSuccess": "Course anonymized! All student names and comments have been removed.",
+    "anonymizeStudentLabel": "Student"
   },
   "test": {
     "giveFeedback": "Give Feedback",
@@ -451,6 +456,7 @@
     "classProgressDesc": "Average score and % blank from test to test",
     "avgScore": "Avg. Score",
     "blankPct": "% Blank",
+    "scoreDistribution": "Distribution",
     "testAnalyticsDesc": "View detailed task performance for each test",
     "studentDashboardsDesc": "View individual student performance dashboards"
   },
@@ -650,5 +656,12 @@
     "error": "Sync error",
     "lastSync": "Last sync",
     "connectHint": "Connect a folder from the courses page to keep your data safe across browsers and devices."
+  },
+  "preferences": {
+    "settings": "Settings",
+    "showLabels": "Show Course Labels",
+    "showCategories": "Show Task Categories",
+    "showLabelsHelp": "Toggle labels for organizing tasks by theme",
+    "showCategoriesHelp": "Toggle difficulty categories (1/2/3) on tasks"
   }
 }

@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
-import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest } from '@/utils/storage';
+import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest, anonymizeCourse } from '@/utils/storage';
 import { exportCourseToExcel } from '@/utils/excelExport';
-import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download, ShieldOff } from 'lucide-react';
 import Link from 'next/link';
 import LabelManager from '@/components/LabelManager';
 import StudentRosterPanel from '@/components/StudentRosterPanel';
@@ -13,11 +13,13 @@ import TestListPanel from '@/components/TestListPanel';
 import OralTestListPanel from '@/components/OralTestListPanel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { usePreferences } from '@/contexts/PreferencesContext';
 import { groupLabelsByParent, formatLabelDisplay } from '@/utils/labelUtils';
 
 export default function CourseDetailPage() {
   const { t } = useLanguage();
   const { toast, confirm } = useNotification();
+  const { showLabels } = usePreferences();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -394,6 +396,18 @@ export default function CourseDetailPage() {
     loadData();
   };
 
+  const handleAnonymize = async () => {
+    const confirmed = await confirm(
+      t('course.anonymizeConfirmMessage'),
+      t('course.anonymizeConfirmTitle')
+    );
+    if (confirmed) {
+      anonymizeCourse(courseId, t('course.anonymizeStudentLabel'));
+      toast(t('course.anonymizeSuccess'), 'success');
+      loadData();
+    }
+  };
+
   if (!course) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -471,11 +485,35 @@ export default function CourseDetailPage() {
         </div>
 
         {/* Label Manager */}
-        <div className="mt-6">
-          <LabelManager
-            labels={course.availableLabels}
-            onLabelsChange={handleLabelsChange}
-          />
+        {showLabels && (
+          <div className="mt-6">
+            <LabelManager
+              labels={course.availableLabels}
+              onLabelsChange={handleLabelsChange}
+            />
+          </div>
+        )}
+
+        {/* Anonymize Course */}
+        <div className="mt-6 bg-surface border border-border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-text-primary flex items-center gap-2">
+                <ShieldOff size={18} className="text-text-secondary" />
+                {t('course.anonymize')}
+              </h3>
+              <p className="text-sm text-text-secondary mt-1">
+                {t('course.anonymizeConfirmMessage').split('\n')[0]}
+              </p>
+            </div>
+            <button
+              onClick={handleAnonymize}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors shadow-sm"
+            >
+              <ShieldOff size={16} />
+              {t('course.anonymize')}
+            </button>
+          </div>
         </div>
 
         {/* Quick stats */}

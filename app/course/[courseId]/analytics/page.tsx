@@ -9,11 +9,13 @@ import { ArrowLeft, Tag, BarChart3, TrendingUp, Users, FileText, UserCircle } fr
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { usePreferences } from '@/contexts/PreferencesContext';
 import { groupLabelsByParent, formatLabelDisplay } from '@/utils/labelUtils';
 
 export default function CourseAnalyticsPage() {
   const { t } = useLanguage();
   const { toast } = useNotification();
+  const { showLabels, showCategories } = usePreferences();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -202,7 +204,7 @@ export default function CourseAnalyticsPage() {
         </div>
 
         {/* Label Performance */}
-        {labelPerformance.length > 0 ? (
+        {showLabels && (labelPerformance.length > 0 ? (
           <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <Tag size={24} className="text-brand" />
@@ -319,10 +321,10 @@ export default function CourseAnalyticsPage() {
               {t('analytics.noLabelData')}
             </p>
           </div>
-        )}
+        ))}
 
         {/* Category Performance */}
-        {categoryPerformance.length > 0 ? (
+        {showCategories && (categoryPerformance.length > 0 ? (
           <div className="bg-surface rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp size={24} className="text-brand" />
@@ -389,7 +391,7 @@ export default function CourseAnalyticsPage() {
               {t('analytics.noCategoryData')}
             </p>
           </div>
-        )}
+        ))}
 
         {/* Help Section */}
         <div className="mt-6 bg-primary-50 border border-primary-200 rounded-lg p-4">

@@ -159,7 +159,12 @@
     "labelsHelpText": "Merkelapper hjelper deg å spore elevprestasjoner på tvers av temaer. Bruk / for å gruppere, f.eks. \"sannsyn/grunnleggende\" og \"sannsyn/simulering\".",
     "labelAlreadyExists": "Denne merkelappen finnes allerede!",
     "removeLabelConfirm": "Fjern merkelappen \"{label}\"? Dette vil ikke fjerne den fra eksisterende oppgaver.",
-    "labelPlaceholder": "f.eks. sannsyn/grunnleggende"
+    "labelPlaceholder": "f.eks. sannsyn/grunnleggende",
+    "anonymize": "Anonymiser fag",
+    "anonymizeConfirmTitle": "Anonymisere dette faget?",
+    "anonymizeConfirmMessage": "Dette vil permanent erstatte alle elevnavn med generiske navn (Elev 1, Elev 2, ...) og fjerne alle kommentarer som kan inneholde identifiserende informasjon. Poeng og analysedata bevares.\n\nEn sikkerhetskopi opprettes automatisk før anonymisering.",
+    "anonymizeSuccess": "Fag anonymisert! Alle elevnavn og kommentarer er fjernet.",
+    "anonymizeStudentLabel": "Elev"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",
@@ -451,6 +456,7 @@
     "classProgressDesc": "Gjennomsnittspoeng og % blanke fra test til test",
     "avgScore": "Gjennomsnittspoeng",
     "blankPct": "% blanke",
+    "scoreDistribution": "Poengfordeling",
     "testAnalyticsDesc": "Se detaljert oppgaveprestasjon for hver prøve",
     "studentDashboardsDesc": "Se individuelle elevprestasjonsdashboard"
   },
@@ -650,5 +656,12 @@
     "error": "Synkfeil",
     "lastSync": "Sist synkronisert",
     "connectHint": "Koble til en mappe fra kurssiden for å holde dataene dine trygge på tvers av nettlesere og enheter."
+  },
+  "preferences": {
+    "settings": "Innstillinger",
+    "showLabels": "Vis temamerkelapper",
+    "showCategories": "Vis oppgavekategorier",
+    "showLabelsHelp": "Vis/skjul merkelapper for å organisere oppgaver etter tema",
+    "showCategoriesHelp": "Vis/skjul vanskegradskategorier (1/2/3) på oppgaver"
   }
 }

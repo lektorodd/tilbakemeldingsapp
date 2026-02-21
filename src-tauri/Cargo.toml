@@ -1,6 +1,6 @@
 [package]
 name = "mattemonitor"
-version = "0.9.2"
+version = "0.9.3"
 description = "Math grading and feedback tool for teachers"
 authors = ["lektorodd"]
 license = "MIT"

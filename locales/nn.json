@@ -159,7 +159,12 @@
     "labelsHelpText": "Merkelappar hjelper deg å spore elevprestasjonar på tvers av tema. Bruk / for å gruppere, t.d. \"sannsyn/grunnleggande\" og \"sannsyn/simulering\".",
     "labelAlreadyExists": "Denne merkelappen finst allereie!",
     "removeLabelConfirm": "Fjern merkelappen \"{label}\"? Dette vil ikkje fjerne han frå eksisterande oppgåver.",
-    "labelPlaceholder": "t.d. sannsyn/grunnleggande"
+    "labelPlaceholder": "t.d. sannsyn/grunnleggande",
+    "anonymize": "Anonymiser fag",
+    "anonymizeConfirmTitle": "Anonymisere dette faget?",
+    "anonymizeConfirmMessage": "Dette vil permanent erstatte alle elevnamn med generiske namn (Elev 1, Elev 2, ...) og fjerne alle kommentarar som kan innehalde identifiserande informasjon. Poeng og analysedata vert bevart.\n\nEin sikkerheitskopi vert automatisk oppretta før anonymisering.",
+    "anonymizeSuccess": "Fag anonymisert! Alle elevnamn og kommentarar er fjerna.",
+    "anonymizeStudentLabel": "Elev"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",
@@ -451,6 +456,7 @@
     "classProgressDesc": "Snittpoeng og % blanke frå test til test",
     "avgScore": "Snittpoeng",
     "blankPct": "% blanke",
+    "scoreDistribution": "Poengfordeling",
     "testAnalyticsDesc": "Sjå detaljert oppgåveprestasjon for kvar prøve",
     "studentDashboardsDesc": "Sjå individuelle elevprestasjonsdasboard"
   },
@@ -650,5 +656,12 @@
     "error": "Synkfeil",
     "lastSync": "Sist synkronisert",
     "connectHint": "Kople til ei mappe frå kurssida for å halde dataa dine trygge på tvers av nettlesarar og einingar."
+  },
+  "preferences": {
+    "settings": "Innstillingar",
+    "showLabels": "Vis temamerkelappar",
+    "showCategories": "Vis oppgåvekategoriar",
+    "showLabelsHelp": "Vis/gøym merkelappar for å organisere oppgåver etter tema",
+    "showCategoriesHelp": "Vis/gøym vanskegradskategoriar (1/2/3) på oppgåver"
   }
 }

@@ -9,11 +9,13 @@ import Link from 'next/link';
 import ProgressGrid from '@/components/ProgressGrid';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { usePreferences } from '@/contexts/PreferencesContext';
 import { groupLabelsByParent, formatLabelDisplay, getParentLabel } from '@/utils/labelUtils';
 
 export default function TestAnalyticsPage() {
   const { t } = useLanguage();
   const { toast } = useNotification();
+  const { showLabels, showCategories } = usePreferences();
   const params = useParams();
   const router = useRouter();
   const courseId = params.courseId as string;
@@ -151,6 +153,12 @@ export default function TestAnalyticsPage() {
     return 'text-rose-600';
   };
 
+  const getBarColor = (score: number) => {
+    if (score >= 5) return 'bg-emerald-500';
+    if (score >= 3) return 'bg-amber-400';
+    return 'bg-rose-400';
+  };
+
   return (
     <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -264,7 +272,7 @@ export default function TestAnalyticsPage() {
             )}
 
             {/* Category Filter */}
-            {availableCategories.size > 0 && (
+            {showCategories && availableCategories.size > 0 && (
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
                   {t('test.category')}
@@ -311,7 +319,7 @@ export default function TestAnalyticsPage() {
           </div>
 
           {/* Label Filter */}
-          {availableLabels.size > 0 && (
+          {showLabels && availableLabels.size > 0 && (
             <div className="mt-4">
               <label className="block text-sm font-medium text-text-secondary mb-2">
                 {t('test.themeLabels')}
@@ -364,9 +372,10 @@ export default function TestAnalyticsPage() {
               <thead className="bg-surface border-b border-border">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.task')}</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.category')}</th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.themeLabelsCol')}</th>
+                  {showCategories && <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.category')}</th>}
+                  {showLabels && <th className="px-4 py-3 text-left text-sm font-semibold text-text-primary">{t('test.themeLabelsCol')}</th>}
                   <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.avgScore')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary min-w-[140px]">{t('analytics.scoreDistribution') || 'Distribution'}</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.attempted')}</th>
                   <th className="px-4 py-3 text-center text-sm font-semibold text-text-primary">{t('test.attemptPct')}</th>
                 </tr>
@@ -374,7 +383,7 @@ export default function TestAnalyticsPage() {
               <tbody className="divide-y divide-border">
                 {sortedAnalytics.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-text-disabled">
+                    <td colSpan={4 + (showCategories ? 1 : 0) + (showLabels ? 1 : 0)} className="px-4 py-8 text-center text-text-disabled">
                       {t('test.noTasksMatch')}
                     </td>
                   </tr>
@@ -404,37 +413,59 @@ export default function TestAnalyticsPage() {
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3">
-                            {ta.category ? (
-                              <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${getCategoryColor(ta.category)}`}>
-                                {getCategoryLabel(ta.category)}
-                              </span>
-                            ) : (
-                              <span className="text-sm text-text-disabled">-</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex flex-wrap gap-1">
-                              {ta.labels.length > 0 ? (
-                                ta.labels.map(label => (
-                                  <span
-                                    key={label}
-                                    className="inline-block px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-xs"
-                                    title={label}
-                                  >
-                                    {label}
-                                  </span>
-                                ))
+                          {showCategories && (
+                            <td className="px-4 py-3">
+                              {ta.category ? (
+                                <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${getCategoryColor(ta.category)}`}>
+                                  {getCategoryLabel(ta.category)}
+                                </span>
                               ) : (
                                 <span className="text-sm text-text-disabled">-</span>
                               )}
-                            </div>
-                          </td>
+                            </td>
+                          )}
+                          {showLabels && (
+                            <td className="px-4 py-3">
+                              <div className="flex flex-wrap gap-1">
+                                {ta.labels.length > 0 ? (
+                                  ta.labels.map(label => (
+                                    <span
+                                      key={label}
+                                      className="inline-block px-2 py-0.5 bg-primary-100 text-primary-700 rounded text-xs"
+                                      title={label}
+                                    >
+                                      {label}
+                                    </span>
+                                  ))
+                                ) : (
+                                  <span className="text-sm text-text-disabled">-</span>
+                                )}
+                              </div>
+                            </td>
+                          )}
                           <td className="px-4 py-3 text-center">
                             <span className={`text-sm ${getScoreColor(ta.averageScore)}`}>
                               {ta.averageScore.toFixed(2)}
                             </span>
                             <span className="text-xs text-text-disabled"> / 6</span>
+                          </td>
+                          {/* Inline histogram */}
+                          <td className="px-4 py-3">
+                            <div className="flex items-end gap-px h-6 justify-center" title={Object.entries(ta.scoreDistribution).map(([s, c]) => `${s}: ${c}`).join(', ')}>
+                              {[0, 1, 2, 3, 4, 5, 6].map(score => {
+                                const count = ta.scoreDistribution[score] || 0;
+                                const maxCount = Math.max(...Object.values(ta.scoreDistribution), 1);
+                                const heightPct = (count / maxCount) * 100;
+                                return (
+                                  <div
+                                    key={score}
+                                    className={`w-3 rounded-t-sm ${count > 0 ? getBarColor(score) : 'bg-border'} transition-all`}
+                                    style={{ height: `${Math.max(heightPct, 8)}%` }}
+                                    title={`${score}: ${count}`}
+                                  />
+                                );
+                              })}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-center text-sm text-text-secondary">
                             {ta.attemptCount} / {ta.totalStudents}
@@ -447,7 +478,30 @@ export default function TestAnalyticsPage() {
                         </tr>
                         {isExpanded && (
                           <tr>
-                            <td colSpan={6} className="px-4 py-4 bg-surface border-t border-border">
+                            <td colSpan={4 + (showCategories ? 1 : 0) + (showLabels ? 1 : 0)} className="px-4 py-4 bg-surface border-t border-border">
+                              {/* Full Score Distribution Histogram */}
+                              <div className="mb-4">
+                                <h4 className="text-sm font-semibold text-text-secondary mb-2">{t('analytics.scoreDistribution') || 'Score Distribution'}</h4>
+                                <div className="flex items-end gap-2 h-28">
+                                  {[0, 1, 2, 3, 4, 5, 6].map(score => {
+                                    const count = ta.scoreDistribution[score] || 0;
+                                    const maxCount = Math.max(...Object.values(ta.scoreDistribution), 1);
+                                    const heightPct = (count / maxCount) * 100;
+                                    return (
+                                      <div key={score} className="flex flex-col items-center gap-1 flex-1">
+                                        <span className="text-xs font-medium text-text-secondary">{count}</span>
+                                        <div className="w-full flex items-end" style={{ height: '80px' }}>
+                                          <div
+                                            className={`w-full rounded-t ${count > 0 ? getBarColor(score) : 'bg-border'} transition-all`}
+                                            style={{ height: `${Math.max(heightPct, 4)}%` }}
+                                          />
+                                        </div>
+                                        <span className="text-xs font-bold text-text-primary">{score}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
                               <div className="max-h-80 overflow-y-auto">
                                 <table className="w-full text-sm">
                                   <thead>
@@ -490,7 +544,8 @@ export default function TestAnalyticsPage() {
                               </div>
                             </td>
                           </tr>
-                        )}
+                        )
+                        }
                       </React.Fragment>
                     );
                   })
@@ -505,6 +560,6 @@ export default function TestAnalyticsPage() {
           <p>{t('test.analyticsNote')}</p>
         </div>
       </div>
-    </main>
+    </main >
   );
 }

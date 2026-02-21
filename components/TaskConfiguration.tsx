@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Task, Subtask } from '@/types';
 import { Plus, Trash2, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePreferences } from '@/contexts/PreferencesContext';
 import { groupLabelsByParent, formatLabelDisplay } from '@/utils/labelUtils';
 
 interface TaskConfigurationProps {
@@ -15,6 +16,7 @@ interface TaskConfigurationProps {
 
 export default function TaskConfiguration({ tasks, onTasksChange, availableLabels, onLabelsChange }: TaskConfigurationProps) {
   const { t } = useLanguage();
+  const { showLabels, showCategories } = usePreferences();
   const [showConfig, setShowConfig] = useState(false);
   const [addingLabelFor, setAddingLabelFor] = useState<string | null>(null);
   const [newLabelValue, setNewLabelValue] = useState('');
@@ -256,7 +258,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                   </span>
                 )}
 
-                {!task.hasSubtasks && (
+                {!task.hasSubtasks && showCategories && (
                   <>
                     <div className="flex items-center gap-2">
                       <label className="text-xs font-medium text-text-secondary">{t('test.categoryLabel')}</label>
@@ -299,8 +301,8 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                 </button>
               </div>
 
-              {/* Task Theme Labels - only shown if NO subtasks */}
-              {!task.hasSubtasks && (availableLabels.length > 0 || onLabelsChange) && (
+              {/* Task Theme Labels - only shown if NO subtasks and labels enabled */}
+              {!task.hasSubtasks && showLabels && (availableLabels.length > 0 || onLabelsChange) && (
                 <div className="flex items-start gap-2">
                   <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
                   <div className="flex flex-wrap gap-1.5 items-center">
@@ -382,22 +384,24 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                           />
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium text-text-secondary">{t('test.categoryLabel')}</label>
-                          <select
-                            value={subtask.category || ''}
-                            onChange={(e) => updateSubtaskCategory(task.id, subtask.id, e.target.value ? Number(e.target.value) : undefined)}
-                            className="px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
-                          >
-                            <option value="">-</option>
-                            <option value="1">1 - {t('test.category1Short')}</option>
-                            <option value="2">2 - {t('test.category2Short')}</option>
-                            <option value="3">3 - {t('test.category3Short')}</option>
-                          </select>
-                        </div>
+                        {showCategories && (
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-text-secondary">{t('test.categoryLabel')}</label>
+                            <select
+                              value={subtask.category || ''}
+                              onChange={(e) => updateSubtaskCategory(task.id, subtask.id, e.target.value ? Number(e.target.value) : undefined)}
+                              className="px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-focus text-text-primary text-sm"
+                            >
+                              <option value="">-</option>
+                              <option value="1">1 - {t('test.category1Short')}</option>
+                              <option value="2">2 - {t('test.category2Short')}</option>
+                              <option value="3">3 - {t('test.category3Short')}</option>
+                            </select>
+                          </div>
+                        )}
 
                         {/* Category tag for subtask */}
-                        {subtask.category && (
+                        {showCategories && subtask.category && (
                           <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
                             {t(`test.category${subtask.category}Short`)}
                           </span>
@@ -413,7 +417,7 @@ export default function TaskConfiguration({ tasks, onTasksChange, availableLabel
                       </div>
 
                       {/* Subtask Theme Labels */}
-                      {(availableLabels.length > 0 || onLabelsChange) && (
+                      {showLabels && (availableLabels.length > 0 || onLabelsChange) && (
                         <div className="flex items-start gap-2">
                           <label className="text-xs font-medium text-text-secondary pt-1 min-w-[60px]">{t('test.themesLabel')}</label>
                           <div className="flex flex-wrap gap-1.5 items-center">

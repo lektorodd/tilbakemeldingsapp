@@ -2089,3 +2089,70 @@ export function safeDeleteStudent(courseId: string, studentId: string): { backup
   deleteStudent(courseId, studentId);
   return { backupId: backup?.id || null };
 }
+
+// ==========================================
+// ANONYMIZATION
+// ==========================================
+
+/**
+ * Anonymize a course: replace all student names with generic labels,
+ * clear student numbers, and strip individual comments that may
+ * contain identifying information. Scores, task structure, and
+ * analytics data are fully preserved.
+ *
+ * Creates a backup before anonymizing so the operation can be undone.
+ *
+ * @param courseId - The course to anonymize
+ * @param studentLabel - Localized label for students (e.g. "Student", "Elev")
+ * @returns Object with backup ID generated before anonymization
+ */
+export function anonymizeCourse(
+  courseId: string,
+  studentLabel: string = 'Student'
+): { backupId: string | null } {
+  const backup = createBackup('before-anonymize');
+
+  const course = loadCourse(courseId);
+  if (!course) return { backupId: backup?.id || null };
+
+  // Replace student names and clear student numbers
+  course.students = course.students.map((student, index) => ({
+    ...student,
+    name: `${studentLabel} ${index + 1}`,
+    studentNumber: undefined,
+  }));
+
+  // Clear individual comments from written test feedback
+  course.tests = course.tests.map(test => ({
+    ...test,
+    studentFeedbacks: test.studentFeedbacks.map(fb => ({
+      ...fb,
+      individualComment: '',
+      // Clear per-task comments too — they may reference the student
+      taskFeedbacks: fb.taskFeedbacks.map(tf => ({
+        ...tf,
+        comment: '',
+      })),
+    })),
+  }));
+
+  // Clear general observations from oral assessments
+  if (course.oralTests) {
+    course.oralTests = course.oralTests.map(oralTest => ({
+      ...oralTest,
+      studentAssessments: oralTest.studentAssessments.map(sa => ({
+        ...sa,
+        generalObservations: '',
+        // Clear per-dimension comments too
+        dimensions: sa.dimensions.map(d => ({
+          ...d,
+          comment: '',
+        })),
+      })),
+    }));
+  }
+
+  course.lastModified = new Date().toISOString();
+  saveCourse(course);
+  return { backupId: backup?.id || null };
+}

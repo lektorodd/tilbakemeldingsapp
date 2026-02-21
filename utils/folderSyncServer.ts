@@ -82,6 +82,8 @@ export function serverGetFolderName(): string | null {
 export interface AppSettings {
     language: 'en' | 'nb' | 'nn';
     darkMode?: boolean;
+    showLabels?: boolean;
+    showCategories?: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = { language: 'nb' };
