@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { isFolderConnected, saveSettingsToFolder } from '@/utils/folderSync';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function DarkModeToggle() {
+    const { t } = useLanguage();
     const [isDark, setIsDark] = useState(false);
     const [mounted, setMounted] = useState(false);
 
@@ -52,8 +54,8 @@ export default function DarkModeToggle() {
         <button
             onClick={toggle}
             className="p-2 rounded-lg text-text-secondary hover:text-brand hover:bg-surface-alt transition-colors"
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDark ? t('help.darkModeTitle') + ' ☀' : t('help.darkModeTitle') + ' 🌙'}
+            aria-label={isDark ? 'Light mode' : 'Dark mode'}
         >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>

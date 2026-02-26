@@ -57,7 +57,7 @@ export default function ProgressGrid({
             <div className="px-4 py-3 border-b border-border">
                 <h3 className="text-sm font-semibold text-text-primary">{t('test.progressGrid')}</h3>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" style={{ background: 'linear-gradient(to right, transparent 95%, rgba(0,0,0,0.08))', backgroundAttachment: 'local, scroll' }}>
                 <table className="w-full text-xs">
                     <thead>
                         <tr className="border-b border-border bg-surface-alt">

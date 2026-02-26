@@ -2,6 +2,16 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.7] — 2026-02-26
+
+### Improved
+- **Progress grid scroll cue** — a subtle shadow on the right edge indicates when more columns are hidden off-screen.
+- **Auto-advance after grading** — marking a student's feedback as complete now automatically advances to the next student after 300ms.
+- **Card depth standardized** — the test settings card no longer uses a heavier `border-2`; all cards now share a consistent `border border-border`.
+- **Dark mode toggle tooltip** — the sun/moon button now uses a localized tooltip instead of hardcoded English.
+
+---
+
 ## [0.9.6] — 2026-02-26
 
 ### Improved

@@ -195,6 +195,11 @@ export default function TestFeedbackPage() {
     setCurrentFeedback(updatedFeedback);
     loadData();
     toast(t('test.feedbackMarkedComplete'), 'success');
+
+    // Auto-advance to the next student if available
+    if (currentStudentIndex < (course?.students.length ?? 0) - 1) {
+      setTimeout(() => goToNextStudent(), 300);
+    }
   };
 
   const handleUnmarkComplete = () => {
@@ -708,7 +713,7 @@ export default function TestFeedbackPage() {
         </div>
 
         {/* Test Settings Section */}
-        <div className="bg-surface rounded-lg shadow-sm p-6 mb-8 border-2 border-primary-200">
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-8 border border-border">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-display font-bold text-text-primary">{t('test.testSettings')}</h2>
