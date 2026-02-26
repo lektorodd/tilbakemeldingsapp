@@ -14,7 +14,7 @@ function typstToKatex(expr: string): string {
     // sqrt(x) → \sqrt{x}
     s = s.replace(/sqrt\(([^)]+)\)/g, '\\sqrt{$1}');
 
-    // frac(a, b) → \frac{a}{b}
+    // frac(a, b) → \frac{a}{b}  (explicit function form)
     s = s.replace(/frac\(([^,]+),\s*([^)]+)\)/g, '\\frac{$1}{$2}');
 
     // vec(x) → \vec{x}
@@ -22,6 +22,14 @@ function typstToKatex(expr: string): string {
 
     // abs(x) → |x|
     s = s.replace(/abs\(([^)]+)\)/g, '|$1|');
+
+    // Typst a/b fraction syntax → \frac{a}{b}
+    // Handles: x/y, (a+b)/(c+d), 1/2, numerator/denominator
+    // Process parenthesized groups first: (...)/(...)
+    s = s.replace(/\(([^)]+)\)\s*\/\s*\(([^)]+)\)/g, '\\frac{$1}{$2}');
+    // Then simple token/token: word or number before / after
+    // But avoid breaking already-converted \frac or other commands
+    s = s.replace(/(?<![\\a-zA-Z])([a-zA-Z0-9]+(?:\^[a-zA-Z0-9{}]+)?)\s*\/\s*([a-zA-Z0-9]+(?:\^[a-zA-Z0-9{}]+)?)/g, '\\frac{$1}{$2}');
 
     // Superscripts: x^2 works in both, but x^{10} too
     // Subscripts: x_1 works in both
@@ -41,7 +49,7 @@ function typstToKatex(expr: string): string {
     s = s.replace(/\bsum\b/g, '\\sum');
     s = s.replace(/\bprod\b/g, '\\prod');
     s = s.replace(/\bintegral\b/g, '\\int');
-    s = s.replace(/\bint\b/g, '\\int');
+    s = s.replace(/(?<![\\])\\?\bint\b/g, '\\int');
     s = s.replace(/\blim\b/g, '\\lim');
 
     // Comparison operators — Typst uses >= and <=, LaTeX uses \geq and \leq
@@ -68,7 +76,7 @@ function escapeHtml(s: string): string {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** Parse text with $...$ segments, translate Typst→KaTeX, render */
+/** Parse text with $...$ (inline) and $$...$$ (display) math, translate Typst→KaTeX, render */
 function renderTextWithMath(text: string): string {
     if (!text.includes('$')) return '';
 
@@ -82,34 +90,61 @@ function renderTextWithMath(text: string): string {
             break;
         }
 
+        // Text before $
         if (dollarPos > i) {
             parts.push(escapeHtml(text.slice(i, dollarPos)));
         }
 
-        const closePos = text.indexOf('$', dollarPos + 1);
-        if (closePos === -1) {
-            parts.push(escapeHtml(text.slice(dollarPos)));
-            break;
-        }
+        // Check for $$ display math $$
+        const isDisplay = dollarPos + 1 < text.length && text[dollarPos + 1] === '$';
 
-        const mathExpr = text.slice(dollarPos + 1, closePos);
-        if (mathExpr.trim()) {
-            try {
-                const katexExpr = typstToKatex(mathExpr);
-                const rendered = katex.renderToString(katexExpr, {
-                    throwOnError: false,
-                    displayMode: false,
-                    output: 'html',
-                });
-                parts.push(rendered);
-            } catch {
-                parts.push(`<code style="color:var(--text-secondary);font-size:0.85em;">$${escapeHtml(mathExpr)}$</code>`);
+        if (isDisplay) {
+            // Find closing $$
+            const closePos = text.indexOf('$$', dollarPos + 2);
+            if (closePos === -1) {
+                parts.push(escapeHtml(text.slice(dollarPos)));
+                break;
             }
-        } else {
-            parts.push('$$');
-        }
 
-        i = closePos + 1;
+            const mathExpr = text.slice(dollarPos + 2, closePos).trim();
+            if (mathExpr) {
+                try {
+                    const katexExpr = typstToKatex(mathExpr);
+                    const rendered = katex.renderToString(katexExpr, {
+                        throwOnError: false,
+                        displayMode: true,
+                        output: 'html',
+                    });
+                    parts.push(rendered);
+                } catch {
+                    parts.push(`<code style="color:var(--text-secondary);font-size:0.85em;">$$${escapeHtml(mathExpr)}$$</code>`);
+                }
+            }
+            i = closePos + 2;
+        } else {
+            // Inline $...$
+            const closePos = text.indexOf('$', dollarPos + 1);
+            if (closePos === -1) {
+                parts.push(escapeHtml(text.slice(dollarPos)));
+                break;
+            }
+
+            const mathExpr = text.slice(dollarPos + 1, closePos);
+            if (mathExpr.trim()) {
+                try {
+                    const katexExpr = typstToKatex(mathExpr);
+                    const rendered = katex.renderToString(katexExpr, {
+                        throwOnError: false,
+                        displayMode: false,
+                        output: 'html',
+                    });
+                    parts.push(rendered);
+                } catch {
+                    parts.push(`<code style="color:var(--text-secondary);font-size:0.85em;">$${escapeHtml(mathExpr)}$</code>`);
+                }
+            }
+            i = closePos + 1;
+        }
     }
 
     return parts.join('');
