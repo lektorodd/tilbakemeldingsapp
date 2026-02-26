@@ -33,6 +33,7 @@ export default function TestFeedbackPage() {
   const [selectedStudent, setSelectedStudent] = useState<CourseStudent | null>(null);
   const [currentFeedback, setCurrentFeedback] = useState<TestFeedbackData | null>(null);
   const [allSnippets, setAllSnippets] = useState<FeedbackSnippet[]>([]);
+  const [studentSearch, setStudentSearch] = useState('');
 
   // Snippet sidebar state
   const [showSnippetSidebar, setShowSnippetSidebar] = useState(false);
@@ -824,12 +825,19 @@ export default function TestFeedbackPage() {
             {/* Students list — sticky left */}
             <div className="w-64 flex-shrink-0 hidden lg:block">
               <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
-                <h3 className="text-lg font-semibold text-text-primary mb-4">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
-                <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <h3 className="text-lg font-semibold text-text-primary mb-3">{t('test.studentsCount').replace('{count}', course.students.length.toString())}</h3>
+                <input
+                  type="text"
+                  value={studentSearch}
+                  onChange={(e) => setStudentSearch(e.target.value)}
+                  placeholder={t('test.searchStudents') || 'Søk elev...'}
+                  className="w-full px-3 py-2 mb-3 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus bg-surface text-text-primary placeholder:text-text-disabled"
+                />
+                <div className="space-y-2 max-h-[calc(100vh-260px)] overflow-y-auto">
                   {course.students.length === 0 ? (
                     <p className="text-sm text-text-disabled text-center py-4">{t('test.noStudentsInCourse')}</p>
                   ) : (
-                    course.students.map(student => {
+                    course.students.filter(s => s.name.toLowerCase().includes(studentSearch.toLowerCase())).map(student => {
                       const feedback = getStudentFeedback(courseId, testId, student.id);
                       const score = feedback ? calculateStudentScore(test.tasks, feedback.taskFeedbacks) : 0;
                       const isCompleted = feedback?.completedDate;
@@ -966,19 +974,19 @@ export default function TestFeedbackPage() {
                                         ? 'border-brand bg-primary-50 ring-2 ring-brand/30'
                                         : 'border-border bg-surface-alt'
                                         }`}>
-                                        <div className="flex items-center gap-4 mb-3">
-                                          <label className="font-medium text-text-secondary min-w-[60px]">
+                                        <div className="flex items-center gap-3 mb-3 flex-wrap">
+                                          <label className="font-medium text-text-secondary min-w-[50px]">
                                             {task.label}{subtask.label}:
                                           </label>
-                                          <div className="flex items-center gap-2">
+                                          <div className="flex items-center gap-2 flex-wrap">
                                             <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
-                                            <div className="flex gap-1">
+                                            <div className="flex gap-1 flex-wrap">
                                               {[0, 1, 2, 3, 4, 5, 6].map(p => (
                                                 <button
                                                   key={p}
                                                   type="button"
                                                   onClick={() => handleUpdateFeedback(task.id, subtask.id, { points: p })}
-                                                  className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
+                                                  className={`w-8 h-8 rounded-lg text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none ${feedback.points === p
                                                     ? 'bg-brand text-white shadow-md scale-110'
                                                     : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                                     }`}

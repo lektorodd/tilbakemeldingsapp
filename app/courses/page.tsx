@@ -291,14 +291,12 @@ export default function CoursesPage() {
     <main className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header — title + primary action */}
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-display font-bold text-text-primary mb-2">{t('home.title')}</h1>
-            <p className="text-text-secondary">{t('home.subtitle')}</p>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-4xl font-display font-bold text-text-primary mb-2">{t('home.title')}</h1>
+          <p className="text-text-secondary mb-4">{t('home.subtitle')}</p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white rounded-lg hover:bg-brand-hover transition-colors font-medium shadow-sm"
           >
             <Plus size={20} />
             {t('home.createCourse')}

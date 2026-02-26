@@ -94,10 +94,10 @@ export default function TaskStudentList({
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                   <label className="text-sm text-text-secondary">{t('test.pointsLabel')}</label>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 flex-wrap">
                     {[0, 1, 2, 3, 4, 5, 6].map(p => (
                       <button
                         key={p}
@@ -107,7 +107,7 @@ export default function TaskStudentList({
                           onSetActiveStudent(index);
                           onUpdateFeedback(student.id, { points: p });
                         }}
-                        className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
+                        className={`w-8 h-8 rounded-lg text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none ${feedback.points === p
                           ? 'bg-brand text-white shadow-md scale-110'
                           : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                           }`}

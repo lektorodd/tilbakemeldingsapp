@@ -348,7 +348,7 @@ export default function TaskGradingPage() {
       {/* Header */}
       <div className="bg-surface border-b border-border px-4 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-2">
+          <div className="mb-2">
             <div>
               <Link
                 href={`/course/${courseId}/test/${testId}`}
@@ -364,38 +364,38 @@ export default function TaskGradingPage() {
                 <span className="text-text-secondary">— {test.name}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href={`/course/${courseId}/test/${testId}`}
-                className="flex items-center gap-2 px-3 py-2 text-sm bg-surface border border-border rounded-lg hover:bg-surface-alt transition"
-                title={t('test.backToStudentGrading')}
-              >
-                <Users size={16} />
-                {t('test.backToStudentGrading')}
-              </Link>
-              <Link
-                href={`/course/${courseId}/test/${testId}/analytics`}
-                className="flex items-center gap-2 px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
-                title={t('test.taskAnalyticsTitle')}
-              >
-                <BarChart3 size={16} />
-                {t('test.taskAnalyticsTitle')}
-              </Link>
-              <button
-                onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
-                className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-surface-alt transition"
-                title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
-              >
-                {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
-              </button>
-              <button
-                onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
-                className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-surface-alt transition"
-                title={t('test.keyboardShortcuts')}
-              >
-                <Keyboard size={16} />
-              </button>
-            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href={`/course/${courseId}/test/${testId}`}
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-surface border border-border rounded-lg hover:bg-surface-alt transition"
+              title={t('test.backToStudentGrading')}
+            >
+              <Users size={16} />
+              {t('test.backToStudentGrading')}
+            </Link>
+            <Link
+              href={`/course/${courseId}/test/${testId}/analytics`}
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+              title={t('test.taskAnalyticsTitle')}
+            >
+              <BarChart3 size={16} />
+              {t('test.taskAnalyticsTitle')}
+            </Link>
+            <button
+              onClick={() => setShowSnippetSidebar(!showSnippetSidebar)}
+              className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-surface-alt transition"
+              title={showSnippetSidebar ? t('test.hideSnippets') : t('test.showSnippets')}
+            >
+              {showSnippetSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+            </button>
+            <button
+              onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
+              className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-surface-alt transition"
+              title={t('test.keyboardShortcuts')}
+            >
+              <Keyboard size={16} />
+            </button>
           </div>
 
           <div className="flex items-center gap-4">

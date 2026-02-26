@@ -164,7 +164,8 @@
     "anonymizeConfirmTitle": "Anonymize this course?",
     "anonymizeConfirmMessage": "This will permanently replace all student names with generic labels (Student 1, Student 2, ...) and remove all comments that may contain identifying information. Scores and analytics data will be preserved.\n\nA backup is automatically created before anonymization.",
     "anonymizeSuccess": "Course anonymized! All student names and comments have been removed.",
-    "anonymizeStudentLabel": "Student"
+    "anonymizeStudentLabel": "Student",
+    "exportCsv": "Export to CSV/Excel"
   },
   "test": {
     "giveFeedback": "Give Feedback",
@@ -650,7 +651,7 @@
   },
   "sync": {
     "connected": "Connected",
-    "notConnected": "Not connected",
+    "notConnected": "Folder not connected",
     "syncing": "Syncing…",
     "saved": "Saved",
     "error": "Sync error",

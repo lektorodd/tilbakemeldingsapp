@@ -91,7 +91,7 @@ export default function ProgressGrid({
                             return (
                                 <tr
                                     key={student.id}
-                                    className={`border-b border-border/50 cursor-pointer transition-colors hover:bg-surface-alt ${isSelected ? 'bg-rose-50 hover:bg-rose-100' : ''
+                                    className={`border-b border-border/50 cursor-pointer transition-colors hover:bg-surface-alt ${isSelected ? 'bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50' : ''
                                         } ${isAbsent ? 'opacity-50' : ''}`}
                                     onClick={() => onSelectStudent(student)}
                                 >
@@ -118,14 +118,24 @@ export default function ProgressGrid({
                                             const isGraded = points !== null || hasComment;
                                             const displayPoints = points ?? 0;
 
-                                            // Color based on score (0-6 scale)
+                                            // Color + accessibility shape based on score (0-6 scale)
                                             let cellColor = 'bg-surface-alt text-text-disabled'; // not graded
+                                            let a11yShape = ''; // accessibility shape indicator
                                             if (isGraded) {
                                                 const ratio = displayPoints / MAX_POINTS;
-                                                if (ratio >= 0.83) cellColor = 'bg-emerald-100 text-emerald-700';       // 5-6
-                                                else if (ratio >= 0.5) cellColor = 'bg-amber-100 text-amber-700';        // 3-4
-                                                else if (ratio > 0) cellColor = 'bg-danger-bg text-danger';               // 1-2
-                                                else cellColor = hasComment ? 'bg-info-bg text-info' : 'bg-danger-bg text-danger'; // 0
+                                                if (ratio >= 0.83) {
+                                                    cellColor = 'bg-emerald-100 text-emerald-700';       // 5-6
+                                                    a11yShape = '●';
+                                                } else if (ratio >= 0.5) {
+                                                    cellColor = 'bg-amber-100 text-amber-700';           // 3-4
+                                                    a11yShape = '◆';
+                                                } else if (ratio > 0) {
+                                                    cellColor = 'bg-danger-bg text-danger';              // 1-2
+                                                    a11yShape = '▼';
+                                                } else {
+                                                    cellColor = hasComment ? 'bg-info-bg text-info' : 'bg-danger-bg text-danger'; // 0
+                                                    a11yShape = '▼';
+                                                }
                                             }
 
                                             return (
@@ -133,6 +143,7 @@ export default function ProgressGrid({
                                                     <div
                                                         className={`inline-flex items-center justify-center w-7 h-6 rounded text-[10px] font-semibold ${cellColor}`}
                                                         title={`${slot.label}: ${displayPoints}/${MAX_POINTS}${hasComment ? ' 💬' : ''}`}
+                                                        aria-label={`${slot.label}: ${displayPoints} av ${MAX_POINTS}`}
                                                     >
                                                         {isGraded ? displayPoints : '·'}
                                                     </div>

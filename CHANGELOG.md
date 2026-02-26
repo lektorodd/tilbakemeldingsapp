@@ -2,6 +2,24 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.5] — 2026-02-26
+
+### Improved
+- **Hero layout** — title, subtitle, and "Create Course" button now stack vertically instead of competing for the same row.
+- **Score buttons responsive** — the 0-6 point buttons now wrap gracefully on narrow viewports and are slightly smaller (32→28px) for better fit.
+- **Task-grading header** — split into title row + action row to prevent text/button overlap.
+- **Student search** — added a live-filter search input to the student sidebar on the grading page.
+- **Accessibility indicators** — ProgressGrid score cells now include shape symbols (● high, ◆ medium, ▼ low) alongside colors for color-blind users, plus `aria-label` attributes.
+- **Dark mode selected row** — the selected student row in ProgressGrid is now clearly visible in dark mode (`dark:bg-rose-950`).
+- **Focus rings on score buttons** — keyboard navigation now shows a `focus-visible` ring on the 0-6 point buttons.
+- **Sync status clarity** — "Ikke tilkoblet" → "Mappe ikke tilkoblet" to indicate folder sync specifically.
+
+### Fixed
+- **i18n: Export button** — the "Export to CSV/Excel" button text was hardcoded in English; now uses `t('course.exportCsv')` with translations in all 3 locales.
+
+---
+
+
 ## [0.9.4] — 2026-02-26
 
 ### Security
