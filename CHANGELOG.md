@@ -2,6 +2,21 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.9] — 2026-02-26
+
+### Added
+- **Live math preview** in comment fields — type `$x^2 + sqrt(3)$` and see rendered math below the textarea. Supports Typst math syntax with automatic translation to KaTeX.
+  - Inline math: `$expr$`, display math: `$ expr $` (Typst space convention)
+  - Fraction syntax: `$a/b$`, `$(a+b)/(c+d)$`, `$frac(a,b)$`
+  - Greek letters, operators, arrows, sqrt, vec, abs, and more
+
+### Improved
+- **Observation panel UX** — floating action button (bottom-right) opens a slide-out panel instead of being buried at the bottom of the page.
+- **Searchable student picker** for observations — type to filter students by name, essential for large classes.
+- **Cmd+Enter** shortcut to submit observations quickly.
+
+---
+
 ## [0.9.8] — 2026-02-26
 
 ### Added

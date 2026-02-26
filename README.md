@@ -1,4 +1,4 @@
-# MatteMonitor v0.9.8
+# MatteMonitor v0.9.9
 
 A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 
@@ -68,6 +68,11 @@ cargo install --git https://github.com/typst/typst
 **PDF Export**
 - Generate professional feedback documents via Typst
 - Full math rendering in exported PDFs
+
+**Live Math Preview**
+- Inline math rendering in comment fields using KaTeX with Typst syntax translation
+- Type `$x^2 + sqrt(3)$` and see rendered math below the textarea
+- Supports fractions (`a/b`), Greek letters, operators, arrows, and more
 - Supports English, Norwegian Bokmål, and Nynorsk
 
 **Data & Backup**
