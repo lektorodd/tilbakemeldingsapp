@@ -165,7 +165,20 @@
     "anonymizeConfirmMessage": "This will permanently replace all student names with generic labels (Student 1, Student 2, ...) and remove all comments that may contain identifying information. Scores and analytics data will be preserved.\n\nA backup is automatically created before anonymization.",
     "anonymizeSuccess": "Course anonymized! All student names and comments have been removed.",
     "anonymizeStudentLabel": "Student",
-    "exportCsv": "Export to CSV/Excel"
+    "exportCsv": "Export to CSV/Excel",
+    "observations": "Observations",
+    "noObservationsYet": "No observations yet. Record positive moments and classroom observations!",
+    "addObservation": "Add observation",
+    "observationPlaceholder": "What did you observe? e.g. 'Explained derivatives to peer', 'Great effort in group work'",
+    "observationTypePositive": "Positive",
+    "observationTypeConstructive": "Constructive",
+    "observationTypeNote": "Note",
+    "observationAdded": "Observation added!",
+    "deleteObservationConfirm": "Delete this observation?",
+    "recentObservations": "Recent observations",
+    "allStudents": "All students",
+    "observationCount": "Observations",
+    "prosjektComingSoon": "Projects (coming soon)"
   },
   "test": {
     "giveFeedback": "Give Feedback",

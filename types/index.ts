@@ -133,6 +133,7 @@ export interface Course {
   students: CourseStudent[]; // All students in this course
   tests: CourseTest[]; // Written tests in this course
   oralTests?: OralTest[]; // Oral assessments in this course
+  observations?: ClassroomObservation[]; // Formative assessment observations
   availableLabels: string[]; // Course-specific labels (e.g., ["fractions", "logarithms", "equations"])
   createdDate: string;
   lastModified: string;
@@ -226,6 +227,19 @@ export interface OralFeedbackData {
   duration?: number; // Duration in minutes
   completedDate?: string; // When the teacher finished the assessment
   score?: number; // Calculated average across dimensions (0-60 scale)
+}
+
+// Classroom observation — standalone formative assessment note (underveisvurdering)
+export type ObservationType = 'positive' | 'constructive' | 'note';
+
+export interface ClassroomObservation {
+  id: string;
+  studentId: string;
+  text: string;
+  type: ObservationType;
+  labels?: string[];   // Reuses course availableLabels
+  date: string;        // ISO date string (observation date)
+  createdDate: string; // ISO date string (when created in the app)
 }
 
 // Per-student scores for a specific task (used in analytics drill-down and task-level grading)

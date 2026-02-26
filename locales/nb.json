@@ -165,7 +165,20 @@
     "anonymizeConfirmMessage": "Dette vil permanent erstatte alle elevnavn med generiske navn (Elev 1, Elev 2, ...) og fjerne alle kommentarer som kan inneholde identifiserende informasjon. Poeng og analysedata bevares.\n\nEn sikkerhetskopi opprettes automatisk før anonymisering.",
     "anonymizeSuccess": "Fag anonymisert! Alle elevnavn og kommentarer er fjernet.",
     "anonymizeStudentLabel": "Elev",
-    "exportCsv": "Eksporter til CSV/Excel"
+    "exportCsv": "Eksporter til CSV/Excel",
+    "observations": "Observasjoner",
+    "noObservationsYet": "Ingen observasjoner ennå. Registrer positive ting og observasjoner fra timen!",
+    "addObservation": "Legg til observasjon",
+    "observationPlaceholder": "Hva observerte du? f.eks. 'Forklarte derivasjon til medelev', 'God innsats i gruppearbeid'",
+    "observationTypePositive": "Positivt",
+    "observationTypeConstructive": "Konstruktivt",
+    "observationTypeNote": "Notat",
+    "observationAdded": "Observasjon lagt til!",
+    "deleteObservationConfirm": "Slette denne observasjonen?",
+    "recentObservations": "Siste observasjoner",
+    "allStudents": "Alle elever",
+    "observationCount": "Observasjoner",
+    "prosjektComingSoon": "Prosjekt (kommer snart)"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",

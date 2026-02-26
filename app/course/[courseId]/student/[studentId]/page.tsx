@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getStudentDetailedAnalytics, loadCourse } from '@/utils/storage';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, Target, Award, BarChart3, Tag, BookOpen, MessageSquare, UserX } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, Target, Award, BarChart3, Tag, BookOpen, MessageSquare, UserX, Eye, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -42,7 +42,7 @@ export default function StudentDashboardPage() {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>;
   }
 
-  const { student, course, testPerformance, oralPerformance, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
+  const { student, course, testPerformance, oralPerformance, observations, labelPerformance, categoryPerformance, partPerformance, overallStats } = analytics;
 
   const getScoreColor = (score: number): string => {
     const percentage = (score / 60) * 100;
@@ -93,7 +93,7 @@ export default function StudentDashboardPage() {
         </div>
 
         {/* Overall Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-surface rounded-lg shadow-sm p-4">
             <div className="flex items-center gap-2 mb-2">
               <Award size={20} className="text-brand" />
@@ -125,6 +125,16 @@ export default function StudentDashboardPage() {
               {overallStats.averageAttemptRate.toFixed(0)}%
             </p>
             <p className="text-sm text-text-secondary">{t('dashboard.tasksAttempted')}</p>
+          </div>
+
+          <div className="bg-surface rounded-lg shadow-sm p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Eye size={20} className="text-emerald-600" />
+              <h3 className="font-semibold text-text-primary">{t('course.observationCount')}</h3>
+            </div>
+            <p className="text-3xl font-display font-bold text-emerald-600">
+              {overallStats.observationCount || 0}
+            </p>
           </div>
 
           <div className="bg-surface rounded-lg shadow-sm p-4">
@@ -310,6 +320,55 @@ export default function StudentDashboardPage() {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Observations Timeline */}
+        <div className="bg-surface rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Eye size={24} className="text-emerald-600" />
+            <h2 className="text-2xl font-display font-bold text-text-primary">{t('course.observations')}</h2>
+            <span className="text-text-secondary">({observations?.length || 0})</span>
+          </div>
+
+          {!observations || observations.length === 0 ? (
+            <p className="text-text-disabled text-center py-6">{t('course.noObservationsYet')}</p>
+          ) : (
+            <div className="space-y-2">
+              {observations.map(obs => {
+                const typeConfig = {
+                  positive: { emoji: '🌟', bgClass: 'bg-emerald-100 text-emerald-700' },
+                  constructive: { emoji: '🔧', bgClass: 'bg-amber-100 text-amber-700' },
+                  note: { emoji: '📝', bgClass: 'bg-slate-100 text-slate-600' },
+                };
+                const config = typeConfig[obs.type] || typeConfig.note;
+                return (
+                  <div key={obs.id} className="flex items-start gap-3 border border-border rounded-lg px-4 py-3">
+                    <span className="text-lg mt-0.5">{config.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${config.bgClass}`}>
+                          {t(`course.observationType${obs.type.charAt(0).toUpperCase() + obs.type.slice(1)}`)}
+                        </span>
+                        <span className="text-xs text-text-disabled">
+                          {new Date(obs.date).toLocaleDateString('nb-NO')}
+                        </span>
+                      </div>
+                      <p className="text-sm text-text-primary">{obs.text}</p>
+                      {obs.labels && obs.labels.length > 0 && (
+                        <div className="flex gap-1 mt-1">
+                          {obs.labels.map(label => (
+                            <span key={label} className="px-1.5 py-0.5 bg-surface-alt text-text-secondary rounded text-xs">
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -563,6 +622,22 @@ export default function StudentDashboardPage() {
             <li>• {t('dashboard.helpPart')}</li>
             <li>• {t('dashboard.helpColors')}</li>
           </ul>
+        </div>
+
+        {/* Prosjekt placeholder (coming soon) */}
+        <div className="mt-6 bg-surface border-2 border-dashed border-border rounded-lg p-6">
+          <div className="flex items-center gap-3">
+            <FolderOpen size={24} className="text-text-disabled" />
+            <div>
+              <h3 className="font-semibold text-text-primary flex items-center gap-2">
+                {t('course.prosjektComingSoon')}
+                <span className="px-2 py-0.5 bg-brand/10 text-brand text-xs font-medium rounded-full">Snart</span>
+              </h3>
+              <p className="text-sm text-text-disabled mt-0.5">
+                Lengre arbeid, prosjekter og innleveringer — kommer i neste oppdatering.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Scoring Guide */}

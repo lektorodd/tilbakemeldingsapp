@@ -2,6 +2,20 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.8] — 2026-02-26
+
+### Added
+- **Classroom observations** — record positive moments, constructive feedback, and general notes per student directly from the course page. Quick-add form with type selector (🌟 Positive / 🔧 Constructive / 📝 Note), optional topic labels, and student filter. Observations appear as a timeline on each student's dashboard.
+- **Observation count** on the student dashboard stats row — shows how many observations have been recorded for the student.
+- **Prosjekt placeholder** — "coming soon" teaser on the student dashboard for the upcoming project module.
+
+### Changed
+- Student dashboard stats grid expanded from 4 to 5 columns to include observation count.
+- `deleteStudent()` now also cleans up associated observations.
+- `getStudentDetailedAnalytics()` returns observations and observation count in the overall stats.
+
+---
+
 ## [0.9.7] — 2026-02-26
 
 ### Improved

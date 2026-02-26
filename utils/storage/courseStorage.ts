@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore, ClassroomObservation } from '@/types';
 import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from '../folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
@@ -186,6 +186,11 @@ export function deleteStudent(courseId: string, studentId: string): void {
   course.tests.forEach(test => {
     test.studentFeedbacks = test.studentFeedbacks.filter(f => f.studentId !== studentId);
   });
+
+  // Also remove their observations
+  if (course.observations) {
+    course.observations = course.observations.filter(o => o.studentId !== studentId);
+  }
 
   saveCourse(course);
 }
@@ -375,6 +380,73 @@ export function deleteOralAssessment(courseId: string, oralTestId: string, stude
 
   oralTest.studentAssessments = oralTest.studentAssessments.filter(a => a.studentId !== studentId);
   saveCourse(course);
+}
+
+// Classroom Observation CRUD operations
+export function addObservation(
+  courseId: string,
+  observation: Omit<ClassroomObservation, 'id' | 'createdDate'>
+): ClassroomObservation {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.observations) {
+    course.observations = [];
+  }
+
+  const newObservation: ClassroomObservation = {
+    ...observation,
+    id: `obs-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    createdDate: new Date().toISOString(),
+  };
+
+  course.observations.push(newObservation);
+  saveCourse(course);
+
+  return newObservation;
+}
+
+export function updateObservation(
+  courseId: string,
+  observationId: string,
+  updates: Partial<ClassroomObservation>
+): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.observations) throw new Error('No observations in course');
+
+  const index = course.observations.findIndex(o => o.id === observationId);
+  if (index === -1) throw new Error('Observation not found');
+
+  course.observations[index] = {
+    ...course.observations[index],
+    ...updates,
+  };
+
+  saveCourse(course);
+}
+
+export function deleteObservation(courseId: string, observationId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.observations) return;
+
+  course.observations = course.observations.filter(o => o.id !== observationId);
+  saveCourse(course);
+}
+
+export function getStudentObservations(
+  courseId: string,
+  studentId: string
+): ClassroomObservation[] {
+  const course = loadCourse(courseId);
+  if (!course || !course.observations) return [];
+
+  return course.observations
+    .filter(o => o.studentId === studentId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export function calculateOralScore(oralFeedback: OralFeedbackData): number {
@@ -887,11 +959,17 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
     ? nonAbsentTests.reduce((sum, t) => sum + t.attemptPercentage, 0) / nonAbsentTests.length
     : 0;
 
+  // Student observations (newest first)
+  const observations = (course.observations || [])
+    .filter(o => o.studentId === studentId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
   return {
     student,
     course,
     testPerformance,
     oralPerformance,
+    observations,
     labelPerformance: labelStats,
     categoryPerformance: categoryStats,
     partPerformance: partStats,
@@ -900,6 +978,7 @@ export function getStudentDetailedAnalytics(courseId: string, studentId: string)
       totalTests: course.tests.length,
       completedOralTests: completedOralTests.length,
       totalOralTests: (course.oralTests || []).length,
+      observationCount: observations.length,
       averageScore,
       averageAttemptRate,
     },

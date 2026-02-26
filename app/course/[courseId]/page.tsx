@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
-import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest, anonymizeCourse } from '@/utils/storage';
+import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest, anonymizeCourse, addObservation, deleteObservation } from '@/utils/storage';
 import { exportCourseToExcel } from '@/utils/excelExport';
 import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download, ShieldOff } from 'lucide-react';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ import LabelManager from '@/components/LabelManager';
 import StudentRosterPanel from '@/components/StudentRosterPanel';
 import TestListPanel from '@/components/TestListPanel';
 import OralTestListPanel from '@/components/OralTestListPanel';
+import ObservationPanel from '@/components/ObservationPanel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { usePreferences } from '@/contexts/PreferencesContext';
@@ -408,6 +409,25 @@ export default function CourseDetailPage() {
     }
   };
 
+  const handleAddObservation = (observation: {
+    studentId: string;
+    text: string;
+    type: 'positive' | 'constructive' | 'note';
+    labels?: string[];
+    date: string;
+  }) => {
+    addObservation(courseId, observation);
+    toast(t('course.observationAdded'), 'success');
+    loadData();
+  };
+
+  const handleDeleteObservation = async (observationId: string) => {
+    if (await confirm(t('course.deleteObservationConfirm'))) {
+      deleteObservation(courseId, observationId);
+      loadData();
+    }
+  };
+
   if (!course) {
     return <div className="min-h-screen bg-background flex items-center justify-center">{t('common.loading')}</div>;
   }
@@ -479,6 +499,18 @@ export default function CourseDetailPage() {
             onAddOralTest={() => setShowAddOralTestModal(true)}
             onEditOralTest={handleEditOralTest}
             onDeleteOralTest={handleDeleteOralTest}
+          />
+        </div>
+
+        {/* Observations */}
+        <div className="mt-6">
+          <ObservationPanel
+            courseId={courseId}
+            students={course.students}
+            observations={(course.observations || []).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
+            availableLabels={course.availableLabels}
+            onAddObservation={handleAddObservation}
+            onDeleteObservation={handleDeleteObservation}
           />
         </div>
 

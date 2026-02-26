@@ -34,6 +34,12 @@ export {
     deleteOralAssessment,
     calculateOralScore,
 
+    // Observation CRUD
+    addObservation,
+    updateObservation,
+    deleteObservation,
+    getStudentObservations,
+
     // Scoring
     calculateStudentScore,
     calculateMaxScore,
