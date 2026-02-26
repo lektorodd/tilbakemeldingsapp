@@ -417,13 +417,11 @@ export default function CourseDetailPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <Link
-              href="/courses"
-              className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-2"
-            >
-              <ArrowLeft size={20} />
-              {t('course.backToCourses')}
-            </Link>
+            <nav className="flex items-center gap-1.5 text-sm text-text-secondary mb-2" aria-label="Breadcrumb">
+              <Link href="/courses" className="hover:text-brand transition-colors">{t('common.appName')}</Link>
+              <span className="text-text-disabled">/</span>
+              <span className="text-text-primary font-medium">{course.name}</span>
+            </nav>
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-display font-bold text-text-primary">{course.name}</h1>

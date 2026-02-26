@@ -2,6 +2,16 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.6] — 2026-02-26
+
+### Improved
+- **Breadcrumb navigation** — replaced "← Back" links with `MatteMonitor / Course / Test` breadcrumb trails on course detail, test grading, and task-grading pages.
+- **Language switcher redesigned** — replaced pipe-separated buttons with a proper segmented control (rounded container, branded active state, improved dark mode contrast).
+- **Task sidebar labels** — the stats display now shows `ø 2.9` (average score) and `20/22` (graded count) with hover tooltips explaining each number.
+- **Typst hint simplified** — removed "(Typst matematikk støttes)" from every comment label; now a single clean "Kommentar:" label.
+
+---
+
 ## [0.9.5] — 2026-02-26
 
 ### Improved

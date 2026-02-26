@@ -71,9 +71,8 @@ export default function TaskSidebar({ tasks, activeTaskSlot, onSelectTask, taskS
           if (item.isPartHeader) {
             return (
               <div key={`part-${item.partNumber}`} className="px-3 py-2 mt-2 first:mt-0">
-                <span className={`text-xs font-semibold uppercase tracking-wider ${
-                  item.partNumber === 1 ? 'text-orange-600' : 'text-info'
-                }`}>
+                <span className={`text-xs font-semibold uppercase tracking-wider ${item.partNumber === 1 ? 'text-orange-600' : 'text-info'
+                  }`}>
                   {item.partNumber === 1 ? t('test.part1NoAids') : t('test.part2AllAids')}
                 </span>
               </div>
@@ -88,11 +87,10 @@ export default function TaskSidebar({ tasks, activeTaskSlot, onSelectTask, taskS
             <button
               key={key}
               onClick={() => onSelectTask(item.slot)}
-              className={`w-full text-left px-3 py-2.5 rounded-lg transition-all flex items-center justify-between gap-2 ${
-                isActive
+              className={`w-full text-left px-3 py-2.5 rounded-lg transition-all flex items-center justify-between gap-2 ${isActive
                   ? 'border-brand bg-primary-50 ring-2 ring-brand/30 border'
                   : 'border border-transparent hover:bg-surface-alt hover:border-border'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span className={`font-medium ${isActive ? 'text-brand' : 'text-text-primary'}`}>
@@ -101,10 +99,10 @@ export default function TaskSidebar({ tasks, activeTaskSlot, onSelectTask, taskS
               </div>
               {stats && (
                 <div className="flex items-center gap-2 text-xs shrink-0">
-                  <span className={getScoreColor(stats.avgScore)}>
-                    {stats.avgScore.toFixed(1)}
+                  <span className={getScoreColor(stats.avgScore)} title={t('test.averageScore')}>
+                    ø {stats.avgScore.toFixed(1)}
                   </span>
-                  <span className="text-text-disabled">
+                  <span className="text-text-disabled" title={t('test.gradedCount').replace('{count}', stats.gradedCount.toString()).replace('{total}', stats.totalStudents.toString())}>
                     {stats.gradedCount}/{stats.totalStudents}
                   </span>
                 </div>

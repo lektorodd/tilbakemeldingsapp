@@ -350,13 +350,15 @@ export default function TaskGradingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-2">
             <div>
-              <Link
-                href={`/course/${courseId}/test/${testId}`}
-                className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-1 text-sm"
-              >
-                <ArrowLeft size={16} />
-                {t('test.backToTest')}
-              </Link>
+              <nav className="flex items-center gap-1.5 text-xs text-text-secondary mb-1" aria-label="Breadcrumb">
+                <Link href="/courses" className="hover:text-brand transition-colors">{t('common.appName')}</Link>
+                <span className="text-text-disabled">/</span>
+                <Link href={`/course/${courseId}`} className="hover:text-brand transition-colors">{course.name}</Link>
+                <span className="text-text-disabled">/</span>
+                <Link href={`/course/${courseId}/test/${testId}`} className="hover:text-brand transition-colors">{test.name}</Link>
+                <span className="text-text-disabled">/</span>
+                <span className="text-text-primary font-medium">{t('test.taskGrading')}</span>
+              </nav>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-display font-bold text-text-primary">
                   {t('test.taskGrading')}

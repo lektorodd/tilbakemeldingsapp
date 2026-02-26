@@ -653,13 +653,13 @@ export default function TestFeedbackPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <Link
-              href={`/course/${courseId}`}
-              className="inline-flex items-center gap-2 text-brand hover:text-brand-hover mb-2"
-            >
-              <ArrowLeft size={20} />
-              {t('test.backToCourse')}
-            </Link>
+            <nav className="flex items-center gap-1.5 text-sm text-text-secondary mb-2" aria-label="Breadcrumb">
+              <Link href="/courses" className="hover:text-brand transition-colors">{t('common.appName')}</Link>
+              <span className="text-text-disabled">/</span>
+              <Link href={`/course/${courseId}`} className="hover:text-brand transition-colors">{course.name}</Link>
+              <span className="text-text-disabled">/</span>
+              <span className="text-text-primary font-medium">{test.name}</span>
+            </nav>
             <div className="flex items-center gap-4 mb-2">
               <h1 className="text-3xl font-display font-bold text-text-primary">{test.name}</h1>
               {course.tests.length > 1 && (
