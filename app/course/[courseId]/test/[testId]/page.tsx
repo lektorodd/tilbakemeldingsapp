@@ -12,6 +12,7 @@ import ScoringGuide from '@/components/ScoringGuide';
 import GradingProgressBar from '@/components/GradingProgressBar';
 import ProgressGrid from '@/components/ProgressGrid';
 import SnippetSidebar from '@/components/SnippetSidebar';
+import TypstMathPreview from '@/components/TypstMathPreview';
 import { useGradingShortcuts, TaskSlot } from '@/hooks/useGradingShortcuts';
 import { ArrowLeft, Save, Download, CheckCircle, Circle, FileText, BarChart3, Link2, PanelRightOpen, PanelRightClose, Plus, Trash2, ChevronLeft, ChevronRight, Keyboard, ListChecks, Eye, UserX, UserCheck, Bold, Italic, Underline } from 'lucide-react';
 import Link from 'next/link';
@@ -798,6 +799,7 @@ export default function TestFeedbackPage() {
               className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
               placeholder={t('test.generalCommentPlaceholder')}
             />
+            <TypstMathPreview text={test.generalComment} />
           </div>
         </div>
 
@@ -1020,6 +1022,7 @@ export default function TestFeedbackPage() {
                                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                             placeholder={t('test.commentPlaceholder1')}
                                           />
+                                          <TypstMathPreview text={feedback.comment} />
                                         </div>
                                       </div>
                                     );
@@ -1085,6 +1088,7 @@ export default function TestFeedbackPage() {
                                             className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                                             placeholder={t('test.commentPlaceholder2')}
                                           />
+                                          <TypstMathPreview text={feedback.comment} />
                                         </div>
                                       </>
                                     );
@@ -1132,6 +1136,7 @@ export default function TestFeedbackPage() {
                         className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                         placeholder={t('test.individualCommentPlaceholder')}
                       />
+                      <TypstMathPreview text={currentFeedback.individualComment} />
                     </div>
                   </div>
               ) : (

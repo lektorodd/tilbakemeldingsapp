@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { CourseStudent, TaskFeedback } from '@/types';
 import { CheckCircle, Circle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import TypstMathPreview from '@/components/TypstMathPreview';
 
 interface TaskStudentListProps {
   students: CourseStudent[];
@@ -134,17 +135,20 @@ export default function TaskStudentList({
                   className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                   placeholder={t('test.commentPlaceholder1')}
                 />
+                <TypstMathPreview text={feedback.comment} />
               </div>
             </div>
           );
         })}
       </div>
 
-      {students.length === 0 && (
-        <div className="text-center py-8 text-text-disabled">
-          {t('test.noStudentsInCourse')}
-        </div>
-      )}
+      {
+        students.length === 0 && (
+          <div className="text-center py-8 text-text-disabled">
+            {t('test.noStudentsInCourse')}
+          </div>
+        )
+      }
     </div>
   );
 }

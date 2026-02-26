@@ -3,6 +3,7 @@
 import React from 'react';
 import { Task, TaskFeedback } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import TypstMathPreview from '@/components/TypstMathPreview';
 
 interface FeedbackFormProps {
   tasks: Task[];
@@ -66,8 +67,8 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                                 type="button"
                                 onClick={() => updateFeedback(task.id, subtask.id, { points: p })}
                                 className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
-                                    ? 'bg-brand text-white shadow-md scale-110'
-                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
+                                  ? 'bg-brand text-white shadow-md scale-110'
+                                  : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                   }`}
                               >
                                 {p}
@@ -90,6 +91,7 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                           className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                           placeholder={t('test.commentPlaceholder1')}
                         />
+                        <TypstMathPreview text={feedback.comment} />
                       </div>
                     </div>
                   );
@@ -114,8 +116,8 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                                 type="button"
                                 onClick={() => updateFeedback(task.id, undefined, { points: p })}
                                 className={`w-9 h-9 rounded-lg font-semibold transition-all ${feedback.points === p
-                                    ? 'bg-brand text-white shadow-md scale-110'
-                                    : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
+                                  ? 'bg-brand text-white shadow-md scale-110'
+                                  : 'bg-surface border border-border text-text-secondary hover:bg-primary-50 hover:border-brand'
                                   }`}
                               >
                                 {p}
@@ -138,6 +140,7 @@ export default function FeedbackForm({ tasks, feedbacks, onFeedbackChange }: Fee
                           className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-focus font-mono text-sm text-text-primary"
                           placeholder={t('test.commentPlaceholder2')}
                         />
+                        <TypstMathPreview text={feedback.comment} />
                       </div>
                     </>
                   );
