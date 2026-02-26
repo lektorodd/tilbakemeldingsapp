@@ -21,6 +21,7 @@ export {
     // Feedback operations
     updateStudentFeedback,
     getStudentFeedback,
+    flushPendingSave,
 
     // Oral Test CRUD
     addOralTest,

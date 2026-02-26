@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readdir, readFile, writeFile, mkdir, rm, stat } from 'fs/promises';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { existsSync } from 'fs';
 
 /**
@@ -22,6 +22,18 @@ import { existsSync } from 'fs';
 // Store the chosen folder path in memory (server-side state)
 let activeFolderPath: string | null = null;
 
+/**
+ * Resolve a relative path within the active folder and ensure it doesn't escape.
+ * Throws if the resolved path is outside the sandbox.
+ */
+function safePath(base: string, rel: string): string {
+    const resolved = resolve(base, rel);
+    if (resolved !== base && !resolved.startsWith(base + '/')) {
+        throw new Error('Path traversal detected');
+    }
+    return resolved;
+}
+
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
@@ -38,7 +50,7 @@ export async function GET(request: NextRequest) {
                     ).trim();
                     // Convert AppleScript path (Macintosh HD:Users:...) to POSIX path
                     const posixPath = '/' + result.replace(/^.*?:/, '').replace(/:/g, '/').replace(/\/$/, '');
-                    activeFolderPath = posixPath;
+                    activeFolderPath = resolve(posixPath);
                     return NextResponse.json({ path: posixPath, name: posixPath.split('/').pop() });
                 } catch (e: any) {
                     if (e.status === 1) {
@@ -64,8 +76,8 @@ export async function GET(request: NextRequest) {
 
             case 'reconnect': {
                 const savedPath = searchParams.get('path');
-                if (savedPath && existsSync(savedPath)) {
-                    activeFolderPath = savedPath;
+                if (savedPath && !savedPath.includes('..') && existsSync(savedPath)) {
+                    activeFolderPath = resolve(savedPath);
                     return NextResponse.json({ connected: true, path: savedPath });
                 }
                 return NextResponse.json({ connected: false });
@@ -76,7 +88,7 @@ export async function GET(request: NextRequest) {
                 if (!filePath || !activeFolderPath) {
                     return NextResponse.json({ error: 'Missing path or no folder connected' }, { status: 400 });
                 }
-                const fullPath = join(activeFolderPath, filePath);
+                const fullPath = safePath(activeFolderPath, filePath);
                 if (!existsSync(fullPath)) {
                     return NextResponse.json({ error: 'File not found' }, { status: 404 });
                 }
@@ -89,7 +101,7 @@ export async function GET(request: NextRequest) {
                 if (!activeFolderPath) {
                     return NextResponse.json({ error: 'No folder connected' }, { status: 400 });
                 }
-                const fullPath = join(activeFolderPath, dirPath);
+                const fullPath = safePath(activeFolderPath, dirPath);
                 if (!existsSync(fullPath)) {
                     return NextResponse.json([]);
                 }
@@ -104,7 +116,7 @@ export async function GET(request: NextRequest) {
                 if (!activeFolderPath) {
                     return NextResponse.json({ exists: false });
                 }
-                return NextResponse.json({ exists: existsSync(join(activeFolderPath, checkPath)) });
+                return NextResponse.json({ exists: existsSync(safePath(activeFolderPath, checkPath)) });
             }
 
             default:
@@ -130,7 +142,7 @@ export async function POST(request: NextRequest) {
                 if (!relPath) {
                     return NextResponse.json({ error: 'Missing path' }, { status: 400 });
                 }
-                const fullPath = join(activeFolderPath, relPath);
+                const fullPath = safePath(activeFolderPath, relPath);
                 // Ensure parent directory exists
                 const parentDir = fullPath.substring(0, fullPath.lastIndexOf('/'));
                 if (!existsSync(parentDir)) {
@@ -144,7 +156,7 @@ export async function POST(request: NextRequest) {
                 if (!relPath) {
                     return NextResponse.json({ error: 'Missing path' }, { status: 400 });
                 }
-                const fullPath = join(activeFolderPath, relPath);
+                const fullPath = safePath(activeFolderPath, relPath);
                 await mkdir(fullPath, { recursive: true });
                 return NextResponse.json({ ok: true });
             }
@@ -153,7 +165,7 @@ export async function POST(request: NextRequest) {
                 if (!relPath) {
                     return NextResponse.json({ error: 'Missing path' }, { status: 400 });
                 }
-                const fullPath = join(activeFolderPath, relPath);
+                const fullPath = safePath(activeFolderPath, relPath);
                 if (existsSync(fullPath)) {
                     await rm(fullPath, { recursive: true });
                 }

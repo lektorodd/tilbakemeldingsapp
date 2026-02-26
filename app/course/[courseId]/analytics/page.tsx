@@ -133,7 +133,7 @@ export default function CourseAnalyticsPage() {
               </div>
               <p className="text-sm text-text-secondary mb-4">{t('analytics.testAnalyticsDesc')}</p>
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {course.tests
+                {[...course.tests]
                   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                   .map(test => {
                     const completedCount = test.studentFeedbacks.filter(f => f.completedDate).length;
@@ -170,7 +170,7 @@ export default function CourseAnalyticsPage() {
               </div>
               <p className="text-sm text-text-secondary mb-4">{t('analytics.studentDashboardsDesc')}</p>
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {course.students
+                {[...course.students]
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map(student => {
                     // Calculate completed tests for this student

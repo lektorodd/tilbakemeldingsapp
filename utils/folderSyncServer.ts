@@ -320,6 +320,7 @@ async function readTestFolderServer(
                         taskFeedbacks: data.taskFeedbacks || [],
                         individualComment: data.individualComment || '',
                         completedDate: data.completedDate,
+                        absent: data.absent,
                     });
                 }
             } catch (e) {
@@ -421,7 +422,7 @@ export async function serverSaveCourseToFolder(course: Course): Promise<void> {
             const student = course.students.find(s => s.id === feedback.studentId);
             if (!student) continue;
 
-            const studentFileName = `${sanitizeFileName(student.name)}.json`;
+            const studentFileName = `${student.id}.json`;
             await fetch(API_BASE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -435,6 +436,7 @@ export async function serverSaveCourseToFolder(course: Course): Promise<void> {
                         taskFeedbacks: feedback.taskFeedbacks,
                         individualComment: feedback.individualComment,
                         completedDate: feedback.completedDate,
+                        absent: feedback.absent,
                     },
                 }),
             });

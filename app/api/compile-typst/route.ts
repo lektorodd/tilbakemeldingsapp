@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { writeFile, unlink, readFile } from 'fs/promises';
+import { writeFile, readFile, rm } from 'fs/promises';
+import { mkdtemp } from 'fs/promises';
 import { join, resolve } from 'path';
 import { tmpdir } from 'os';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const fontsDir = resolve(process.cwd(), 'fonts');
 
@@ -23,7 +24,22 @@ function findTypst(): string {
   return 'typst'; // fallback to PATH
 }
 
+/**
+ * Sanitize filename: strip directory separators, traversal, and dangerous chars.
+ * Returns only the basename with safe characters.
+ */
+function sanitizeFilename(name: string): string {
+  return name
+    .replace(/\.\./g, '')           // remove traversal
+    .replace(/[/\\]/g, '')          // remove directory separators
+    .replace(/[^a-zA-Z0-9_\-æøåÆØÅ .]/g, '') // keep safe chars
+    .trim() || 'document';
+}
+
 export async function POST(request: NextRequest) {
+  // Create a unique per-request temp directory to prevent file collisions
+  const tempDir = await mkdtemp(join(tmpdir(), 'typst-'));
+
   try {
     const { content, filename, chartImage } = await request.json();
 
@@ -34,14 +50,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create temp files
-    const tempDir = tmpdir();
-    const typFilename = filename.replace(/\.typ$/, '') + '.typ';
-    const pdfFilename = filename.replace(/\.typ$/, '') + '.pdf';
+    // Sanitize the filename to prevent traversal and injection
+    const safeName = sanitizeFilename(filename.replace(/\.typ$/, ''));
+    const typFilename = safeName + '.typ';
+    const pdfFilename = safeName + '.pdf';
     const typPath = join(tempDir, typFilename);
     const pdfPath = join(tempDir, pdfFilename);
 
-    // Save chart image if provided
+    // Save chart image if provided (unique dir prevents collisions)
     let chartImagePath: string | null = null;
     if (chartImage) {
       chartImagePath = join(tempDir, 'radar-chart.png');
@@ -55,10 +71,16 @@ export async function POST(request: NextRequest) {
     // Find typst binary
     const typstBin = findTypst();
 
-    // Compile Typst file to PDF
+    // Compile Typst file to PDF using execFile (no shell interpretation)
     try {
       const execEnv = { ...process.env, PATH: `/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH || ''}` };
-      const { stdout, stderr } = await execAsync(`"${typstBin}" compile --root "${tempDir}" --font-path "${fontsDir}" "${typPath}" "${pdfPath}"`, {
+      const { stderr } = await execFileAsync(typstBin, [
+        'compile',
+        '--root', tempDir,
+        '--font-path', fontsDir,
+        typPath,
+        pdfPath,
+      ], {
         timeout: 30000,
         env: execEnv,
       });
@@ -70,11 +92,6 @@ export async function POST(request: NextRequest) {
       // Read the generated PDF
       const pdfBuffer = await readFile(pdfPath);
 
-      // Clean up temp files
-      await unlink(typPath).catch(() => { });
-      await unlink(pdfPath).catch(() => { });
-      if (chartImagePath) await unlink(chartImagePath).catch(() => { });
-
       // Return PDF as blob
       return new NextResponse(pdfBuffer, {
         status: 200,
@@ -84,11 +101,6 @@ export async function POST(request: NextRequest) {
         },
       });
     } catch (compileError: any) {
-      // Clean up temp files
-      await unlink(typPath).catch(() => { });
-      await unlink(pdfPath).catch(() => { });
-      if (chartImagePath) await unlink(chartImagePath).catch(() => { });
-
       return NextResponse.json(
         {
           error: 'Typst compilation failed',
@@ -104,5 +116,8 @@ export async function POST(request: NextRequest) {
       { error: 'Internal server error', details: error.message },
       { status: 500 }
     );
+  } finally {
+    // Always clean up the per-request temp directory
+    await rm(tempDir, { recursive: true }).catch(() => { });
   }
 }

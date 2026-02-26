@@ -186,7 +186,13 @@ function escapeCsv(value: string): string {
     return '""';
   }
 
-  const stringValue = String(value);
+  let stringValue = String(value);
+
+  // Guard against CSV formula injection — neutralize dangerous prefixes
+  const DANGEROUS_PREFIXES = ['=', '+', '-', '@', '\t', '\r'];
+  if (DANGEROUS_PREFIXES.some(p => stringValue.startsWith(p))) {
+    stringValue = "'" + stringValue;
+  }
 
   // If value contains comma, quote, or newline, wrap in quotes and escape quotes
   if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {

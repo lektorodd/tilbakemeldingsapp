@@ -1,3 +1,36 @@
+/* Self-hosted fonts — no external network requests */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/InterVariable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/InterVariable-Italic.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('/fonts/SourceSans3.ttf') format('truetype');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('/fonts/SourceSans3-Italic.ttf') format('truetype');
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -2,6 +2,30 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.9.4] — 2026-02-26
+
+### Security
+- **Folder sync API sandboxing** — all file operations now use a `safePath()` helper that prevents `../` directory traversal, ensuring reads/writes stay within the user-approved folder.
+- **URL opener hardened** — replaced `execSync` shell string with `execFileSync` array args, eliminating command injection risk. URLs are validated via `new URL()` constructor.
+- **Typst compile hardened** — replaced shell-interpreted `execAsync` with `execFileAsync` (no shell). Filenames are sanitized to strip traversal characters and directory separators.
+- **Per-request temp directories** — PDF compilation now uses `mkdtemp()` for isolated temp directories per request, preventing concurrent file collisions (e.g., `radar-chart.png` overwrite races).
+- **Content Security Policy** — set a restrictive CSP in `tauri.conf.json` that disallows external connections (`default-src 'self'`).
+- **Shell permissions restricted** — `shell:allow-open` now only permits `http://` and `https://` URLs.
+- **CSV formula injection guard** — `escapeCsv()` now neutralizes cells starting with `=`, `+`, `-`, `@` to prevent Excel formula execution.
+
+### Fixed
+- **Absent status lost on sync** — the `absent` flag is now persisted in folder sync JSON files (both read and write paths) so attendance state survives sync/reload cycles.
+- **Student file name collisions** — folder sync now uses student IDs for feedback filenames instead of sanitized display names, preventing data loss when students share similar names.
+- **Course deduplication** — `deduplicateCourses()` now keys on course ID instead of name, preserving same-name courses (e.g., different years/sections).
+- **State mutation in analytics** — replaced in-place `.sort()` on React state arrays with spread-then-sort (`[...array].sort()`) to prevent subtle re-render bugs.
+
+### Improved
+- **Debounced feedback writes** — `updateStudentFeedback()` now batches saves with a 300ms debounce, reducing localStorage writes and folder sync churn during rapid typing.
+- **ProgressGrid optimization** — replaced per-row `getStudentFeedback()` calls (each re-parsing all localStorage) with a single `useMemo` lookup map, significantly speeding up large class renders.
+- **Self-hosted fonts** — removed Google Fonts CDN links; Inter and Source Sans 3 are now loaded via local `@font-face` declarations for true offline/privacy-first operation.
+
+---
+
 ## [0.9.3] — 2026-02-21
 
 ### Added

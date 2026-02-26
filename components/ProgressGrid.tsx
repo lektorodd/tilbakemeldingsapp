@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { CourseStudent, CourseTest, Task, Subtask } from '@/types';
-import { getStudentFeedback, calculateStudentScore } from '@/utils/storage';
+import React, { useMemo } from 'react';
+import { CourseStudent, CourseTest, Task, Subtask, TestFeedbackData } from '@/types';
+import { calculateStudentScore } from '@/utils/storage';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CheckCircle } from 'lucide-react';
 
@@ -30,6 +30,13 @@ export default function ProgressGrid({
     onSelectStudent,
 }: ProgressGridProps) {
     const { t } = useLanguage();
+
+    // Build feedback lookup map once (instead of calling getStudentFeedback per row)
+    const feedbackMap = useMemo(() => {
+        const map = new Map<string, TestFeedbackData>();
+        test.studentFeedbacks.forEach(fb => map.set(fb.studentId, fb));
+        return map;
+    }, [test.studentFeedbacks]);
 
     if (students.length === 0 || test.tasks.length === 0) return null;
 
@@ -73,7 +80,7 @@ export default function ProgressGrid({
                     </thead>
                     <tbody>
                         {students.map(student => {
-                            const feedback = getStudentFeedback(courseId, test.id, student.id);
+                            const feedback = feedbackMap.get(student.id) || null;
                             const isAbsent = !!feedback?.absent;
                             const isCompleted = !!feedback?.completedDate;
                             const totalScore = feedback

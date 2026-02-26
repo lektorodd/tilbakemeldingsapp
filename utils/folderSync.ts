@@ -463,6 +463,7 @@ async function readTestFolder(
           taskFeedbacks: data.taskFeedbacks || [],
           individualComment: data.individualComment || '',
           completedDate: data.completedDate,
+          absent: data.absent,
         });
       }
     } catch (e) {
@@ -556,7 +557,7 @@ async function writeTestFolder(
     const student = course.students.find(s => s.id === feedback.studentId);
     if (!student) continue;
 
-    const studentFileName = `${sanitizeFileName(student.name)}.json`;
+    const studentFileName = `${student.id}.json`;
     const studentFile = await testDirHandle.getFileHandle(studentFileName, { create: true });
     const studentWritable = await studentFile.createWritable();
     await studentWritable.write(JSON.stringify({
@@ -566,6 +567,7 @@ async function writeTestFolder(
       taskFeedbacks: feedback.taskFeedbacks,
       individualComment: feedback.individualComment,
       completedDate: feedback.completedDate,
+      absent: feedback.absent,
     }, null, 2));
     await studentWritable.close();
   }

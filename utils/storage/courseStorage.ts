@@ -9,8 +9,15 @@ const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 let autoBackupTimer: ReturnType<typeof setInterval> | null = null;
 
-// Course CRUD operations
-export function saveCourse(course: Course): void {
+// ==========================================
+// DEBOUNCED SAVE — batches rapid feedback writes
+// ==========================================
+
+let pendingSaveCourse: Course | null = null;
+let saveDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+const SAVE_DEBOUNCE_MS = 300;
+
+function saveCourseImmediate(course: Course): void {
   const courses = loadAllCourses();
   const existingIndex = courses.findIndex(c => c.id === course.id);
 
@@ -30,6 +37,35 @@ export function saveCourse(course: Course): void {
   if (isFolderConnected()) {
     saveCourseToFolder(course);
   }
+}
+
+function debouncedSaveCourse(course: Course): void {
+  pendingSaveCourse = course;
+  if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(() => {
+    if (pendingSaveCourse) {
+      saveCourseImmediate(pendingSaveCourse);
+      pendingSaveCourse = null;
+    }
+    saveDebounceTimer = null;
+  }, SAVE_DEBOUNCE_MS);
+}
+
+/** Flush any pending debounced save immediately. Call on page unload / navigation. */
+export function flushPendingSave(): void {
+  if (saveDebounceTimer) {
+    clearTimeout(saveDebounceTimer);
+    saveDebounceTimer = null;
+  }
+  if (pendingSaveCourse) {
+    saveCourseImmediate(pendingSaveCourse);
+    pendingSaveCourse = null;
+  }
+}
+
+// Course CRUD operations — always use immediate save
+export function saveCourse(course: Course): void {
+  saveCourseImmediate(course);
 }
 
 export function loadAllCourses(): Course[] {
@@ -226,7 +262,7 @@ export function updateStudentFeedback(
     });
   }
 
-  saveCourse(course);
+  debouncedSaveCourse(course);
 }
 
 export function getStudentFeedback(courseId: string, testId: string, studentId: string): TestFeedbackData | null {
@@ -1100,7 +1136,8 @@ export function deduplicateCourses(courses: Course[]): Course[] {
   const seen = new Map<string, Course>();
 
   for (const course of courses) {
-    const key = course.name.trim().toLowerCase();
+    // Deduplicate by ID, not name — same-name courses (e.g. different years) are preserved
+    const key = course.id;
     const existing = seen.get(key);
     if (!existing) {
       seen.set(key, course);

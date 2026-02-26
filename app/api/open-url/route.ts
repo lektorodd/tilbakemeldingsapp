@@ -12,14 +12,20 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Missing url parameter' }, { status: 400 });
     }
 
-    // Only allow http/https URLs for security
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        return NextResponse.json({ error: 'Only http/https URLs allowed' }, { status: 400 });
+    // Validate URL structure — only allow http/https
+    try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+            return NextResponse.json({ error: 'Only http/https URLs allowed' }, { status: 400 });
+        }
+    } catch {
+        return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
     }
 
     try {
-        const { execSync } = require('child_process');
-        execSync(`open "${url.replace(/"/g, '')}"`, { timeout: 5000 });
+        // Use execFileSync with array args to avoid shell interpretation entirely
+        const { execFileSync } = require('child_process');
+        execFileSync('open', [url], { timeout: 5000 });
         return NextResponse.json({ ok: true });
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 500 });
