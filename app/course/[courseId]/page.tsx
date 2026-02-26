@@ -502,18 +502,6 @@ export default function CourseDetailPage() {
           />
         </div>
 
-        {/* Observations */}
-        <div className="mt-6">
-          <ObservationPanel
-            courseId={courseId}
-            students={course.students}
-            observations={(course.observations || []).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
-            availableLabels={course.availableLabels}
-            onAddObservation={handleAddObservation}
-            onDeleteObservation={handleDeleteObservation}
-          />
-        </div>
-
         {/* Label Manager */}
         {showLabels && (
           <div className="mt-6">
@@ -1212,6 +1200,16 @@ export default function CourseDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Floating observation panel — FAB + slide-out */}
+      <ObservationPanel
+        courseId={courseId}
+        students={course.students}
+        observations={(course.observations || []).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
+        availableLabels={course.availableLabels}
+        onAddObservation={handleAddObservation}
+        onDeleteObservation={handleDeleteObservation}
+      />
     </main>
   );
 }
