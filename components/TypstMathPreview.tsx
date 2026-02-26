@@ -76,7 +76,7 @@ function escapeHtml(s: string): string {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** Parse text with $...$ (inline) and $$...$$ (display) math, translate Typst→KaTeX, render */
+/** Parse text with $...$ math. Typst convention: $expr$ = inline, $ expr $ (spaces) = display */
 function renderTextWithMath(text: string): string {
     if (!text.includes('$')) return '';
 
@@ -95,56 +95,35 @@ function renderTextWithMath(text: string): string {
             parts.push(escapeHtml(text.slice(i, dollarPos)));
         }
 
-        // Check for $$ display math $$
-        const isDisplay = dollarPos + 1 < text.length && text[dollarPos + 1] === '$';
-
-        if (isDisplay) {
-            // Find closing $$
-            const closePos = text.indexOf('$$', dollarPos + 2);
-            if (closePos === -1) {
-                parts.push(escapeHtml(text.slice(dollarPos)));
-                break;
-            }
-
-            const mathExpr = text.slice(dollarPos + 2, closePos).trim();
-            if (mathExpr) {
-                try {
-                    const katexExpr = typstToKatex(mathExpr);
-                    const rendered = katex.renderToString(katexExpr, {
-                        throwOnError: false,
-                        displayMode: true,
-                        output: 'html',
-                    });
-                    parts.push(rendered);
-                } catch {
-                    parts.push(`<code style="color:var(--text-secondary);font-size:0.85em;">$$${escapeHtml(mathExpr)}$$</code>`);
-                }
-            }
-            i = closePos + 2;
-        } else {
-            // Inline $...$
-            const closePos = text.indexOf('$', dollarPos + 1);
-            if (closePos === -1) {
-                parts.push(escapeHtml(text.slice(dollarPos)));
-                break;
-            }
-
-            const mathExpr = text.slice(dollarPos + 1, closePos);
-            if (mathExpr.trim()) {
-                try {
-                    const katexExpr = typstToKatex(mathExpr);
-                    const rendered = katex.renderToString(katexExpr, {
-                        throwOnError: false,
-                        displayMode: false,
-                        output: 'html',
-                    });
-                    parts.push(rendered);
-                } catch {
-                    parts.push(`<code style="color:var(--text-secondary);font-size:0.85em;">$${escapeHtml(mathExpr)}$</code>`);
-                }
-            }
-            i = closePos + 1;
+        // Find closing $
+        const closePos = text.indexOf('$', dollarPos + 1);
+        if (closePos === -1) {
+            parts.push(escapeHtml(text.slice(dollarPos)));
+            break;
         }
+
+        const rawContent = text.slice(dollarPos + 1, closePos);
+
+        // Typst display math: $ expr $ (content starts with space AND ends with space)
+        // Typst inline math: $expr$ (no leading/trailing spaces)
+        const isDisplay = rawContent.length > 0 && rawContent[0] === ' ' && rawContent[rawContent.length - 1] === ' ';
+        const mathExpr = rawContent.trim();
+
+        if (mathExpr) {
+            try {
+                const katexExpr = typstToKatex(mathExpr);
+                const rendered = katex.renderToString(katexExpr, {
+                    throwOnError: false,
+                    displayMode: isDisplay,
+                    output: 'html',
+                });
+                parts.push(rendered);
+            } catch {
+                parts.push(`<code style="color:var(--text-secondary);font-size:0.85em;">$${escapeHtml(mathExpr)}$</code>`);
+            }
+        }
+
+        i = closePos + 1;
     }
 
     return parts.join('');
