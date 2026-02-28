@@ -3,7 +3,7 @@
  * (e.g., in Tauri's WKWebView). Delegates all file operations to /api/folder-sync.
  */
 
-import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest, CourseProject } from '@/types';
+import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest, CourseProject, CriteriaTemplate } from '@/types';
 
 const API_BASE = '/api/folder-sync';
 
@@ -132,6 +132,30 @@ export async function serverSaveSnippetsToFolder(snippets: FeedbackSnippet[]): P
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'write', path: 'snippets.json', data: snippets }),
+    });
+}
+
+// ==========================================
+// CRITERIA TEMPLATES
+// ==========================================
+
+export async function serverLoadCriteriaTemplatesFromFolder(): Promise<CriteriaTemplate[] | null> {
+    if (!serverFolderPath) return null;
+    try {
+        const res = await fetch(`${API_BASE}?action=read&path=criteria-templates.json`);
+        if (!res.ok) return null;
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
+export async function serverSaveCriteriaTemplatesToFolder(templates: CriteriaTemplate[]): Promise<void> {
+    if (!serverFolderPath) return;
+    await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'write', path: 'criteria-templates.json', data: templates }),
     });
 }
 

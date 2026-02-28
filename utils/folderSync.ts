@@ -14,7 +14,7 @@
  *               └── student_name.json  (all feedback for this student)
  */
 
-import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest, CourseProject } from '@/types';
+import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest, CourseProject, CriteriaTemplate } from '@/types';
 import { saveFolderHandle, loadFolderHandle, verifyFolderHandle, clearFolderHandle } from './folderDB';
 import {
   shouldUseServerSync,
@@ -27,6 +27,8 @@ import {
   serverSaveSettingsToFolder,
   serverLoadSnippetsFromFolder,
   serverSaveSnippetsToFolder,
+  serverLoadCriteriaTemplatesFromFolder,
+  serverSaveCriteriaTemplatesToFolder,
   serverLoadCoursesFromFolder,
   serverSaveAllCoursesToFolder,
   serverSaveCourseToFolder,
@@ -216,6 +218,36 @@ export async function saveSnippetsToFolder(snippets: FeedbackSnippet[]): Promise
     await writable.close();
   } catch (e) {
     console.error('Failed to save snippets to folder:', e);
+  }
+}
+
+// ==========================================
+// CRITERIA TEMPLATES — GLOBAL READ/WRITE
+// ==========================================
+
+export async function loadCriteriaTemplatesFromFolder(): Promise<CriteriaTemplate[] | null> {
+  if (useServer) return serverLoadCriteriaTemplatesFromFolder();
+  if (!activeDirHandle) return null;
+  try {
+    const fileHandle = await activeDirHandle.getFileHandle('criteria-templates.json');
+    const file = await fileHandle.getFile();
+    const text = await file.text();
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+export async function saveCriteriaTemplatesToFolder(templates: CriteriaTemplate[]): Promise<void> {
+  if (useServer) return serverSaveCriteriaTemplatesToFolder(templates);
+  if (!activeDirHandle) return;
+  try {
+    const fileHandle = await activeDirHandle.getFileHandle('criteria-templates.json', { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(templates, null, 2));
+    await writable.close();
+  } catch (e) {
+    console.error('Failed to save criteria templates to folder:', e);
   }
 }
 

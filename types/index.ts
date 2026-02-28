@@ -254,6 +254,14 @@ export interface ProjectCriterionDef {
   rubricHigh?: string;   // Høg måloppnåing (5–6)
 }
 
+// Reusable criteria template — saved globally and synced via folder
+export interface CriteriaTemplate {
+  id: string;
+  name: string;
+  criteria: ProjectCriterionDef[];
+  createdDate: string;
+}
+
 export interface ProjectCriterionScore {
   criterionId: string;
   points: number;        // 0–6

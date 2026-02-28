@@ -205,7 +205,15 @@
     "projectDeadlineRequired": "Vel ein frist",
     "projectMinCriteria": "Legg til minst 3 vurderingskriterium",
     "addProjectButton": "Legg til prosjekt",
-    "saveProjectButton": "Lagre prosjekt"
+    "saveProjectButton": "Lagre prosjekt",
+    "loadTemplate": "Last mal...",
+    "saveAsTemplate": "Lagre som mal",
+    "deleteTemplate": "Slett mal...",
+    "templateNamePlaceholder": "Namn på mal...",
+    "templateSaved": "Kriteriemal lagra!",
+    "templateLoaded": "Kriterier lasta frå mal!",
+    "templateDeleted": "Mal sletta!",
+    "deleteTemplateConfirm": "Slette denne malen?"
   },
   "test": {
     "giveFeedback": "Gi tilbakemelding",

@@ -63,6 +63,7 @@ cargo install --git https://github.com/typst/typst
 - Radar chart visualization with N sectors matching the criteria
 - Screenshot uploads compressed and stored alongside feedback data
 - Link classroom observations to projects — view a process timeline in the assessment sidebar
+- Reusable criteria templates — save and load criteria sets (with rubrics) across projects and courses
 - Project results displayed on the student dashboard with radar charts
 
 **Analytics**

@@ -9,6 +9,7 @@ All notable changes to MatteMonitor will be documented in this file.
 - **Dual comment sections** — project feedback now has separate "Video / presentasjon" and "Refleksjonsnotat" comment fields instead of a single general comment.
 - **Observation → project linking** — observations can be linked to a specific project via a dropdown in the observation panel. Linked observations appear as a "Prosess" timeline in the project assessment sidebar.
 - **Rubric inputs in criteria builder** — the project modal now includes three textareas (Låg / Middels / Høg) per criterion for entering rubric descriptions.
+- **Reusable criteria templates** — save a set of criteria (with rubrics) as a named template. Load templates when creating new projects. Templates are stored in localStorage and synced via folder storage.
 
 ### Changed
 - `ProjectFeedbackData.generalComment` replaced by `videoComment` and `reflectionComment`.

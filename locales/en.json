@@ -205,7 +205,15 @@
     "projectDeadlineRequired": "Please select a deadline",
     "projectMinCriteria": "Please add at least 3 assessment criteria",
     "addProjectButton": "Add project",
-    "saveProjectButton": "Save project"
+    "saveProjectButton": "Save project",
+    "loadTemplate": "Load template...",
+    "saveAsTemplate": "Save as template",
+    "deleteTemplate": "Delete template...",
+    "templateNamePlaceholder": "Template name...",
+    "templateSaved": "Criteria template saved!",
+    "templateLoaded": "Criteria loaded from template!",
+    "templateDeleted": "Template deleted!",
+    "deleteTemplateConfirm": "Delete this template?"
   },
   "test": {
     "giveFeedback": "Give Feedback",

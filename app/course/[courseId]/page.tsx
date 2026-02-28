@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Course, CourseStudent, CourseTest, OralTest, CourseProject, ProjectCriterionDef } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseProject, ProjectCriterionDef, CriteriaTemplate } from '@/types';
+import { loadCriteriaTemplates, addCriteriaTemplate, deleteCriteriaTemplate, saveCriteriaTemplates } from '@/utils/criteriaTemplateStorage';
+import { loadCriteriaTemplatesFromFolder, saveCriteriaTemplatesToFolder } from '@/utils/folderSync';
 import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest, anonymizeCourse, addObservation, deleteObservation, addProject, deleteProject, updateProject } from '@/utils/storage';
 import { exportCourseToExcel } from '@/utils/excelExport';
 import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download, ShieldOff } from 'lucide-react';
@@ -63,9 +65,24 @@ export default function CourseDetailPage() {
   const [newProjectDescription, setNewProjectDescription] = useState('');
   const [newProjectDeadline, setNewProjectDeadline] = useState('');
   const [newProjectCriteria, setNewProjectCriteria] = useState<ProjectCriterionDef[]>([]);
+  const [criteriaTemplates, setCriteriaTemplates] = useState<CriteriaTemplate[]>([]);
+  const [saveTemplateName, setSaveTemplateName] = useState('');
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
 
   useEffect(() => {
     loadData();
+    // Load criteria templates
+    const localTemplates = loadCriteriaTemplates();
+    setCriteriaTemplates(localTemplates);
+    loadCriteriaTemplatesFromFolder().then(folderTemplates => {
+      if (folderTemplates && folderTemplates.length > 0) {
+        // Merge: prefer folder, add any local-only templates
+        const folderIds = new Set(folderTemplates.map(t2 => t2.id));
+        const merged = [...folderTemplates, ...localTemplates.filter(t2 => !folderIds.has(t2.id))];
+        setCriteriaTemplates(merged);
+        saveCriteriaTemplates(merged);
+      }
+    });
   }, [courseId]);
 
   const loadData = () => {
@@ -1126,6 +1143,112 @@ export default function CourseDetailPage() {
                     {t('course.projectCriteriaLabel')}
                   </label>
                   <p className="text-xs text-text-disabled mb-2">{t('course.projectCriteriaHelp')}</p>
+
+                  {/* Template load / save */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {criteriaTemplates.length > 0 && (
+                      <select
+                        className="px-2 py-1 text-xs border border-border rounded-lg bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500"
+                        value=""
+                        onChange={(e) => {
+                          const tpl = criteriaTemplates.find(t2 => t2.id === e.target.value);
+                          if (tpl) {
+                            const loaded = tpl.criteria.map((c, i) => ({
+                              ...c,
+                              id: `criterion-${Date.now()}-${i}`,
+                            }));
+                            setNewProjectCriteria(loaded);
+                            toast(t('course.templateLoaded'), 'success');
+                          }
+                        }}
+                      >
+                        <option value="">{t('course.loadTemplate')}</option>
+                        {criteriaTemplates.map(tpl => (
+                          <option key={tpl.id} value={tpl.id}>{tpl.name} ({tpl.criteria.length})</option>
+                        ))}
+                      </select>
+                    )}
+
+                    {!showSaveTemplate ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowSaveTemplate(true)}
+                        disabled={newProjectCriteria.length === 0}
+                        className="px-2 py-1 text-xs bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition disabled:opacity-30"
+                      >
+                        {t('course.saveAsTemplate')}
+                      </button>
+                    ) : (
+                      <div className="flex gap-1 items-center">
+                        <input
+                          type="text"
+                          value={saveTemplateName}
+                          onChange={(e) => setSaveTemplateName(e.target.value)}
+                          placeholder={t('course.templateNamePlaceholder')}
+                          className="px-2 py-1 text-xs border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-primary w-40"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && saveTemplateName.trim()) {
+                              const tpl = addCriteriaTemplate(saveTemplateName.trim(), newProjectCriteria);
+                              setCriteriaTemplates([...criteriaTemplates, tpl]);
+                              saveCriteriaTemplatesToFolder([...criteriaTemplates, tpl]);
+                              setSaveTemplateName('');
+                              setShowSaveTemplate(false);
+                              toast(t('course.templateSaved'), 'success');
+                            } else if (e.key === 'Escape') {
+                              setShowSaveTemplate(false);
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!saveTemplateName.trim()) return;
+                            const tpl = addCriteriaTemplate(saveTemplateName.trim(), newProjectCriteria);
+                            setCriteriaTemplates([...criteriaTemplates, tpl]);
+                            saveCriteriaTemplatesToFolder([...criteriaTemplates, tpl]);
+                            setSaveTemplateName('');
+                            setShowSaveTemplate(false);
+                            toast(t('course.templateSaved'), 'success');
+                          }}
+                          disabled={!saveTemplateName.trim()}
+                          className="px-2 py-1 text-xs bg-success text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-30"
+                        >
+                          {t('common.save')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowSaveTemplate(false)}
+                          className="px-2 py-1 text-xs bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
+                        >
+                          {t('common.cancel')}
+                        </button>
+                      </div>
+                    )}
+
+                    {criteriaTemplates.length > 0 && (
+                      <select
+                        className="px-2 py-1 text-xs border border-red-200 rounded-lg bg-surface text-danger focus:outline-none"
+                        value=""
+                        onChange={async (e) => {
+                          const tplId = e.target.value;
+                          if (!tplId) return;
+                          const confirmed = await confirm(t('course.deleteTemplateConfirm'));
+                          if (!confirmed) return;
+                          deleteCriteriaTemplate(tplId);
+                          const updated = criteriaTemplates.filter(t2 => t2.id !== tplId);
+                          setCriteriaTemplates(updated);
+                          saveCriteriaTemplatesToFolder(updated);
+                          toast(t('course.templateDeleted'), 'success');
+                        }}
+                      >
+                        <option value="">{t('course.deleteTemplate')}</option>
+                        {criteriaTemplates.map(tpl => (
+                          <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
 
                   <div className="space-y-2">
                     {newProjectCriteria.map((criterion, index) => (
