@@ -2,20 +2,33 @@ import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 import { OralFeedbackDimension } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+interface GenericRadarData {
+  label: string;
+  value: number;
+  emoji?: string;
+}
+
 interface RadarChartProps {
-  dimensions: OralFeedbackDimension[];
+  dimensions?: OralFeedbackDimension[];
+  genericData?: GenericRadarData[];
   width?: number;
   height?: number;
   maxValue?: number;
+  color?: string; // CSS color for the polygon, defaults to indigo
 }
 
 export interface RadarChartRef {
   exportToPNG: () => Promise<string>;
 }
 
-const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, width = 300, height = 250, maxValue = 6 }, ref) => {
+const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, genericData, width = 300, height = 250, maxValue = 6, color }, ref) => {
   const { t } = useLanguage();
   const svgRef = useRef<SVGSVGElement>(null);
+
+  const fillColor = color || 'rgba(79, 70, 229, 0.2)';
+  const strokeColor = color ? color.replace(/[\d.]+\)$/, '1)') : 'rgb(79, 70, 229)';
+  const dotColor = color ? strokeColor : 'rgb(79, 70, 229)';
+  const textColor = color ? strokeColor : '#4F46E5';
 
   useImperativeHandle(ref, () => ({
     exportToPNG: async (): Promise<string> => {
@@ -60,45 +73,60 @@ const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, wid
     },
   }));
 
-  // Sort dimensions in a consistent order for the radar chart
-  const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
-  const emojis = ['🎯', '💭', '📊', '⚙️', '💬', '📚'];
+  // Build unified data array from either source
+  let chartData: { label: string; emoji: string; value: number }[];
 
-  const sortedDimensions = dimensionOrder.map(dimType => {
-    const dimension = dimensions.find(d => d.dimension === dimType);
-    return dimension || { dimension: dimType as any, points: 0, comment: '' };
-  });
+  if (genericData && genericData.length > 0) {
+    // Generic mode: use provided labels
+    const defaultEmojis = ['📋', '📊', '🔬', '🎯', '📝', '💡', '⚙️', '📐', '🧪', '🎨'];
+    chartData = genericData.map((d, i) => ({
+      label: d.label,
+      emoji: d.emoji || defaultEmojis[i % defaultEmojis.length],
+      value: d.value,
+    }));
+  } else if (dimensions && dimensions.length > 0) {
+    // Oral assessment mode: use hardcoded dimension order
+    const dimensionOrder = ['strategy', 'reasoning', 'representations', 'modeling', 'communication', 'subject_knowledge'];
+    const emojis = ['🎯', '💭', '📊', '⚙️', '💬', '📚'];
 
-  const numDimensions = sortedDimensions.length;
+    chartData = dimensionOrder.map((dimType, i) => {
+      const dimension = dimensions.find(d => d.dimension === dimType);
+      return {
+        label: dimType,
+        emoji: emojis[i],
+        value: dimension?.points || 0,
+      };
+    });
+  } else {
+    return null;
+  }
+
+  const numDimensions = chartData.length;
+  if (numDimensions < 3) return null; // Need at least 3 points for a polygon
+
   const centerX = width / 2;
   const centerY = height / 2;
-  const radius = Math.min(width, height) / 2 - 35; // Less margin needed for letter labels
+  const radius = Math.min(width, height) / 2 - 35;
 
-  // Calculate points for each dimension
   const getPoint = (index: number, value: number) => {
-    const angle = (Math.PI * 2 * index) / numDimensions - Math.PI / 2; // Start from top
+    const angle = (Math.PI * 2 * index) / numDimensions - Math.PI / 2;
     const distance = (value / maxValue) * radius;
     const x = centerX + Math.cos(angle) * distance;
     const y = centerY + Math.sin(angle) * distance;
     return { x, y };
   };
 
-  // Generate polygon points for the data
-  const dataPoints = sortedDimensions.map((dim, index) => getPoint(index, dim.points));
+  const dataPoints = chartData.map((d, index) => getPoint(index, d.value));
   const dataPolygon = dataPoints.map(p => `${p.x},${p.y}`).join(' ');
-
-  // Generate grid circles (for 0, 2, 4, 6)
   const gridLevels = [2, 4, 6];
 
-  // Generate axis lines and labels
-  const axes = sortedDimensions.map((dim, index) => {
+  const axes = chartData.map((d, index) => {
     const endPoint = getPoint(index, maxValue);
-    const labelPoint = getPoint(index, maxValue + 0.6); // Closer to chart with emoji labels
-
+    const labelPoint = getPoint(index, maxValue + 0.6);
     return {
       line: { x1: centerX, y1: centerY, x2: endPoint.x, y2: endPoint.y },
-      label: { x: labelPoint.x, y: labelPoint.y, text: emojis[index] },
-      value: dim.points,
+      label: { x: labelPoint.x, y: labelPoint.y, text: d.emoji },
+      value: d.value,
     };
   });
 
@@ -133,8 +161,8 @@ const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, wid
       {/* Data polygon */}
       <polygon
         points={dataPolygon}
-        fill="rgba(79, 70, 229, 0.2)"
-        stroke="rgb(79, 70, 229)"
+        fill={fillColor}
+        stroke={strokeColor}
         strokeWidth="2"
       />
 
@@ -145,21 +173,12 @@ const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, wid
           cx={point.x}
           cy={point.y}
           r="4"
-          fill="rgb(79, 70, 229)"
+          fill={dotColor}
         />
       ))}
 
       {/* Axis labels and values */}
       {axes.map((axis, index) => {
-        // Calculate text anchor based on position
-        const angle = (Math.PI * 2 * index) / numDimensions - Math.PI / 2;
-        const cos = Math.cos(angle);
-        const sin = Math.sin(angle);
-
-        let textAnchor: 'start' | 'middle' | 'end' = 'middle';
-        if (cos > 0.1) textAnchor = 'start';
-        else if (cos < -0.1) textAnchor = 'end';
-
         return (
           <g key={`label-${index}`}>
             {/* Emoji label */}
@@ -179,10 +198,10 @@ const RadarChart = forwardRef<RadarChartRef, RadarChartProps>(({ dimensions, wid
               textAnchor="middle"
               fontSize="11"
               fontWeight="bold"
-              fill="#4F46E5"
+              fill={textColor}
               dominantBaseline="middle"
             >
-              {axis.value}/6
+              {axis.value}/{maxValue}
             </text>
           </g>
         );

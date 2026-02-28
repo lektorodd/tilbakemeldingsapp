@@ -2,6 +2,22 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.10.0] — 2026-02-28
+
+### Added
+- **Project assessments** — create projects with custom assessment criteria, score students 0–6 on each criterion with optional weighting, attach screenshot annotations per criterion, and write detailed feedback. Projects show up on the course page alongside tests and oral assessments.
+- **Radar chart for projects** — generic N-sector radar visualization adapts to any number of criteria (minimum 3). Also supports custom colors.
+- **Image annotations** — upload and compress screenshots directly into criterion feedback. Images are stored as base64 in the feedback data and sync via folder storage.
+- **Student dashboard integration** — project results now display with radar charts and scores instead of the previous "coming soon" placeholder.
+
+### Changed
+- `RadarChart` component generalized — accepts `genericData` prop for arbitrary label/value arrays alongside the existing `dimensions` prop for oral assessments.
+- `anonymizeCourse()` now also clears project comments, images, and observation text.
+- `deleteStudent()` now also removes project feedback entries.
+- Folder sync (both browser and server) now includes `projects` in read/write.
+
+---
+
 ## [0.9.9] — 2026-02-26
 
 ### Added

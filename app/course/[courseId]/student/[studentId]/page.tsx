@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getStudentDetailedAnalytics, loadCourse } from '@/utils/storage';
+import { getStudentDetailedAnalytics, loadCourse, calculateProjectScore } from '@/utils/storage';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, Target, Award, BarChart3, Tag, BookOpen, MessageSquare, UserX, Eye, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -624,21 +624,49 @@ export default function StudentDashboardPage() {
           </ul>
         </div>
 
-        {/* Prosjekt placeholder (coming soon) */}
-        <div className="mt-6 bg-surface border-2 border-dashed border-border rounded-lg p-6">
-          <div className="flex items-center gap-3">
-            <FolderOpen size={24} className="text-text-disabled" />
-            <div>
-              <h3 className="font-semibold text-text-primary flex items-center gap-2">
-                {t('course.prosjektComingSoon')}
-                <span className="px-2 py-0.5 bg-brand/10 text-brand text-xs font-medium rounded-full">Snart</span>
-              </h3>
-              <p className="text-sm text-text-disabled mt-0.5">
-                Lengre arbeid, prosjekter og innleveringer — kommer i neste oppdatering.
-              </p>
+        {/* Project Results */}
+        {course.projects && course.projects.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-display font-bold text-text-primary mb-4 flex items-center gap-2">
+              <FolderOpen size={20} className="text-amber-600" />
+              {t('course.projects')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {course.projects.map(project => {
+                const fb = project.studentFeedbacks.find(f => f.studentId === student?.id);
+                if (!fb) return (
+                  <div key={project.id} className="bg-surface rounded-lg border border-border p-4">
+                    <h3 className="font-semibold text-text-primary">{project.name}</h3>
+                    <p className="text-sm text-text-disabled mt-1">{t('test.notCompleted')}</p>
+                  </div>
+                );
+
+                const score = calculateProjectScore(fb);
+                const radarData = fb.criterionScores.map(cs => {
+                  const def = project.criteria.find(c => c.id === cs.criterionId);
+                  return { label: def?.name || cs.criterionId, value: cs.points };
+                });
+
+                return (
+                  <div key={project.id} className="bg-surface rounded-lg border border-border p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="font-semibold text-text-primary">{project.name}</h3>
+                        {fb.completedDate && (
+                          <p className="text-xs text-success">{t('project.completedOn')}: {new Date(fb.completedDate).toLocaleDateString()}</p>
+                        )}
+                      </div>
+                      <span className="text-2xl font-display font-bold text-amber-700">{score}/60</span>
+                    </div>
+                    {radarData.length >= 3 && (
+                      <RadarChart genericData={radarData} width={220} height={190} color="rgba(217, 119, 6, 0.2)" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Scoring Guide */}
         <div className="mt-6">

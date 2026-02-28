@@ -134,6 +134,7 @@ export interface Course {
   tests: CourseTest[]; // Written tests in this course
   oralTests?: OralTest[]; // Oral assessments in this course
   observations?: ClassroomObservation[]; // Formative assessment observations
+  projects?: CourseProject[]; // Project-based assessments
   availableLabels: string[]; // Course-specific labels (e.g., ["fractions", "logarithms", "equations"])
   createdDate: string;
   lastModified: string;
@@ -240,6 +241,42 @@ export interface ClassroomObservation {
   labels?: string[];   // Reuses course availableLabels
   date: string;        // ISO date string (observation date)
   createdDate: string; // ISO date string (when created in the app)
+}
+
+// Project-based assessment — longer assignments with custom criteria
+export interface ProjectCriterionDef {
+  id: string;            // e.g. "criterion-1"
+  name: string;          // Teacher-defined label, e.g. "Problemstilling"
+  description?: string;  // Optional rubric description
+}
+
+export interface ProjectCriterionScore {
+  criterionId: string;
+  points: number;        // 0–6
+  comment: string;
+  weight?: number;       // Default 1
+  images?: string[];     // Compressed base64 data URLs
+}
+
+export interface ProjectFeedbackData {
+  studentId: string;
+  criterionScores: ProjectCriterionScore[];
+  generalComment: string;
+  completedDate?: string;
+  score?: number;        // Weighted average (0–60 scale)
+}
+
+export interface CourseProject {
+  id: string;
+  name: string;              // e.g. "Prosjektoppgåve – reelle datasett"
+  description?: string;
+  deadline: string;          // ISO date
+  curriculumGoals?: string[];
+  criteria: ProjectCriterionDef[];
+  labels?: string[];
+  studentFeedbacks: ProjectFeedbackData[];
+  createdDate: string;
+  lastModified: string;
 }
 
 // Per-student scores for a specific task (used in analytics drill-down and task-level grading)

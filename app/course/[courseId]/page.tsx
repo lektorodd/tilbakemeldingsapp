@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Course, CourseStudent, CourseTest, OralTest } from '@/types';
-import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest, anonymizeCourse, addObservation, deleteObservation } from '@/utils/storage';
+import { Course, CourseStudent, CourseTest, OralTest, CourseProject, ProjectCriterionDef } from '@/types';
+import { loadCourse, saveCourse, addStudentToCourse, deleteStudent, addTestToCourse, deleteTest, addOralTest, deleteOralTest, updateCourse, updateTest, updateOralTest, anonymizeCourse, addObservation, deleteObservation, addProject, deleteProject, updateProject } from '@/utils/storage';
 import { exportCourseToExcel } from '@/utils/excelExport';
 import { ArrowLeft, Plus, Trash2, Edit, Users, FileText, BarChart3, MessageSquare, Download, ShieldOff } from 'lucide-react';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ import LabelManager from '@/components/LabelManager';
 import StudentRosterPanel from '@/components/StudentRosterPanel';
 import TestListPanel from '@/components/TestListPanel';
 import OralTestListPanel from '@/components/OralTestListPanel';
+import ProjectListPanel from '@/components/ProjectListPanel';
 import ObservationPanel from '@/components/ObservationPanel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -53,6 +54,15 @@ export default function CourseDetailPage() {
   const [newOralTestLabels, setNewOralTestLabels] = useState<string[]>([]);
   const [editCourseName, setEditCourseName] = useState('');
   const [editCourseDescription, setEditCourseDescription] = useState('');
+
+  // Project state
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
+  const [editingProject, setEditingProject] = useState<CourseProject | null>(null);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectDescription, setNewProjectDescription] = useState('');
+  const [newProjectDeadline, setNewProjectDeadline] = useState('');
+  const [newProjectCriteria, setNewProjectCriteria] = useState<ProjectCriterionDef[]>([]);
 
   useEffect(() => {
     loadData();
@@ -291,6 +301,97 @@ export default function CourseDetailPage() {
     }
   };
 
+  // Project handlers
+  const handleAddProject = () => {
+    if (!newProjectName.trim()) {
+      toast(t('course.projectNameRequired'), 'warning');
+      return;
+    }
+    if (!newProjectDeadline) {
+      toast(t('course.projectDeadlineRequired'), 'warning');
+      return;
+    }
+    if (newProjectCriteria.length < 3) {
+      toast(t('course.projectMinCriteria'), 'warning');
+      return;
+    }
+
+    addProject(courseId, {
+      name: newProjectName,
+      description: newProjectDescription || undefined,
+      deadline: newProjectDeadline,
+      criteria: newProjectCriteria,
+    });
+
+    resetProjectForm();
+    setShowAddProjectModal(false);
+    loadData();
+  };
+
+  const handleEditProject = (project: CourseProject) => {
+    setEditingProject(project);
+    setNewProjectName(project.name);
+    setNewProjectDescription(project.description || '');
+    setNewProjectDeadline(project.deadline);
+    setNewProjectCriteria([...project.criteria]);
+    setShowEditProjectModal(true);
+  };
+
+  const handleSaveEditProject = () => {
+    if (!editingProject) return;
+    if (!newProjectName.trim()) {
+      toast(t('course.projectNameRequired'), 'warning');
+      return;
+    }
+    if (newProjectCriteria.length < 3) {
+      toast(t('course.projectMinCriteria'), 'warning');
+      return;
+    }
+
+    updateProject(courseId, editingProject.id, {
+      name: newProjectName,
+      description: newProjectDescription || undefined,
+      deadline: newProjectDeadline,
+      criteria: newProjectCriteria,
+    });
+
+    resetProjectForm();
+    setShowEditProjectModal(false);
+    setEditingProject(null);
+    loadData();
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (await confirm(t('course.deleteProjectConfirm'))) {
+      deleteProject(courseId, projectId);
+      loadData();
+    }
+  };
+
+  const resetProjectForm = () => {
+    setNewProjectName('');
+    setNewProjectDescription('');
+    setNewProjectDeadline('');
+    setNewProjectCriteria([]);
+  };
+
+  const addCriterion = () => {
+    setNewProjectCriteria([
+      ...newProjectCriteria,
+      { id: `criterion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, name: '', description: '' },
+    ]);
+  };
+
+  const updateCriterion = (index: number, updates: Partial<ProjectCriterionDef>) => {
+    const updated = [...newProjectCriteria];
+    updated[index] = { ...updated[index], ...updates };
+    setNewProjectCriteria(updated);
+  };
+
+  const removeCriterion = (index: number) => {
+    setNewProjectCriteria(newProjectCriteria.filter((_, i) => i !== index));
+  };
+
   const handleLabelsChange = (labels: string[]) => {
     if (!course) return;
     const updatedCourse = { ...course, availableLabels: labels };
@@ -499,6 +600,15 @@ export default function CourseDetailPage() {
             onAddOralTest={() => setShowAddOralTestModal(true)}
             onEditOralTest={handleEditOralTest}
             onDeleteOralTest={handleDeleteOralTest}
+          />
+
+          <ProjectListPanel
+            courseId={courseId}
+            projects={course.projects || []}
+            studentCount={course.students.length}
+            onAddProject={() => setShowAddProjectModal(true)}
+            onEditProject={handleEditProject}
+            onDeleteProject={handleDeleteProject}
           />
         </div>
 
@@ -955,6 +1065,123 @@ export default function CourseDetailPage() {
                   className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
                 >
                   {t('course.addOralTestButton')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit Project Modal */}
+        {(showAddProjectModal || showEditProjectModal) && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-surface rounded-lg shadow-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-display font-bold text-text-primary mb-4">
+                {showEditProjectModal ? t('course.editProjectTitle') : t('course.addProjectTitle')}
+              </h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.projectNameLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newProjectName}
+                    onChange={(e) => setNewProjectName(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-text-primary"
+                    placeholder={t('course.projectNamePlaceholder')}
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.projectDescriptionLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={newProjectDescription}
+                    onChange={(e) => setNewProjectDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-text-primary"
+                    placeholder={t('course.projectDescriptionPlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.projectDeadlineLabel')}
+                  </label>
+                  <input
+                    type="date"
+                    value={newProjectDeadline}
+                    onChange={(e) => setNewProjectDeadline(e.target.value)}
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-text-primary"
+                  />
+                </div>
+
+                {/* Criteria Builder */}
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('course.projectCriteriaLabel')}
+                  </label>
+                  <p className="text-xs text-text-disabled mb-2">{t('course.projectCriteriaHelp')}</p>
+
+                  <div className="space-y-2">
+                    {newProjectCriteria.map((criterion, index) => (
+                      <div key={criterion.id} className="flex gap-2 items-start">
+                        <div className="flex-1 space-y-1">
+                          <input
+                            type="text"
+                            value={criterion.name}
+                            onChange={(e) => updateCriterion(index, { name: e.target.value })}
+                            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-primary text-sm"
+                            placeholder={t('course.projectCriterionNamePlaceholder')}
+                          />
+                          <input
+                            type="text"
+                            value={criterion.description || ''}
+                            onChange={(e) => updateCriterion(index, { description: e.target.value })}
+                            className="w-full px-3 py-1 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-secondary text-xs"
+                            placeholder={t('course.projectCriterionDescPlaceholder')}
+                          />
+                        </div>
+                        <button
+                          onClick={() => removeCriterion(index)}
+                          className="p-1 text-danger hover:bg-danger-bg rounded transition mt-1"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={addCriterion}
+                    className="mt-2 flex items-center gap-1 px-3 py-1 text-sm bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition"
+                  >
+                    <Plus size={14} />
+                    {t('course.projectAddCriterion')}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    resetProjectForm();
+                    setShowAddProjectModal(false);
+                    setShowEditProjectModal(false);
+                    setEditingProject(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-surface-alt text-text-secondary rounded-lg hover:bg-border transition"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={showEditProjectModal ? handleSaveEditProject : handleAddProject}
+                  className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
+                >
+                  {showEditProjectModal ? t('course.saveProjectButton') : t('course.addProjectButton')}
                 </button>
               </div>
             </div>

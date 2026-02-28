@@ -14,7 +14,7 @@
  *               └── student_name.json  (all feedback for this student)
  */
 
-import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest } from '@/types';
+import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest, CourseProject } from '@/types';
 import { saveFolderHandle, loadFolderHandle, verifyFolderHandle, clearFolderHandle } from './folderDB';
 import {
   shouldUseServerSync,
@@ -332,6 +332,7 @@ async function readCourseFolder(courseDirHandle: FileSystemDirectoryHandle): Pro
   let lastModified = new Date().toISOString();
   let availableLabels: string[] = [];
   let oralTests: OralTest[] = [];
+  let projects: CourseProject[] = [];
 
   // Read course-info.json
   try {
@@ -350,6 +351,7 @@ async function readCourseFolder(courseDirHandle: FileSystemDirectoryHandle): Pro
     lastModified = info.lastModified || lastModified;
     availableLabels = info.availableLabels || [];
     oralTests = info.oralTests || [];
+    projects = info.projects || [];
   } catch {
     // No course-info.json
   }
@@ -378,6 +380,7 @@ async function readCourseFolder(courseDirHandle: FileSystemDirectoryHandle): Pro
     students,
     tests,
     oralTests,
+    projects,
     availableLabels,
     createdDate,
     lastModified,
@@ -513,6 +516,7 @@ async function writeCourseFolder(
     students: course.students,
     availableLabels: course.availableLabels,
     oralTests: course.oralTests || [],
+    projects: course.projects || [],
     createdDate: course.createdDate,
     lastModified: course.lastModified,
   }, null, 2));

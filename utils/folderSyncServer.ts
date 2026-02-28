@@ -3,7 +3,7 @@
  * (e.g., in Tauri's WKWebView). Delegates all file operations to /api/folder-sync.
  */
 
-import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest } from '@/types';
+import { Course, CourseStudent, CourseTest, FeedbackSnippet, OralTest, CourseProject } from '@/types';
 
 const API_BASE = '/api/folder-sync';
 
@@ -188,6 +188,7 @@ async function readCourseFolderServer(courseFolderName: string): Promise<Course 
     let lastModified = new Date().toISOString();
     let availableLabels: string[] = [];
     let oralTests: OralTest[] = [];
+    let projects: CourseProject[] = [];
 
     // Read course-info.json
     try {
@@ -206,6 +207,7 @@ async function readCourseFolderServer(courseFolderName: string): Promise<Course 
             lastModified = info.lastModified || lastModified;
             availableLabels = info.availableLabels || [];
             oralTests = info.oralTests || [];
+            projects = info.projects || [];
         }
     } catch { /* No course-info.json */ }
 
@@ -235,6 +237,7 @@ async function readCourseFolderServer(courseFolderName: string): Promise<Course 
         students,
         tests,
         oralTests,
+        projects,
         availableLabels,
         createdDate,
         lastModified,
@@ -381,6 +384,7 @@ export async function serverSaveCourseToFolder(course: Course): Promise<void> {
                 students: course.students,
                 availableLabels: course.availableLabels,
                 oralTests: course.oralTests || [],
+                projects: course.projects || [],
                 createdDate: course.createdDate,
                 lastModified: course.lastModified,
             },

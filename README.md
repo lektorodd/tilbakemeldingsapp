@@ -1,4 +1,4 @@
-# MatteMonitor v0.9.9
+# MatteMonitor v0.10.0
 
 A web app for math teachers to grade tests, write feedback with mathematical notation, and export professional PDF reports. Built around a course-based workflow where students are added once and tracked across multiple assessments.
 
@@ -54,6 +54,14 @@ cargo install --git https://github.com/typst/typst
 - Dimension weighting — assign custom weights to focus assessments on specific dimensions
 - Track duration and link to specific topics
 
+**Project Assessments**
+- Define projects with custom assessment criteria (variable count)
+- Score each criterion 0–6 with per-criterion comments and image annotations
+- Weighted scoring — criteria can have different weights, averaged to a 0–60 scale
+- Radar chart visualization with N sectors matching the criteria
+- Screenshot uploads compressed and stored alongside feedback data
+- Project results displayed on the student dashboard with radar charts
+
 **Analytics**
 - Student progress over time
 - Performance breakdown by topic label, difficulty category, and test part
@@ -98,6 +106,7 @@ app/
     test/[testId]/          Grading interface
       analytics/            Test-level analytics
     oral/[oralTestId]/      Oral assessment interface
+    project/[projectId]/    Project assessment interface
     student/[studentId]/    Individual student progress
     analytics/              Course-level analytics
   analytics/               Global analytics

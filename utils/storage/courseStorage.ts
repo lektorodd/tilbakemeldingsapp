@@ -1,4 +1,4 @@
-import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore, ClassroomObservation } from '@/types';
+import { Course, CourseStudent, CourseTest, OralTest, CourseSummary, TestFeedbackData, Task, TaskFeedback, StudentCourseProgress, StudentTestResult, TestResultsSummary, LabelPerformance, CategoryPerformance, OralFeedbackData, TaskAnalytics, TaskStudentScore, ClassroomObservation, CourseProject, ProjectFeedbackData } from '@/types';
 import { saveCourseToFolder, deleteCourseFromFolder, isFolderConnected, saveAllCoursesToFolder } from '../folderSync';
 
 const COURSES_KEY = 'math-feedback-courses';
@@ -190,6 +190,13 @@ export function deleteStudent(courseId: string, studentId: string): void {
   // Also remove their observations
   if (course.observations) {
     course.observations = course.observations.filter(o => o.studentId !== studentId);
+  }
+
+  // Also remove their project feedbacks
+  if (course.projects) {
+    course.projects.forEach(project => {
+      project.studentFeedbacks = project.studentFeedbacks.filter(f => f.studentId !== studentId);
+    });
   }
 
   saveCourse(course);
@@ -447,6 +454,123 @@ export function getStudentObservations(
   return course.observations
     .filter(o => o.studentId === studentId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+// Project CRUD operations
+export function addProject(
+  courseId: string,
+  project: Omit<CourseProject, 'id' | 'createdDate' | 'lastModified' | 'studentFeedbacks'>
+): CourseProject {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.projects) {
+    course.projects = [];
+  }
+
+  const newProject: CourseProject = {
+    ...project,
+    id: `project-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    studentFeedbacks: [],
+    createdDate: new Date().toISOString(),
+    lastModified: new Date().toISOString(),
+  };
+
+  course.projects.push(newProject);
+  saveCourse(course);
+
+  return newProject;
+}
+
+export function updateProject(courseId: string, projectId: string, updates: Partial<CourseProject>): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.projects) throw new Error('No projects in course');
+
+  const projectIndex = course.projects.findIndex(p => p.id === projectId);
+  if (projectIndex === -1) throw new Error('Project not found');
+
+  course.projects[projectIndex] = {
+    ...course.projects[projectIndex],
+    ...updates,
+    lastModified: new Date().toISOString(),
+  };
+
+  saveCourse(course);
+}
+
+export function deleteProject(courseId: string, projectId: string): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.projects) return;
+
+  course.projects = course.projects.filter(p => p.id !== projectId);
+  saveCourse(course);
+}
+
+export function updateProjectFeedback(
+  courseId: string,
+  projectId: string,
+  studentId: string,
+  updates: Partial<ProjectFeedbackData>
+): void {
+  const course = loadCourse(courseId);
+  if (!course) throw new Error('Course not found');
+
+  if (!course.projects) throw new Error('No projects in course');
+
+  const project = course.projects.find(p => p.id === projectId);
+  if (!project) throw new Error('Project not found');
+
+  const feedbackIndex = project.studentFeedbacks.findIndex(f => f.studentId === studentId);
+
+  if (feedbackIndex >= 0) {
+    project.studentFeedbacks[feedbackIndex] = {
+      ...project.studentFeedbacks[feedbackIndex],
+      ...updates,
+    };
+  } else {
+    project.studentFeedbacks.push({
+      studentId,
+      criterionScores: [],
+      generalComment: '',
+      ...updates,
+    });
+  }
+
+  debouncedSaveCourse(course);
+}
+
+export function getProjectFeedback(
+  courseId: string,
+  projectId: string,
+  studentId: string
+): ProjectFeedbackData | null {
+  const course = loadCourse(courseId);
+  if (!course || !course.projects) return null;
+
+  const project = course.projects.find(p => p.id === projectId);
+  if (!project) return null;
+
+  return project.studentFeedbacks.find(f => f.studentId === studentId) || null;
+}
+
+export function calculateProjectScore(feedback: ProjectFeedbackData): number {
+  if (feedback.criterionScores.length === 0) return 0;
+
+  let totalWeighted = 0;
+  let totalWeight = 0;
+  feedback.criterionScores.forEach(cs => {
+    const w = cs.weight ?? 1;
+    totalWeighted += cs.points * w;
+    totalWeight += w;
+  });
+
+  if (totalWeight === 0) return 0;
+  const averagePoints = totalWeighted / totalWeight;
+  return Math.round(averagePoints * 10);
 }
 
 export function calculateOralScore(oralFeedback: OralFeedbackData): number {
@@ -2265,6 +2389,30 @@ export function anonymizeCourse(
           comment: '',
         })),
       })),
+    }));
+  }
+
+  // Clear project feedback comments and images
+  if (course.projects) {
+    course.projects = course.projects.map(project => ({
+      ...project,
+      studentFeedbacks: project.studentFeedbacks.map(fb => ({
+        ...fb,
+        generalComment: '',
+        criterionScores: fb.criterionScores.map(cs => ({
+          ...cs,
+          comment: '',
+          images: [], // Remove all screenshot annotations
+        })),
+      })),
+    }));
+  }
+
+  // Clear observation text
+  if (course.observations) {
+    course.observations = course.observations.map(obs => ({
+      ...obs,
+      text: '',
     }));
   }
 

@@ -40,6 +40,14 @@ export {
     deleteObservation,
     getStudentObservations,
 
+    // Project CRUD
+    addProject,
+    updateProject,
+    deleteProject,
+    updateProjectFeedback,
+    getProjectFeedback,
+    calculateProjectScore,
+
     // Scoring
     calculateStudentScore,
     calculateMaxScore,
