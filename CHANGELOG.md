@@ -2,6 +2,22 @@
 
 All notable changes to MatteMonitor will be documented in this file.
 
+## [0.11.0] — 2026-02-28
+
+### Added
+- **Criteria matrix with rubrics** — define Låg / Middels / Høg achievement descriptions per criterion. Click a rubric cell to auto-set the score (2 / 4 / 6) with color-coded highlight; fine-tune with 0–6 buttons.
+- **Dual comment sections** — project feedback now has separate "Video / presentasjon" and "Refleksjonsnotat" comment fields instead of a single general comment.
+- **Observation → project linking** — observations can be linked to a specific project via a dropdown in the observation panel. Linked observations appear as a "Prosess" timeline in the project assessment sidebar.
+- **Rubric inputs in criteria builder** — the project modal now includes three textareas (Låg / Middels / Høg) per criterion for entering rubric descriptions.
+
+### Changed
+- `ProjectFeedbackData.generalComment` replaced by `videoComment` and `reflectionComment`.
+- `ClassroomObservation` now has an optional `projectId` field.
+- `ProjectCriterionDef` now has optional `rubricLow`, `rubricMedium`, `rubricHigh` fields.
+- Anonymization clears the new comment fields instead of `generalComment`.
+
+---
+
 ## [0.10.0] — 2026-02-28
 
 ### Added

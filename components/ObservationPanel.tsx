@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { CourseStudent, ClassroomObservation, ObservationType } from '@/types';
+import { CourseStudent, ClassroomObservation, ObservationType, CourseProject } from '@/types';
 import { Eye, X, Trash2, Star, Wrench, StickyNote, ChevronDown, Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -10,11 +10,13 @@ interface ObservationPanelProps {
     students: CourseStudent[];
     observations: ClassroomObservation[];
     availableLabels: string[];
+    projects?: CourseProject[];
     onAddObservation: (observation: {
         studentId: string;
         text: string;
         type: ObservationType;
         labels?: string[];
+        projectId?: string;
         date: string;
     }) => void;
     onDeleteObservation: (observationId: string) => void;
@@ -31,6 +33,7 @@ export default function ObservationPanel({
     students,
     observations,
     availableLabels,
+    projects,
     onAddObservation,
     onDeleteObservation,
 }: ObservationPanelProps) {
@@ -47,6 +50,7 @@ export default function ObservationPanel({
     const [type, setType] = useState<ObservationType>('positive');
     const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
     const [showLabels, setShowLabels] = useState(false);
+    const [selectedProjectId, setSelectedProjectId] = useState('');
 
     // Filter state
     const [filterStudentId, setFilterStudentId] = useState('');
@@ -93,10 +97,11 @@ export default function ObservationPanel({
             text: text.trim(),
             type,
             labels: selectedLabels.length > 0 ? selectedLabels : undefined,
+            projectId: selectedProjectId || undefined,
             date: new Date().toISOString().split('T')[0],
         });
 
-        // Reset text but keep student for quick follow-up
+        // Reset text but keep student + project for quick follow-up
         setText('');
         setType('positive');
         setSelectedLabels([]);
@@ -223,8 +228,8 @@ export default function ObservationPanel({
                                         key={obsType}
                                         onClick={() => setType(obsType)}
                                         className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${isSelected
-                                                ? `${config.bgClass} ring-2 ring-offset-1 ring-current`
-                                                : 'bg-surface text-text-secondary hover:bg-border'
+                                            ? `${config.bgClass} ring-2 ring-offset-1 ring-current`
+                                            : 'bg-surface text-text-secondary hover:bg-border'
                                             }`}
                                     >
                                         <span>{config.emoji}</span>
@@ -261,8 +266,8 @@ export default function ObservationPanel({
                                                 key={label}
                                                 onClick={() => toggleLabel(label)}
                                                 className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${selectedLabels.includes(label)
-                                                        ? 'bg-brand text-white'
-                                                        : 'bg-surface text-text-secondary hover:bg-border'
+                                                    ? 'bg-brand text-white'
+                                                    : 'bg-surface text-text-secondary hover:bg-border'
                                                     }`}
                                             >
                                                 {label}
@@ -330,6 +335,11 @@ export default function ObservationPanel({
                                                             </span>
                                                         ))}
                                                     </div>
+                                                )}
+                                                {obs.projectId && projects && (
+                                                    <span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded text-xs">
+                                                        📁 {projects.find(p => p.id === obs.projectId)?.name || ''}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>

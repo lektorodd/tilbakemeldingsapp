@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { Course, CourseProject, ProjectFeedbackData } from '@/types';
+import { Course, CourseProject, ProjectFeedbackData, ClassroomObservation } from '@/types';
 import {
     loadCourse,
     updateProjectFeedback,
@@ -10,12 +10,14 @@ import {
     calculateProjectScore,
     flushPendingSave,
 } from '@/utils/storage';
-import { ArrowLeft, Check, Save, ChevronLeft, ChevronRight, Undo2 } from 'lucide-react';
+import { ArrowLeft, Check, Save, ChevronLeft, ChevronRight, Undo2, Eye, Star, Wrench, StickyNote } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import ProjectFeedbackForm from '@/components/ProjectFeedbackForm';
 import RadarChart from '@/components/RadarChart';
+
+const OBS_EMOJI: Record<string, string> = { positive: '🌟', constructive: '🔧', note: '📝' };
 
 export default function ProjectAssessmentPage() {
     const params = useParams();
@@ -81,7 +83,8 @@ export default function ProjectAssessmentPage() {
                     comment: '',
                     images: [],
                 })),
-                generalComment: '',
+                videoComment: '',
+                reflectionComment: '',
             });
         }
         setHasUnsavedChanges(false);
@@ -163,6 +166,13 @@ export default function ProjectAssessmentPage() {
         };
     }) || [];
 
+    // Get observations linked to this project for the current student
+    const projectObservations: ClassroomObservation[] = currentStudent
+        ? (course.observations || [])
+            .filter(o => o.projectId === projectId && o.studentId === currentStudent.id)
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        : [];
+
     return (
         <main className="min-h-screen bg-background py-8 px-4">
             <div className="max-w-7xl mx-auto">
@@ -184,7 +194,7 @@ export default function ProjectAssessmentPage() {
                     <div className="lg:col-span-1">
                         <div className="bg-surface rounded-lg shadow-sm p-4 sticky top-4">
                             <h3 className="font-semibold text-text-primary mb-3">{t('course.students')}</h3>
-                            <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+                            <div className="space-y-1 max-h-[40vh] overflow-y-auto">
                                 {course.students.map((student, index) => {
                                     const completed = isStudentCompleted(student.id);
                                     return (
@@ -195,8 +205,8 @@ export default function ProjectAssessmentPage() {
                                                 setCurrentStudentIndex(index);
                                             }}
                                             className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ${index === currentStudentIndex
-                                                    ? 'bg-amber-100 text-amber-800 font-medium border border-amber-300'
-                                                    : 'hover:bg-background text-text-secondary'
+                                                ? 'bg-amber-100 text-amber-800 font-medium border border-amber-300'
+                                                : 'hover:bg-background text-text-secondary'
                                                 }`}
                                         >
                                             <span className="truncate">{student.name}</span>
@@ -243,6 +253,31 @@ export default function ProjectAssessmentPage() {
                                     />
                                 </div>
                             )}
+
+                            {/* Process Timeline — observations linked to this project */}
+                            <div className="mt-4 pt-4 border-t border-border">
+                                <h4 className="font-semibold text-text-primary text-sm flex items-center gap-1.5 mb-2">
+                                    <Eye size={14} className="text-emerald-600" />
+                                    {t('project.processTimeline')}
+                                </h4>
+                                {projectObservations.length === 0 ? (
+                                    <p className="text-xs text-text-disabled">{t('project.noProcessObservations')}</p>
+                                ) : (
+                                    <div className="space-y-2 max-h-[30vh] overflow-y-auto">
+                                        {projectObservations.map(obs => (
+                                            <div key={obs.id} className="text-xs border border-border rounded-lg p-2 bg-background">
+                                                <div className="flex items-center gap-1.5 mb-0.5">
+                                                    <span>{OBS_EMOJI[obs.type] || '📝'}</span>
+                                                    <span className="text-text-disabled">
+                                                        {new Date(obs.date).toLocaleDateString('nb-NO')}
+                                                    </span>
+                                                </div>
+                                                <p className="text-text-secondary leading-relaxed">{obs.text}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 

@@ -535,7 +535,8 @@ export function updateProjectFeedback(
     project.studentFeedbacks.push({
       studentId,
       criterionScores: [],
-      generalComment: '',
+      videoComment: '',
+      reflectionComment: '',
       ...updates,
     });
   }
@@ -2398,7 +2399,8 @@ export function anonymizeCourse(
       ...project,
       studentFeedbacks: project.studentFeedbacks.map(fb => ({
         ...fb,
-        generalComment: '',
+        videoComment: '',
+        reflectionComment: '',
         criterionScores: fb.criterionScores.map(cs => ({
           ...cs,
           comment: '',

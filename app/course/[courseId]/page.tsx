@@ -515,6 +515,7 @@ export default function CourseDetailPage() {
     text: string;
     type: 'positive' | 'constructive' | 'note';
     labels?: string[];
+    projectId?: string;
     date: string;
   }) => {
     addObservation(courseId, observation);
@@ -1128,29 +1129,64 @@ export default function CourseDetailPage() {
 
                   <div className="space-y-2">
                     {newProjectCriteria.map((criterion, index) => (
-                      <div key={criterion.id} className="flex gap-2 items-start">
-                        <div className="flex-1 space-y-1">
-                          <input
-                            type="text"
-                            value={criterion.name}
-                            onChange={(e) => updateCriterion(index, { name: e.target.value })}
-                            className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-primary text-sm"
-                            placeholder={t('course.projectCriterionNamePlaceholder')}
-                          />
-                          <input
-                            type="text"
-                            value={criterion.description || ''}
-                            onChange={(e) => updateCriterion(index, { description: e.target.value })}
-                            className="w-full px-3 py-1 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-secondary text-xs"
-                            placeholder={t('course.projectCriterionDescPlaceholder')}
-                          />
+                      <div key={criterion.id} className="border border-border rounded-lg p-3 bg-surface space-y-2">
+                        <div className="flex gap-2 items-start">
+                          <div className="flex-1 space-y-1">
+                            <input
+                              type="text"
+                              value={criterion.name}
+                              onChange={(e) => updateCriterion(index, { name: e.target.value })}
+                              className="w-full px-3 py-1.5 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-primary text-sm"
+                              placeholder={t('course.projectCriterionNamePlaceholder')}
+                            />
+                            <input
+                              type="text"
+                              value={criterion.description || ''}
+                              onChange={(e) => updateCriterion(index, { description: e.target.value })}
+                              className="w-full px-3 py-1 border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500 text-text-secondary text-xs"
+                              placeholder={t('course.projectCriterionDescPlaceholder')}
+                            />
+                          </div>
+                          <button
+                            onClick={() => removeCriterion(index)}
+                            className="p-1 text-danger hover:bg-danger-bg rounded transition mt-1"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
-                        <button
-                          onClick={() => removeCriterion(index)}
-                          className="p-1 text-danger hover:bg-danger-bg rounded transition mt-1"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        {/* Rubric inputs */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="block text-xs text-red-600 font-medium mb-0.5">{t('course.rubricLowLabel')}</label>
+                            <textarea
+                              value={criterion.rubricLow || ''}
+                              onChange={(e) => updateCriterion(index, { rubricLow: e.target.value })}
+                              rows={2}
+                              className="w-full px-2 py-1 border border-border rounded text-xs focus:outline-none focus:ring-1 focus:ring-red-300 text-text-secondary"
+                              placeholder={t('course.rubricLowPlaceholder')}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-yellow-600 font-medium mb-0.5">{t('course.rubricMediumLabel')}</label>
+                            <textarea
+                              value={criterion.rubricMedium || ''}
+                              onChange={(e) => updateCriterion(index, { rubricMedium: e.target.value })}
+                              rows={2}
+                              className="w-full px-2 py-1 border border-border rounded text-xs focus:outline-none focus:ring-1 focus:ring-yellow-300 text-text-secondary"
+                              placeholder={t('course.rubricMediumPlaceholder')}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-green-600 font-medium mb-0.5">{t('course.rubricHighLabel')}</label>
+                            <textarea
+                              value={criterion.rubricHigh || ''}
+                              onChange={(e) => updateCriterion(index, { rubricHigh: e.target.value })}
+                              rows={2}
+                              className="w-full px-2 py-1 border border-border rounded text-xs focus:outline-none focus:ring-1 focus:ring-green-300 text-text-secondary"
+                              placeholder={t('course.rubricHighPlaceholder')}
+                            />
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1434,6 +1470,7 @@ export default function CourseDetailPage() {
         students={course.students}
         observations={(course.observations || []).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
         availableLabels={course.availableLabels}
+        projects={course.projects || []}
         onAddObservation={handleAddObservation}
         onDeleteObservation={handleDeleteObservation}
       />

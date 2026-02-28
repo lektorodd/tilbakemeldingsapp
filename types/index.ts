@@ -239,6 +239,7 @@ export interface ClassroomObservation {
   text: string;
   type: ObservationType;
   labels?: string[];   // Reuses course availableLabels
+  projectId?: string;  // Optional link to a CourseProject
   date: string;        // ISO date string (observation date)
   createdDate: string; // ISO date string (when created in the app)
 }
@@ -248,6 +249,9 @@ export interface ProjectCriterionDef {
   id: string;            // e.g. "criterion-1"
   name: string;          // Teacher-defined label, e.g. "Problemstilling"
   description?: string;  // Optional rubric description
+  rubricLow?: string;    // Låg måloppnåing (2)
+  rubricMedium?: string; // Middels måloppnåing (3–4)
+  rubricHigh?: string;   // Høg måloppnåing (5–6)
 }
 
 export interface ProjectCriterionScore {
@@ -261,7 +265,8 @@ export interface ProjectCriterionScore {
 export interface ProjectFeedbackData {
   studentId: string;
   criterionScores: ProjectCriterionScore[];
-  generalComment: string;
+  videoComment: string;       // Feedback on presentation/video
+  reflectionComment: string;  // Feedback on reflection notes
   completedDate?: string;
   score?: number;        // Weighted average (0–60 scale)
 }
